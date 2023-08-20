@@ -6,7 +6,7 @@ import { pages } from "./utils/pages";
 const App = () => {
   return (
     <Routes>
-      {pages.map((page) => (
+      {pages.all.map((page) => (
         <Route key={page.name} path={page.path} element={page.element} />
       ))}
       <Route path="*" element={<Navigate to="/" />} />
