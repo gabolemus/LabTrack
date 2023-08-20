@@ -1,0 +1,52 @@
+@import "../../../sass/utilities/variables";
+@import "bootstrap/scss/bootstrap";
+
+nav#navbar {
+  background-color: $unisRed !important;
+}
+
+.navbar-brand,
+.nav-link {
+  color: $white;
+  letter-spacing: 0.05rem;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-right: 2.5rem;
+}
+
+.nav-link {
+  font-size: 0.9rem;
+  margin-top: 0.15rem;
+}
+
+.nav-item {
+  margin: 0 0.15rem;
+}
+
+.navbar-nav .nav-link {
+  color: #cbd5db;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: $white;
+  background-color: darken($unisRed, 10%);
+}
+
+.navbar-brand:hover {
+  color: $white;
+  text-decoration: underline;
+}
+
+.navbar-nav .nav-link.active {
+  color: $white;
+  font-weight: 800;
+}
+
+.navbar-brand:focus {
+  color: $white;
+}
