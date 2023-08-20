@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { pages } from "./utils/pages";
 
+/** Component that render the web application */
 const App = () => {
   return (
     <Routes>
