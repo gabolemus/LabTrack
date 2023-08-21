@@ -12,6 +12,7 @@ type EquipmentUsed = {
 export type Project = {
   id: string;
   name: string;
+  description: string;
   lead: string;
   startDate: string;
   dueDate: string;
@@ -25,9 +26,11 @@ export const sampleProjectData = [
   {
     id: "proyecto-1",
     name: "Proyecto 1",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl.",
     lead: "John Doe",
-    startDate: "2023-01-01",
-    dueDate: "2023-12-31",
+    startDate: "2023-01-02",
+    dueDate: "2023-06-15",
     active: false,
     notes:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl.",
@@ -49,6 +52,8 @@ export const sampleProjectData = [
   {
     id: "proyecto-2",
     name: "Proyecto 2",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl. Sed vitae eros quis nisl aliquam aliquet. Sed euismod, nisl vitae aliquam aliquet, nisl nisl aliquam nisl, vitae aliquam nisl nisl vitae nisl.",
     lead: "Jane Smith",
     startDate: "2023-01-01",
     dueDate: "2023-12-31",
@@ -65,3 +70,18 @@ export const sampleProjectData = [
     ],
   },
 ];
+
+/** Fetches equipment data from the server */
+export const fetchProject = async (id: string): Promise<Project> => {
+  // TODO: Implement fetch from server
+
+  // Right now, we just return the item that matches the id
+  return new Promise((resolve, reject) => {
+    const item = sampleProjectData.find((item) => item.id === id);
+    if (item) {
+      resolve(item);
+    } else {
+      reject(new Error("Item not found"));
+    }
+  });
+};
