@@ -1,0 +1,6 @@
+# VS Code settings
+# General settings
+.vscode
+
+# Workspace
+*.code-workspace
