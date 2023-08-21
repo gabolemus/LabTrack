@@ -45,7 +45,7 @@ const ProjectsList = () => {
 
   return (
     <div>
-      <h1>Project List</h1>
+      <h1>Proyectos</h1>
       <form className="project-search-form" onSubmit={handleSubmit}>
         <div className="row mb-3">
           <div className="col-md-4">
