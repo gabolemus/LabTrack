@@ -36,6 +36,9 @@
       {
         "singleQuote": false,
         "parser": "flow"
+      },
+      {
+        "endOfLine": "auto"
       }
     ]
   }
