@@ -1,8 +1,8 @@
 import express from "express";
 import nodemailer from "nodemailer";
 
-import env from "../config/env";
-import logger from "../config/logger";
+import env from "../utils/env";
+import logger from "../utils/logger";
 
 const router = express.Router();
 

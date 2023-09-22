@@ -1,7 +1,7 @@
 import express from "express";
 
-import logger from "./config/logger";
-import env from "./config/env";
+import logger from "./utils/logger";
+import env from "./utils/env";
 
 import indexRouter from "./routes/index";
 import devicesRouter from "./routes/devices";
