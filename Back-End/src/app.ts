@@ -36,8 +36,18 @@ app.use(usersRouter);
 // Services
 app.use(mailRouter);
 
+// Default MongoDB host when running locally
+let MONGO_HOST = "localhost";
+
+// Check if the environment is set to Docker or local
+if (process.env.DOCKER === "true") {
+  // Set the MongoDB host to the Docker container name
+  MONGO_HOST = "mongo";
+}
+
 // MongoDB connection
-const MONGO_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.raz9g.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
+const encodedPassword = encodeURIComponent(env.db.password); // Encode the password to handle special characters
+const MONGO_URI = `mongodb://${env.db.username}:${encodedPassword}@${MONGO_HOST}:${env.db.port}/?authSource=admin&readPreference=primary&ssl=false`;
 
 mongoose
   .connect(MONGO_URI, {
@@ -48,6 +58,17 @@ mongoose
   .catch((err) => logger.error(`An error occurred while connecting to MongoDB: ${err}`));
 
 // Start server
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  logger.info(`The LabTrack server is listening on http://localhost:${PORT}`);
+});
+
+// Gracefully handle shutdown
+process.on("SIGINT", () => {
+  logger.info("Shutting down the server...");
+
+  // Close the server and MongoDB connection gracefully
+  server.close(() => {
+    mongoose.connection.close(false);
+    logger.info("Successfully shut down the server and MongoDB connection");
+  });
 });
