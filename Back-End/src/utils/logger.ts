@@ -1,7 +1,7 @@
 import { addColors, createLogger, format, transports } from "winston";
 import env from "./env";
 
-const maxFileSize = env.logs.maxFileSizeMB; // Max log file size in MB.
+const maxFileSize = env.logs.maxFileSizeMB * 1024 * 1024; // Max size of each log file in bytes.
 const maxFiles = env.logs.maxFiles; // Max number of log files.
 
 // Logger transport options
