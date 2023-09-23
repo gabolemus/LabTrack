@@ -42,20 +42,37 @@ let MONGO_HOST = "localhost";
 // Check if the environment is set to Docker or local
 if (process.env.DOCKER === "true") {
   // Set the MongoDB host to the Docker container name
-  MONGO_HOST = "mongo";
+  MONGO_HOST = "mongodb";
 }
 
 // MongoDB connection
 const encodedPassword = encodeURIComponent(env.db.password); // Encode the password to handle special characters
-const MONGO_URI = `mongodb://${env.db.username}:${encodedPassword}@${MONGO_HOST}:${env.db.port}/?authSource=admin&readPreference=primary&ssl=false`;
+const MONGO_URI = `mongodb://${env.db.username}:${encodedPassword}@${MONGO_HOST}:${env.db.port}/`;
 
-mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions)
-  .then(() => logger.info("Successfully connected to MongoDB"))
-  .catch((err) => logger.error(`An error occurred while connecting to MongoDB: ${err}`));
+// Attempt to connect to MongoDB
+const connectWithRetry = (retries: number) => {
+  retries--;
+
+  if (retries === 0) {
+    logger.error("Could not connect to MongoDB");
+    process.exit(-1);
+  }
+
+  mongoose
+    .connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions)
+    .then(() => logger.info("Successfully connected to MongoDB"))
+    .catch((err) => {
+      logger.error(`An error occurred while connecting to MongoDB: ${err}`)
+      logger.info("Retrying connection to MongoDB...");
+      setTimeout(connectWithRetry, 1000);
+    });
+};
+
+const retries = 5;
+connectWithRetry(retries);
 
 // Start server
 const server = app.listen(PORT, () => {
