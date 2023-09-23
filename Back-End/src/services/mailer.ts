@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
     await transporter.verify();
     logger.info("SMTP server has been setup successfully.");
   } catch (error) {
-    logger.error(`Unable to connect to the SMTP server. Error: ${error}`);
+    logger.error(`An error occured trying to setup the SMTP server: ${error}`);
   }
 })();
 
@@ -57,8 +57,8 @@ router.post("/send-test-email", async (req, res) => {
     logger.debug(`Test email sent to ${info.envelope.to}`);
     res.send({ success: true, message: `Test email sent to ${info.envelope.to}` });
   } catch (error) {
-    logger.error(`Error sending email. Error: ${error}`);
-    res.send({ success: false, message: `Error sending email. Error: ${error}` });
+    logger.error(`An error occured trying to send the test email: ${error}`);
+    res.send({ success: false, message: `An error occured trying to send the test email: ${error}` });
   }
 });
 
