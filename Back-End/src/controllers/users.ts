@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 /** Gets all the users in the database */
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getUsers function called");
+    logger.info("GET /users");
     const users: IUser[] = await User.find();
     res.status(200).json({ success: true, users });
   } catch (error) {
@@ -18,7 +18,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 /** Gets a user by its ID */
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getUser function called");
+    logger.info("GET /user/:id");
     const user: IUser | null = await User.findById(req.params.id);
     res.status(user ? 200 : 404).json({ success: true, user });
   } catch (error) {
@@ -30,7 +30,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 /** Creates a new user */
 export const addUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("addUser function called");
+    logger.info("POST /user");
 
     // Get the body of the request
     const body = req.body as Pick<IUser, "name" | "email" | "salt" | "passwordHash" | "role">;
@@ -70,7 +70,7 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
 /** Updates a user by its ID */
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("updateUser function called");
+    logger.info("PUT /user/:id");
     const user: IUser | null = await User.findByIdAndUpdate(req.params.id, req.body);
     res.status(user ? 200 : 404).json({ success: true, user });
   } catch (error) {
@@ -82,7 +82,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 /** Deletes a user by its ID */
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("deleteUser function called");
+    logger.info("DELETE /user/:id");
     const user: IUser | null = await User.findByIdAndDelete(req.params.id);
     res.status(user ? 200 : 404).json({ success: true, user });
   } catch (error) {

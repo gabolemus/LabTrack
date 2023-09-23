@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 /** Gets all the devices in the database */
 export const getDevices = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getDevices function called");
+    logger.info("GET /devices");
     const devices: IDevice[] = await Device.find();
     res.status(200).json({ success: true, devices });
   } catch (error) {
@@ -18,7 +18,7 @@ export const getDevices = async (req: Request, res: Response): Promise<void> => 
 /** Gets a device by its ID */
 export const getDevice = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getDevice function called");
+    logger.info("GET /device/:id");
     const device: IDevice | null = await Device.findById(req.params.id);
     res.status(device ? 200 : 404).json({ success: true, device });
   } catch (error) {
@@ -30,7 +30,7 @@ export const getDevice = async (req: Request, res: Response): Promise<void> => {
 /** Creates a new device */
 export const addDevice = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("addDevice function called");
+    logger.info("POST /device");
 
     // Get the body of the request
     const body = req.body as Pick<IDevice, "name" | "manufacturer" | "quantity" | "status" | "documentation" | "configuration" | "images">;
@@ -72,7 +72,7 @@ export const addDevice = async (req: Request, res: Response): Promise<void> => {
 /** Updates a device by its ID */
 export const updateDevice = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("updateDevice function called");
+    logger.info("PUT /device/:id");
     const device: IDevice | null = await Device.findByIdAndUpdate({ _id: req.params.id }, req.body);
     res.status(device ? 200 : 404).json({ success: true, device });
   } catch (error) {
@@ -84,7 +84,7 @@ export const updateDevice = async (req: Request, res: Response): Promise<void> =
 /** Deletes a device by its ID */
 export const deleteDevice = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("deleteDevice function called");
+    logger.info("DELETE /device/:id");
     const device: IDevice | null = await Device.findByIdAndRemove(req.params.id);
     res.status(device ? 200 : 404).json({ success: true, device });
   } catch (error) {

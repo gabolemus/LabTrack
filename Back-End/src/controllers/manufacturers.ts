@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 /** Gets all the manufacturers in the database */
 export const getManufacturers = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getManufacturers function called");
+    logger.info("GET /manufacturers");
     const manufacturers: IManufacturer[] = await Manufacturer.find();
     res.status(200).json({ success: true, manufacturers });
   } catch (error) {
@@ -18,7 +18,7 @@ export const getManufacturers = async (req: Request, res: Response): Promise<voi
 /** Gets a manufacturer by its ID */
 export const getManufacturer = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getManufacturer function called");
+    logger.info("GET /manufacturer/:id");
     const manufacturer: IManufacturer | null = await Manufacturer.findById(req.params.id);
     res.status(manufacturer ? 200 : 404).json({ success: true, manufacturer });
   } catch (error) {
@@ -30,7 +30,7 @@ export const getManufacturer = async (req: Request, res: Response): Promise<void
 /** Creates a new manufacturer */
 export const addManufacturer = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("addManufacturer function called");
+    logger.info("POST /manufacturer");
 
     // Get the body of the request
     const body = req.body as Pick<IManufacturer, "name">;
@@ -66,7 +66,7 @@ export const addManufacturer = async (req: Request, res: Response): Promise<void
 /** Updates a manufacturer by its ID */
 export const updateManufacturer = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("updateManufacturer function called");
+    logger.info("PUT /manufacturer/:id");
     const manufacturer: IManufacturer | null = await Manufacturer.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -81,7 +81,7 @@ export const updateManufacturer = async (req: Request, res: Response): Promise<v
 /** Deletes a manufacturer by its ID */
 export const deleteManufacturer = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("deleteManufacturer function called");
+    logger.info("DELETE /manufacturer/:id");
     const manufacturer: IManufacturer | null = await Manufacturer.findByIdAndDelete(req.params.id);
     res.status(manufacturer ? 200 : 404).json({ success: true, manufacturer });
   } catch (error) {

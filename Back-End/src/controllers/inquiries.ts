@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 /** Gets all the inquiries in the database */
 export const getInquiries = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getInquiries function called");
+    logger.info("GET /inquiries");
     const inquiries: IInquiry[] = await Inquiry.find();
     res.status(200).json({ success: true, inquiries });
   } catch (error) {
@@ -18,7 +18,7 @@ export const getInquiries = async (req: Request, res: Response): Promise<void> =
 /** Gets an inquiry by its ID */
 export const getInquiry = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getInquiry function called");
+    logger.info("GET /inquiry/:id");
     const inquiry: IInquiry | null = await Inquiry.findById(req.params.id);
     res.status(inquiry ? 200 : 404).json({ success: true, inquiry });
   } catch (error) {
@@ -30,7 +30,7 @@ export const getInquiry = async (req: Request, res: Response): Promise<void> => 
 /** Creates a new inquiry */
 export const addInquiry = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("addInquiry function called");
+    logger.info("POST /inquiry");
 
     // Get the body of the request
     const body = req.body as Pick<IInquiry, "email" | "projectID" | "devicesID" | "status">;
@@ -53,7 +53,7 @@ export const addInquiry = async (req: Request, res: Response): Promise<void> => 
 /** Updates an inquiry by its ID */
 export const updateInquiry = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("updateInquiry function called");
+    logger.info("PUT /inquiry/:id");
     const inquiry: IInquiry | null = await Inquiry.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -68,7 +68,7 @@ export const updateInquiry = async (req: Request, res: Response): Promise<void> 
 /** Deletes an inquiry by its ID */
 export const deleteInquiry = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("deleteInquiry function called");
+    logger.info("DELETE /inquiry/:id");
     const inquiry: IInquiry | null = await Inquiry.findByIdAndDelete(req.params.id);
     res.status(inquiry ? 200 : 404).json({ success: true, inquiry });
   } catch (error) {

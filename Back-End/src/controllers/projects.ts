@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 /** Gets all the projects in the database */
 export const getProjects = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getProjects function called");
+    logger.info("GET /projects");
     const projects: IProject[] = await Project.find();
     res.status(200).json({ success: true, projects });
   } catch (error) {
@@ -18,7 +18,7 @@ export const getProjects = async (req: Request, res: Response): Promise<void> =>
 /** Gets a project by its ID */
 export const getProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("getProject function called");
+    logger.info("GET /project/:id");
     const project: IProject | null = await Project.findById(req.params.id);
     res.status(project ? 200 : 404).json({ success: true, project });
   } catch (error) {
@@ -30,7 +30,7 @@ export const getProject = async (req: Request, res: Response): Promise<void> => 
 /** Creates a new project */
 export const addProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("addProject function called");
+    logger.info("POST /project");
 
     // Get the body of the request
     const body = req.body as Pick<IProject, "name" | "courses" | "description" | "lead" | "timelapse" | "status" | "notes" | "equipment">;
@@ -73,7 +73,7 @@ export const addProject = async (req: Request, res: Response): Promise<void> => 
 /** Updates a project by its ID */
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("updateProject function called");
+    logger.info("PUT /project/:id");
     const project: IProject | null = await Project.findByIdAndUpdate(req.params.id, req.body);
     res.status(project ? 200 : 404).json({ success: true, project });
   } catch (error) {
@@ -85,7 +85,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 /** Deletes a project by its ID */
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   try {
-    logger.info("deleteProject function called");
+    logger.info("DELETE /project/:id");
     const project: IProject | null = await Project.findByIdAndRemove(req.params.id);
     res.status(project ? 200 : 404).json({ success: true, project });
   } catch (error) {
