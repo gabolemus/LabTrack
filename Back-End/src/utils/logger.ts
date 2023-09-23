@@ -26,7 +26,7 @@ const options = {
         info.level = info.level.toUpperCase();
         return info;
       })(),
-      format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      format.timestamp({ format: "DD-MM-YYYY HH:mm:ss" }),
       format.printf((info) => `[${info.level}] ${info.timestamp} ${info.message}`),
     ),
   },
