@@ -1,11 +1,15 @@
 import express from "express";
 
+// App config imports
 import logger from "./utils/logger";
 import env from "./utils/env";
 
+// Router imports
 import indexRouter from "./routes/index";
 import devicesRouter from "./routes/devices";
-import mailRouter from "./routes/mailer";
+
+// Services imports
+import mailRouter from "./services/mailer";
 
 const app = express();
 const port = env.port;
