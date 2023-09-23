@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { IManufacturer } from "../types/manufacturer";
 import Manufacturer from "../models/manufacturers";
-
 import logger from "../utils/logger";
 
 /** Gets all the manufacturers in the database */

@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { IDevice } from "../types/device";
 import Device from "../models/devices";
-
 import logger from "../utils/logger";
 
 /** Gets all the devices in the database */

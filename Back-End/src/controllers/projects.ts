@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { IProject } from "../types/project";
 import Project from "../models/projects";
-
 import logger from "../utils/logger";
 
 /** Gets all the projects in the database */

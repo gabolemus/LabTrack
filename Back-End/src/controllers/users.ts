@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { IUser } from "../types/user";
 import User from "../models/users";
-
 import logger from "../utils/logger";
 
 /** Gets all the users in the database */

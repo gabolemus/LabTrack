@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { IInquiry } from "../types/inquiry";
 import Inquiry from "../models/inquiries";
-
 import logger from "../utils/logger";
 
 /** Gets all the inquiries in the database */

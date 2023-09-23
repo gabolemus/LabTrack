@@ -1,6 +1,5 @@
 import express from "express";
 import nodemailer from "nodemailer";
-
 import env from "../utils/env";
 import logger from "../utils/logger";
 
