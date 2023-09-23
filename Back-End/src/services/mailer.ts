@@ -1,9 +1,9 @@
-import express from "express";
+import { Router } from "express";
 import nodemailer from "nodemailer";
 import env from "../utils/env";
 import logger from "../utils/logger";
 
-const router = express.Router();
+const router = Router();
 
 /** Reusable transporter object using SMTP transport. */
 const transporter = nodemailer.createTransport({
@@ -27,11 +27,11 @@ const transporter = nodemailer.createTransport({
   }
 })();
 
-router.get("/", (req, res) => {
+router.get("/mailer", (req, res) => {
   res.send("Mailer home page");
 });
 
-router.post("/send-test-email", async (req, res) => {
+router.post("/mailer/send-test-email", async (req, res) => {
   // Check if the request has the required fields.
   if (!req.body.to) {
     res.send({ success: false, message: "Missing required field: to" });
