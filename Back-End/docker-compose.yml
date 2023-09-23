@@ -2,6 +2,7 @@ version: '3'
 services:
   api:
     container_name: labtrack-backend
+    image: labtrack-backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,6 +13,10 @@ services:
       - "8080:8080"
     environment:
       - DOCKER=true
+    mem_limit: 512M
+    cpu_shares: 512
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo:latest
