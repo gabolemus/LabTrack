@@ -1,6 +1,6 @@
 import express from "express";
 
-// App config imports
+// App utilities imports
 import logger from "./utils/logger";
 import env from "./utils/env";
 
