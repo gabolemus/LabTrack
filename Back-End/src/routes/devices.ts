@@ -1,17 +1,12 @@
-import express from "express";
+import { Router } from "express";
+import { getDevices, getDevice, addDevice, updateDevice, deleteDevice } from "../controllers/devices";
 
-import logger from "../utils/logger";
+const devicesRouter = Router();
 
-const router = express.Router();
+devicesRouter.get("/devices", getDevices);
+devicesRouter.get("/device/:id", getDevice);
+devicesRouter.post("/device", addDevice);
+devicesRouter.put("/device/:id", updateDevice);
+devicesRouter.delete("/device/:id", deleteDevice);
 
-router.get("/", (req, res) => {
-  logger.info("GET /devices");
-  res.send("Devices home page");
-});
-
-router.get("/:id", (req, res) => {
-  logger.info(`GET /devices/${req.params.id}`);
-  res.send(`Device with id ${req.params.id}`);
-});
-
-export default router;
+export default devicesRouter;
