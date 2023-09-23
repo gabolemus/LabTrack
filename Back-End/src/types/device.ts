@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { Document } from "mongoose";
-
 import { IManufacturer } from "./manufacturer";
 
 /** Enum that defines the possible device statuses */
