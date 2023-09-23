@@ -38,22 +38,6 @@ export const addManufacturer = async (req: Request, res: Response): Promise<void
       name: body.name,
     });
 
-    // Check if the name of the manufacturer can be used as its ID
-    const manufacturerName = manufacturer.name.replace(/\s+/g, "_").toLowerCase();
-
-    // Check if the manufacturer ID already exists
-    let manufacturerID = manufacturerName;
-    let manufacturerIDExists = await Manufacturer.exists({ id: manufacturerID });
-    while (manufacturerIDExists) {
-      manufacturerID = `${manufacturerName}_${Math.floor(Math.random() * 100)}`;
-      manufacturerIDExists = await Manufacturer.exists({ id: manufacturerID });
-    }
-    if (manufacturerID !== manufacturerName) {
-      manufacturer.id = manufacturerID;
-    } else {
-      manufacturer.id = `${manufacturerName}-${manufacturerID}`;
-    }
-
     // Save the manufacturer
     const newManufacturer: IManufacturer = await manufacturer.save();
     res.status(201).json({ success: true, manufacturer: newManufacturer });

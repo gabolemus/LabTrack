@@ -45,22 +45,6 @@ export const addProject = async (req: Request, res: Response): Promise<void> => 
       equipment: body.equipment,
     });
 
-    // Check if the name of the project can be used as its ID
-    const projectName = project.name.replace(/\s+/g, "_").toLowerCase();
-
-    // Check if the project ID already exists
-    let projectID = projectName;
-    let projectIDExists = await Project.exists({ id: projectID });
-    while (projectIDExists) {
-      projectID = `${projectName}_${Math.floor(Math.random() * 100)}`;
-      projectIDExists = await Project.exists({ id: projectID });
-    }
-    if (projectID !== projectName) {
-      project.id = projectID;
-    } else {
-      project.id = `${projectName}-${projectID}`;
-    }
-
     // Save the project
     const newProject: IProject = await project.save();
     res.status(201).json({ success: true, project: newProject });

@@ -44,22 +44,6 @@ export const addDevice = async (req: Request, res: Response): Promise<void> => {
       images: body.images,
     });
 
-    // Check if the name of the device can be used as its ID
-    const deviceName = device.name.replace(/\s+/g, "_").toLowerCase();
-
-    // Check if the device ID already exists
-    let deviceID = deviceName;
-    let deviceIDExists = await Device.exists({ id: deviceID });
-    while (deviceIDExists) {
-      deviceID = `${deviceName}_${Math.floor(Math.random() * 100)}`;
-      deviceIDExists = await Device.exists({ id: deviceID });
-    }
-    if (deviceID !== deviceName) {
-      device.id = deviceID;
-    } else {
-      device.id = `${deviceName}-${deviceID}`;
-    }
-
     // Save the device
     const newDevice: IDevice = await device.save();
     res.status(201).json({ success: true, newDevice });
