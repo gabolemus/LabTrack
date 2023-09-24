@@ -56,9 +56,12 @@ router.post("/images/upload", upload.array("images", MAX_IMAGES), (req: Request,
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: "No images provided" });
   }
-  const uploadedImagePaths = (req.files as Express.Multer.File[]).map((file) => file.path);
+  const uploadedImagePaths = (req.files as Express.Multer.File[]).map((file) => {
+    const { manufacturer, device } = req.body;
+    const filename = file.filename;
+    return encodeURI(`${req.protocol}://${req.hostname}:${process.env.PORT}/images/${manufacturer}/${device}/${filename}`);
+  });
   logger.info(`Uploaded images: ${uploadedImagePaths.join(", ")}`);
-  // Respond with an array of paths to the uploaded images
   res.status(201).json({ imagePaths: uploadedImagePaths });
 });
 
