@@ -5,10 +5,14 @@ import logger from "../utils/logger";
 export class BaseController<T extends Document> {
   protected model: Model<T>;
   protected modelName: string;
+  protected uniqueFieldName: string;
+  protected enforceUniqueField: boolean;
 
-  constructor(model: Model<T>, modelName: string) {
+  constructor(model: Model<T>, modelName: string, uniqueFieldName: string = "", enforceUniqueField: boolean = false) {
     this.model = model;
     this.modelName = modelName;
+    this.uniqueFieldName = uniqueFieldName;
+    this.enforceUniqueField = enforceUniqueField;
   }
 
   public getItems = async (req: Request, res: Response): Promise<void> => {
@@ -34,6 +38,25 @@ export class BaseController<T extends Document> {
   public createItem = async (req: Request, res: Response): Promise<void> => {
     try {
       logger.info(`POST /${this.modelName} ${JSON.stringify(req.body)}`);
+
+      if (this.enforceUniqueField && this.uniqueFieldName !== "") {
+        // Check if an item with the same uniqueField value already exists
+        const filterQuery: Partial<Record<string, any>> = {};
+        filterQuery[this.uniqueFieldName] = req.body[this.uniqueFieldName];
+        const existingItem = await this.model.findOne(filterQuery);
+
+        if (existingItem) {
+          res.status(400).json({
+            success: false,
+            error: 'ENFORCE_UNIQUE_FIELD',
+            message: `An entry in the ${this.modelName}s collection already exists with the value '${
+              req.body[this.uniqueFieldName]
+            }' for the field '${this.uniqueFieldName}'`,
+          });
+          return;
+        }
+      }
+
       const newItem = new this.model(req.body);
       const savedItem = await newItem.save();
       res.status(201).json({ success: true, [`new${this.modelName}`]: savedItem });
