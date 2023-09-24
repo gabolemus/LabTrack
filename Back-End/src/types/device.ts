@@ -14,7 +14,7 @@ enum DeviceStatus {
 export interface IDevice extends Document {
   id: string;
   name: string;
-  manufacturer: IManufacturer;
+  manufacturerID: IManufacturer["_id"];
   quantity: number;
   status: DeviceStatus;
   createdAt: Date;

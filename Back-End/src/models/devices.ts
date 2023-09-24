@@ -8,7 +8,7 @@ const deviceSchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    manufacturer: {
+    manufacturerID: {
       type: Schema.Types.ObjectId,
       ref: "Manufacturer",
       required: true,
