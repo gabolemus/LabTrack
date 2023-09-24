@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getInquiries, getInquiry, addInquiry, updateInquiry, deleteInquiry } from "../controllers/inquiries";
+import { inquiriesController } from "../controllers/inquiries";
 
 const inquiriesRouter = Router();
 
-inquiriesRouter.get("/inquiries", getInquiries);
-inquiriesRouter.get("/inquiry/:id", getInquiry);
-inquiriesRouter.post("/inquiry", addInquiry);
-inquiriesRouter.put("/inquiry/:id", updateInquiry);
-inquiriesRouter.delete("/inquiry/:id", deleteInquiry);
+inquiriesRouter.get("/inquiries", inquiriesController.getItems);
+inquiriesRouter.get("/inquiry", inquiriesController.getItem);
+inquiriesRouter.post("/inquiry", inquiriesController.createItem);
+inquiriesRouter.put("/inquiry", inquiriesController.updateItem);
+inquiriesRouter.delete("/inquiry", inquiriesController.deleteItem);
 
 export default inquiriesRouter;

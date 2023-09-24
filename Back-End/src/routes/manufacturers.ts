@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getManufacturers, getManufacturer, addManufacturer, updateManufacturer, deleteManufacturer } from "../controllers/manufacturers";
+import { manufacturersController } from "../controllers/manufacturers";
 
 const manufacturersRouter = Router();
 
-manufacturersRouter.get("/manufacturers", getManufacturers);
-manufacturersRouter.get("/manufacturer/:id", getManufacturer);
-manufacturersRouter.post("/manufacturer", addManufacturer);
-manufacturersRouter.put("/manufacturer/:id", updateManufacturer);
-manufacturersRouter.delete("/manufacturer/:id", deleteManufacturer);
+manufacturersRouter.get("/manufacturers", manufacturersController.getItems);
+manufacturersRouter.get("/manufacturer", manufacturersController.getItem);
+manufacturersRouter.post("/manufacturer", manufacturersController.createItem);
+manufacturersRouter.put("/manufacturer", manufacturersController.updateItem);
+manufacturersRouter.delete("/manufacturer", manufacturersController.deleteItem);
 
 export default manufacturersRouter;

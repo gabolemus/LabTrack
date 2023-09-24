@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getProjects, getProject, addProject, updateProject, deleteProject } from "../controllers/projects";
+import { projectsController } from "../controllers/projects";
 
 const projectRouter = Router();
 
-projectRouter.get("/projects", getProjects);
-projectRouter.get("/project/:id", getProject);
-projectRouter.post("/project", addProject);
-projectRouter.put("/project/:id", updateProject);
-projectRouter.delete("/project/:id", deleteProject);
+projectRouter.get("/projects", projectsController.getItems);
+projectRouter.get("/project", projectsController.getItem);
+projectRouter.post("/project", projectsController.createItem);
+projectRouter.put("/project", projectsController.updateItem);
+projectRouter.delete("/project", projectsController.deleteItem);
 
 export default projectRouter;

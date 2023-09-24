@@ -1,75 +1,11 @@
-import { Response, Request } from "express";
-import { IManufacturer } from "../types/manufacturer";
+import { BaseController } from "./BaseController";
 import Manufacturer from "../models/manufacturers";
-import logger from "../utils/logger";
+import { IManufacturer } from "../types/manufacturer";
 
-/** Gets all the manufacturers in the database */
-export const getManufacturers = async (req: Request, res: Response): Promise<void> => {
-  try {
-    logger.info("GET /manufacturers");
-    const manufacturers: IManufacturer[] = await Manufacturer.find();
-    res.status(200).json({ success: true, manufacturers });
-  } catch (error) {
-    logger.error(`An error occured trying to get all the manufacturers: ${error}`);
-    throw error;
+export class ManufacturersController extends BaseController<IManufacturer> {
+  constructor() {
+    super(Manufacturer, "manufacturer");
   }
-};
+}
 
-/** Gets a manufacturer by its ID */
-export const getManufacturer = async (req: Request, res: Response): Promise<void> => {
-  try {
-    logger.info("GET /manufacturer/:id");
-    const manufacturer: IManufacturer | null = await Manufacturer.findById(req.params.id);
-    res.status(manufacturer ? 200 : 404).json({ success: true, manufacturer });
-  } catch (error) {
-    logger.error(`An error occured trying to get the manufacturer with ID ${req.params.id}: ${error}`);
-    throw error;
-  }
-};
-
-/** Creates a new manufacturer */
-export const addManufacturer = async (req: Request, res: Response): Promise<void> => {
-  try {
-    logger.info("POST /manufacturer");
-
-    // Get the body of the request
-    const body = req.body as Pick<IManufacturer, "name">;
-    let manufacturer: IManufacturer = new Manufacturer({
-      name: body.name,
-    });
-
-    // Save the manufacturer
-    const newManufacturer: IManufacturer = await manufacturer.save();
-    res.status(201).json({ success: true, manufacturer: newManufacturer });
-  } catch (error) {
-    logger.error(`An error occured trying to create a new manufacturer: ${error}`);
-    throw error;
-  }
-};
-
-/** Updates a manufacturer by its ID */
-export const updateManufacturer = async (req: Request, res: Response): Promise<void> => {
-  try {
-    logger.info("PUT /manufacturer/:id");
-    const manufacturer: IManufacturer | null = await Manufacturer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-    );
-    res.status(manufacturer ? 200 : 404).json({ success: true, manufacturer });
-  } catch (error) {
-    logger.error(`An error occured trying to update the manufacturer with ID ${req.params.id}: ${error}`);
-    throw error;
-  }
-};
-
-/** Deletes a manufacturer by its ID */
-export const deleteManufacturer = async (req: Request, res: Response): Promise<void> => {
-  try {
-    logger.info("DELETE /manufacturer/:id");
-    const manufacturer: IManufacturer | null = await Manufacturer.findByIdAndDelete(req.params.id);
-    res.status(manufacturer ? 200 : 404).json({ success: true, manufacturer });
-  } catch (error) {
-    logger.error(`An error occured trying to delete the manufacturer with ID ${req.params.id}: ${error}`);
-    throw error;
-  }
-};
+export const manufacturersController = new ManufacturersController();
