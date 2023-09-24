@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import logger from "../utils/logger";
+import env from "../utils/env";
 
 const router = express.Router();
 const MAX_IMAGES = 25;
@@ -59,7 +60,7 @@ router.post("/images/upload", upload.array("images", MAX_IMAGES), (req: Request,
   const uploadedImagePaths = (req.files as Express.Multer.File[]).map((file) => {
     const { manufacturer, device } = req.body;
     const filename = file.filename;
-    return encodeURI(`${req.protocol}://${req.hostname}:${process.env.PORT}/images/${manufacturer}/${device}/${filename}`);
+    return encodeURI(`${env.images.host}:${env.port}/images/${manufacturer}/${device}/${filename}`);
   });
   logger.info(`Uploaded images: ${uploadedImagePaths.join(", ")}`);
   res.status(201).json({ imagePaths: uploadedImagePaths });
