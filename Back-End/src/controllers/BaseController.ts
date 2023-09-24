@@ -15,7 +15,7 @@ export class BaseController<T extends Document> {
     try {
       logger.info(`GET /${this.modelName}s`);
       const items = await this.model.find();
-      res.status(200).json({ success: true, [`${this.modelName}s`]: items });
+      res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
     } catch (error) {
       this.handleError(res, error);
     }
