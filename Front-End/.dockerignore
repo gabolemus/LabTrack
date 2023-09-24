@@ -1,0 +1,7 @@
+.dockerignore
+.gitignore
+.eslintrc.json
+.prettierrc.json
+Dockerfile
+node_modules
+README.md
