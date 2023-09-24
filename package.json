@@ -1,0 +1,12 @@
+{
+  "name": "labtrack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:gabolemus/LabTrack.git",
+  "author": "Gabriel Lemus <49124491+gabolemus@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "docker:compose": "docker-compose up -d --build",
+    "docker:compose-logs": "docker-compose logs -f"
+  }
+}
