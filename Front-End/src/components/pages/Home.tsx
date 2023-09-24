@@ -29,6 +29,10 @@ const Home = () => {
           laboratorio para la realización de proyectos.
         </li>
       </ul>
+      <p>
+        Para aprender más sobre el sistema, puede visitar la sección de{" "}
+        <a href="/information">información</a>.
+      </p>
     </MainPage>
   );
 };
