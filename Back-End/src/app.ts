@@ -50,29 +50,36 @@ const encodedPassword = encodeURIComponent(env.db.password); // Encode the passw
 const MONGO_URI = `mongodb://${env.db.username}:${encodedPassword}@${MONGO_HOST}:${env.db.port}/`;
 
 // Attempt to connect to MongoDB
-const connectWithRetry = (retries: number) => {
+let retries = 5;
+let failedFirstAttempt = false;
+while (true) {
   retries--;
 
   if (retries === 0) {
-    logger.error("Could not connect to MongoDB");
+    logger.error(`Could not connect to MongoDB after ${retries} retries`);
     process.exit(-1);
   }
 
-  mongoose
-    .connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions)
-    .then(() => logger.info("Successfully connected to MongoDB"))
-    .catch((err) => {
-      logger.error(`An error occurred while connecting to MongoDB: ${err}`)
-      logger.info("Retrying connection to MongoDB...");
-      setTimeout(connectWithRetry, 1000);
-    });
-};
+  try {
+    (async () => {
+      await mongoose.connect(MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      } as ConnectOptions);
+    })();
 
-const retries = 5;
-connectWithRetry(retries);
+    logger.info("Successfully connected to MongoDB");
+    break;
+  } catch (err) {
+    if (!failedFirstAttempt) {
+      logger.error(`An error occurred while connecting to MongoDB: ${err}`);
+      logger.info("Retrying connection to MongoDB...");
+      failedFirstAttempt = true;
+    }
+
+    setTimeout(() => {}, 750);
+  }
+}
 
 // Start server
 const server = app.listen(PORT, () => {
