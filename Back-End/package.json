@@ -9,9 +9,9 @@
     "dev": "nodemon - exec 'ts-node' src/app.ts",
     "eslint:fix": "eslint --fix --ext .ts src",
     "docker:build": "docker build -t labtrack-backend .",
-    "docker:run": "node -e \"const { spawnSync } = require('child_process'); spawnSync('docker', ['run', '--rm', '-p', '8080:8080', '-v', process.cwd() + '/src:/app/src', '-v', process.cwd() + '/logs:/app/logs', 'labtrack-backend'], { stdio: 'inherit' });\"",
+    "docker:run": "node -e \"const { spawnSync } = require('child_process'); spawnSync('docker', ['run', '--rm', '-p', '8080:8080', '-v', process.cwd() + '/volumes/logs:/app/logs', 'labtrack-backend'], { stdio: 'inherit' });\"",
     "docker:compose": "docker-compose up -d --build",
-    "docker:mongo": "node -r dotenv/config -e \"const { spawnSync } = require('child_process'); spawnSync('docker', ['run', '-d', '--rm', '-p', '27017:27017', '-v', process.cwd() + '/data:/data/db', '--env-file', '.env', '--name', 'labtrack-mongodb', 'mongo'], { stdio: 'inherit' });\"",
+    "docker:mongo": "node -r dotenv/config -e \"const { spawnSync } = require('child_process'); spawnSync('docker', ['run', '-d', '--rm', '-p', '27017:27017', '-v', process.cwd() + '/volumes/data:/data/db', '--env-file', '.env', '--name', 'labtrack-mongodb', 'mongo'], { stdio: 'inherit' });\"",
     "docker:compose-logs": "docker-compose logs -f"
   },
   "dependencies": {
