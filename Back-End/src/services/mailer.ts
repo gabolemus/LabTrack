@@ -1,10 +1,9 @@
-import express from "express";
+import { Router } from "express";
 import nodemailer from "nodemailer";
+import env from "../utils/env";
+import logger from "../utils/logger";
 
-import env from "../config/env";
-import logger from "../config/logger";
-
-const router = express.Router();
+const router = Router();
 
 /** Reusable transporter object using SMTP transport. */
 const transporter = nodemailer.createTransport({
@@ -24,15 +23,15 @@ const transporter = nodemailer.createTransport({
     await transporter.verify();
     logger.info("SMTP server has been setup successfully.");
   } catch (error) {
-    logger.error(`Unable to connect to the SMTP server. Error: ${error}`);
+    logger.error(`An error occured trying to setup the SMTP server: ${error}`);
   }
 })();
 
-router.get("/", (req, res) => {
+router.get("/mailer", (req, res) => {
   res.send("Mailer home page");
 });
 
-router.post("/send-test-email", async (req, res) => {
+router.post("/mailer/send-test-email", async (req, res) => {
   // Check if the request has the required fields.
   if (!req.body.to) {
     res.send({ success: false, message: "Missing required field: to" });
@@ -57,8 +56,8 @@ router.post("/send-test-email", async (req, res) => {
     logger.debug(`Test email sent to ${info.envelope.to}`);
     res.send({ success: true, message: `Test email sent to ${info.envelope.to}` });
   } catch (error) {
-    logger.error(`Error sending email. Error: ${error}`);
-    res.send({ success: false, message: `Error sending email. Error: ${error}` });
+    logger.error(`An error occured trying to send the test email: ${error}`);
+    res.send({ success: false, message: `An error occured trying to send the test email: ${error}` });
   }
 });
 

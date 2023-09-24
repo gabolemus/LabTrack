@@ -1,13 +1,12 @@
-import express from "express";
+import { Router } from "express";
+import { devicesController } from "../controllers/devices";
 
-const router = express.Router();
+const devicesRouter = Router();
 
-router.get("/", (req, res) => {
-  res.send("Devices home page");
-});
+devicesRouter.get("/devices", devicesController.getItems);
+devicesRouter.get("/device", devicesController.getItem);
+devicesRouter.post("/device", devicesController.createItem);
+devicesRouter.put("/device", devicesController.updateItem);
+devicesRouter.delete("/device", devicesController.deleteItem);
 
-router.get("/:id", (req, res) => {
-  res.send(`Device with id ${req.params.id}`);
-});
-
-export default router;
+export default devicesRouter;
