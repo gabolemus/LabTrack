@@ -4,7 +4,7 @@ import { IManufacturer } from "../types/manufacturer";
 
 export class ManufacturersController extends BaseController<IManufacturer> {
   constructor() {
-    super(Manufacturer, "manufacturer");
+    super(Manufacturer, "manufacturer", "name", true);
   }
 }
 

@@ -4,7 +4,7 @@ import { IUser } from "../types/user";
 
 export class UsersController extends BaseController<IUser> {
   constructor() {
-    super(User, "user");
+    super(User, "user", "email", true);
   }
 }
 

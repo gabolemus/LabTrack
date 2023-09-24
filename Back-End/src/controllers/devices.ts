@@ -6,7 +6,7 @@ import logger from "../utils/logger";
 
 export class DevicesController extends BaseController<IDevice> {
   constructor() {
-    super(Device, "device");
+    super(Device, "device", "name", true);
   }
 
   public getItems = async (req: Request, res: Response): Promise<void> => {
