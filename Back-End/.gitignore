@@ -132,3 +132,6 @@ dist
 
 # Docker MongoDB data
 data
+
+# Images uploads
+uploads

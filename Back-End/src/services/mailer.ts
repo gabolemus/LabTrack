@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 
 const router = Router();
 
+// TODO: refactor the code to separate the controllers from the routes
 /** Reusable transporter object using SMTP transport. */
 const transporter = nodemailer.createTransport({
   service: "gmail",

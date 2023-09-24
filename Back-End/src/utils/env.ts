@@ -15,6 +15,9 @@ export default {
     host: process.env.MONGO_HOST ?? "localhost",
     port: process.env.MONGO_PORT ?? 27017,
   },
+  images: {
+    host: process.env.IMAGE_SERVER_HOST ?? "localhost",
+  },
   logs: {
     maxFileSizeMB: Number(process.env.MAX_LOG_FILE_SIZE) ?? 500,
     maxFiles: Number(process.env.MAX_LOG_FILES) ?? 10,

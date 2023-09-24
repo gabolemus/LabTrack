@@ -34,7 +34,7 @@ const options = {
 
 const logger = createLogger({
   level: "debug",
-  transports: [new transports.Console(options.console), new transports.File({ filename: "logs/labtrack.log", ...options.logFile })],
+  transports: [new transports.Console(options.console), new transports.File({ filename: "logs/labtrack-backend.log", ...options.logFile })],
 });
 
 addColors({

@@ -16,6 +16,7 @@ import usersRouter from "./routes/users";
 
 // Services imports
 import mailRouter from "./services/mailer";
+import imagesRouter from "./services/images";
 
 const app = express();
 const PORT = env.port;
@@ -35,6 +36,7 @@ app.use(usersRouter);
 
 // Services
 app.use(mailRouter);
+app.use(imagesRouter);
 
 // Default MongoDB host when running locally
 let MONGO_HOST = "localhost";
