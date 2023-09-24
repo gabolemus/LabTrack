@@ -21,6 +21,7 @@ services:
     container_name: mongodb
     volumes:
       - ./data:/data/db
+      - ./mongodb-logs:/usr/log
     ports:
       - "27017:27017"
     environment:
@@ -28,4 +29,4 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     logging:
       driver: "none"
-    command: mongod --quiet --logpath /dev/null
+    command: mongod --quiet --logpath /usr/log/mongodb.log --logappend
