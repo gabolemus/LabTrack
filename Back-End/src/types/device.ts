@@ -15,11 +15,13 @@ export interface IDevice extends Document {
   id: string;
   name: string;
   manufacturerID: IManufacturer["_id"];
+  tags: string[];
   quantity: number;
   status: DeviceStatus;
   createdAt: Date;
   updatedAt: Date;
   documentation?: string[];
+  notes?: string;
   configuration?: string;
   images?: string;
 }

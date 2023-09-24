@@ -13,6 +13,10 @@ const deviceSchema: Schema = new Schema(
       ref: "Manufacturer",
       required: true,
     },
+    tags: {
+      type: [String],
+      required: false,
+    },
     quantity: {
       type: Number,
       required: true,
@@ -23,6 +27,10 @@ const deviceSchema: Schema = new Schema(
     },
     documentation: {
       type: [String],
+      required: false,
+    },
+    notes: {
+      type: String,
       required: false,
     },
     configuration: {
