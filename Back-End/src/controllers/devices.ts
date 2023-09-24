@@ -12,6 +12,7 @@ export class DevicesController extends BaseController<IDevice> {
   public getItems = async (req: Request, res: Response): Promise<void> => {
     try {
       logger.info(`GET /${this.modelName}s`);
+      // TODO: refactor this aggregate into a separate function
       const items = await Device.db.db
         .collection("devices")
         .aggregate([
