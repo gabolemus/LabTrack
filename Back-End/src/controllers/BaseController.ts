@@ -64,6 +64,6 @@ export class BaseController<T extends Document> {
 
   protected handleError(res: Response, error: any): void {
     logger.error(`An error occurred: ${error}`);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    res.status(500).json({ success: false, error });
   }
 }
