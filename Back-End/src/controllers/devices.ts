@@ -31,6 +31,8 @@ export class DevicesController extends BaseController<IDevice> {
             $project: {
               _id: 1,
               name: 1,
+              manufacturer: "$manufacturer.name",
+              tags: 1,
               quantity: 1,
               status: 1,
               createdAt: 1,
@@ -38,7 +40,6 @@ export class DevicesController extends BaseController<IDevice> {
               documentation: 1,
               configuration: 1,
               images: 1,
-              manufacturer: "$manufacturer.name",
             },
           },
         ])
@@ -70,6 +71,8 @@ export class DevicesController extends BaseController<IDevice> {
             $project: {
               _id: 1,
               name: 1,
+              manufacturer: "$manufacturer.name",
+              tags: 1,
               quantity: 1,
               status: 1,
               createdAt: 1,
@@ -77,7 +80,6 @@ export class DevicesController extends BaseController<IDevice> {
               documentation: 1,
               configuration: 1,
               images: 1,
-              manufacturer: "$manufacturer.name",
             },
           },
         ])
