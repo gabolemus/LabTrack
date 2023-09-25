@@ -8,12 +8,19 @@ enum InquiryStatus {
   REJECTED = "Rejected",
 }
 
+/** Interface that represents a device inquiry */
+interface IDeviceInquiry {
+  id: string;
+  quantity: number;
+}
+
 /** Inquiry interface */
 export interface IInquiry extends Document {
   id: string;
   email: string;
-  projectID: string;
-  devicesID: string[];
+  devices: IDeviceInquiry[];
+  projectName: string;
+  courses: string[];
   status: InquiryStatus;
   createdAt: Date;
   updatedAt: Date;

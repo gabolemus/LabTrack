@@ -8,14 +8,25 @@ const inquirySchema: Schema = new Schema(
       type: String,
       required: true,
     },
-    projectID: {
-      type: Schema.Types.ObjectId,
-      ref: "Project",
+    devices: {
+      type: [
+        {
+          id: {
+            type: Schema.Types.ObjectId,
+            ref: "Device",
+            required: false,
+          },
+          quantity: Number,
+        },
+      ],
       required: true,
     },
-    devicesID: {
-      type: [Schema.Types.ObjectId],
-      ref: "Device",
+    projectName: {
+      type: String,
+      required: true,
+    },
+    courses: {
+      type: [String],
       required: true,
     },
     status: {
