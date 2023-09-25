@@ -25,6 +25,10 @@ const deviceSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    path: {
+      type: String,
+      required: false,
+    },
     documentation: {
       type: [String],
       required: false,

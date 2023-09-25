@@ -35,6 +35,7 @@ export class DevicesController extends BaseController<IDevice> {
               tags: 1,
               quantity: 1,
               status: 1,
+              path: 1,
               createdAt: 1,
               updatedAt: 1,
               documentation: 1,
@@ -75,6 +76,7 @@ export class DevicesController extends BaseController<IDevice> {
               tags: 1,
               quantity: 1,
               status: 1,
+              path: 1,
               createdAt: 1,
               updatedAt: 1,
               documentation: 1,
@@ -126,6 +128,9 @@ export class DevicesController extends BaseController<IDevice> {
 
       // Add the manufacturerId field to the request body
       req.body.manufacturerID = manufacturer._id;
+
+      // Make the name of the device in lowercase and changing whitespaces to hyphens its path
+      req.body.path = "/" + req.body.name.toLowerCase().replace(/\s/g, "-");
 
       // Create the device
       const newDevice = new this.model(req.body);

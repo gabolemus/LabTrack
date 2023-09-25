@@ -18,6 +18,7 @@ export interface IDevice extends Document {
   tags: string[];
   quantity: number;
   status: DeviceStatus;
+  path: string;
   createdAt: Date;
   updatedAt: Date;
   documentation?: string[];
