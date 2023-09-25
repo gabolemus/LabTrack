@@ -98,6 +98,22 @@ export class DevicesController extends BaseController<IDevice> {
     try {
       logger.info(`POST /${this.modelName} ${JSON.stringify(req.body)}`);
 
+      // Check if an item with the same uniqueField value already exists
+      const filterQuery: Partial<Record<string, any>> = {};
+      filterQuery[this.uniqueFieldName] = req.body[this.uniqueFieldName];
+      const existingItem = await this.model.findOne(filterQuery);
+
+      if (existingItem) {
+        res.status(400).json({
+          success: false,
+          error: "ENFORCE_UNIQUE_FIELD",
+          message: `An entry in the ${this.modelName}s collection already exists with the value '${req.body[this.uniqueFieldName]}' for the field '${
+            this.uniqueFieldName
+          }'`,
+        });
+        return;
+      }
+
       // Check if the name of the manufacturer provided is valid
       const manufacturer = await Device.db.db.collection("manufacturers").findOne({ name: req.body.manufacturer });
       if (!manufacturer) {
