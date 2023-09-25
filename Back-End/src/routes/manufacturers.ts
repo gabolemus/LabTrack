@@ -8,5 +8,6 @@ manufacturersRouter.get("/manufacturer", manufacturersController.getItem);
 manufacturersRouter.post("/manufacturer", manufacturersController.createItem);
 manufacturersRouter.put("/manufacturer", manufacturersController.updateItem);
 manufacturersRouter.delete("/manufacturer", manufacturersController.deleteItem);
+manufacturersRouter.delete("/all-manufacturers", manufacturersController.deleteAllItems);
 
 export default manufacturersRouter;

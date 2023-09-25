@@ -8,5 +8,6 @@ inquiriesRouter.get("/inquiry", inquiriesController.getItem);
 inquiriesRouter.post("/inquiry", inquiriesController.createItem);
 inquiriesRouter.put("/inquiry", inquiriesController.updateItem);
 inquiriesRouter.delete("/inquiry", inquiriesController.deleteItem);
+inquiriesRouter.delete("/all-inquiries", inquiriesController.deleteAllItems);
 
 export default inquiriesRouter;
