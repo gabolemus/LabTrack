@@ -24,7 +24,7 @@ export class InquiriesController extends BaseController<IInquiry> {
         },
         {
           $project: {
-            email: 1,
+            projectRequester: 1,
             devices: {
               $map: {
                 input: "$devices",
@@ -67,7 +67,7 @@ export class InquiriesController extends BaseController<IInquiry> {
         },
         {
           $project: {
-            email: 1,
+            projectRequester: 1,
             devices: {
               $map: {
                 input: "$devices",

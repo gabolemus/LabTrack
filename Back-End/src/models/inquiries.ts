@@ -4,9 +4,15 @@ import { IInquiry } from "../types/inquiry";
 /** Mongoose schema for project inquiries */
 const inquirySchema: Schema = new Schema(
   {
-    email: {
-      type: String,
-      required: true,
+    projectRequester: {
+      name: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
     },
     devices: {
       type: [
