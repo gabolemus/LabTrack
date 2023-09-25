@@ -48,7 +48,7 @@ export class BaseController<T extends Document> {
         if (existingItem) {
           res.status(400).json({
             success: false,
-            error: 'ENFORCE_UNIQUE_FIELD',
+            error: "ENFORCE_UNIQUE_FIELD",
             message: `An entry in the ${this.modelName}s collection already exists with the value '${
               req.body[this.uniqueFieldName]
             }' for the field '${this.uniqueFieldName}'`,
@@ -80,6 +80,16 @@ export class BaseController<T extends Document> {
       logger.info(`DELETE /${this.modelName}?id=${req.query.id}`);
       const deletedItem = await this.model.findByIdAndDelete(req.query.id);
       res.status(deletedItem ? 200 : 404).json({ success: true, [this.modelName]: deletedItem });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  public deleteAllItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`DELETE /${this.modelName}s`);
+      const deletedItems = await this.model.deleteMany({});
+      res.status(deletedItems ? 200 : 404).json({ success: true, [`${this.modelName}s`]: deletedItems });
     } catch (error) {
       this.handleError(res, error);
     }
