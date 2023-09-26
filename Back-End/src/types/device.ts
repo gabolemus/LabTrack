@@ -10,6 +10,12 @@ enum DeviceStatus {
   BROKEN = "Broken",
 }
 
+/** Interface that represents the device's documentation */
+export interface IDocumentation {
+  name: string;
+  url: string;
+}
+
 /** Lab device interface */
 export interface IDevice extends Document {
   id: string;
@@ -21,7 +27,7 @@ export interface IDevice extends Document {
   path: string;
   createdAt: Date;
   updatedAt: Date;
-  documentation?: string[];
+  documentation?: IDocumentation[];
   notes?: string;
   configuration?: string;
   images?: string;
