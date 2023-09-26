@@ -9,5 +9,6 @@ usersRouter.post("/user", usersController.createItem);
 usersRouter.put("/user", usersController.updateItem);
 usersRouter.delete("/user", usersController.deleteItem);
 usersRouter.delete("/all-users", usersController.deleteAllItems);
+usersRouter.get("/check-password", usersController.checkPassword);
 
 export default usersRouter;
