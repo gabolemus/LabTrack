@@ -2,9 +2,10 @@
 import { Document } from "mongoose";
 
 /** User role enum */
-enum UserRole {
-  ADMIN = "Admin",
-  SUPER_ADMIN = "Super Admin",
+export enum UserRole {
+  // TODO: update the roles to be more descriptive
+  ADMIN = "Admin", // TODO: change it to "Lab Supervisor"?
+  SUPER_ADMIN = "Super Admin", // TODO: change it to "Lab Admin"?
 }
 
 /** User interface */
