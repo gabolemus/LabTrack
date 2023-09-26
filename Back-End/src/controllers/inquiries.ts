@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { BaseController } from "./BaseController";
 import Inquiry from "../models/inquiries";
 import Device from "../models/devices";
@@ -9,7 +10,7 @@ export class InquiriesController extends BaseController<IInquiry> {
     super(Inquiry, "inquiry");
   }
 
-  public getItems = async (req: any, res: any): Promise<void> => {
+  public getItems = async (req: Request, res: Response): Promise<void> => {
     logger.info(`GET /inquiries`);
 
     try {
@@ -52,7 +53,7 @@ export class InquiriesController extends BaseController<IInquiry> {
     }
   };
 
-  public getItem = async (req: any, res: any): Promise<void> => {
+  public getItem = async (req: Request, res: Response): Promise<void> => {
     logger.info(`GET /inquiry?id=${req.query.id}`);
 
     try {
@@ -103,7 +104,7 @@ export class InquiriesController extends BaseController<IInquiry> {
   };
 
   // Override the createItem method to verify that the amount of devices requested is available
-  public createItem = async (req: any, res: any): Promise<void> => {
+  public createItem = async (req: Request, res: Response): Promise<void> => {
     try {
       const { devices } = req.body;
       let allDevicesAvailable = true;
