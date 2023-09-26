@@ -30,7 +30,12 @@ const deviceSchema: Schema = new Schema(
       required: false,
     },
     documentation: {
-      type: [String],
+      type: [
+        {
+          name: String,
+          url: String,
+        },
+      ],
       required: false,
     },
     notes: {
