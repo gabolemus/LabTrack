@@ -122,7 +122,8 @@ router.post("/images/upload", upload.array("images", MAX_IMAGES), (req: Request,
 router.get("/images/devices/:manufacturer/:device/:filename", (req: Request, res: Response) => {
   logger.info(`GET /images/devices/${req.params.manufacturer}/${req.params.device}/${req.params.filename}`);
   const { manufacturer, device, filename } = req.params;
-  const imagePath = path.join(`${__dirname}/../../uploads/devices/${manufacturer}/${device}/${filename}`);
+  let imagePath = path.join(`${__dirname}/../../uploads/devices/${manufacturer}/${device}/${filename}`);
+  imagePath = decodeURI(imagePath);
   logger.info(`Image path: ${imagePath}`);
 
   // Check if the image file exists
@@ -137,7 +138,8 @@ router.get("/images/devices/:manufacturer/:device/:filename", (req: Request, res
 router.get("/images/projects/:project/:filename", (req: Request, res: Response) => {
   logger.info(`GET /images/projects/${req.params.project}/${req.params.filename}`);
   const { project, filename } = req.params;
-  const imagePath = path.join(`${__dirname}/../../uploads/projects/${project}/${filename}`);
+  let imagePath = path.join(`${__dirname}/../../uploads/projects/${project}/${filename}`);
+  imagePath = decodeURI(imagePath);
   logger.info(`Image path: ${imagePath}`);
 
   // Check if the image file exists
