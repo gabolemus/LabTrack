@@ -30,6 +30,7 @@ interface IProjectDevice {
 export interface IProject extends Document {
   id: string;
   name: string;
+  path: string;
   courses: string[];
   description: string;
   lead: ILead;
