@@ -90,6 +90,99 @@ export class DevicesController extends BaseController<IDevice> {
       // Filter the array to only return the device with the specified ID
       const item = items.filter((item) => item._id.toString() === req.query.id)[0];
 
+      // Show the projects that use this device
+      const projects = await Device.db.db
+        .collection("projects")
+        .aggregate([
+          {
+            $unwind: "$devices",
+          },
+          {
+            $match: {
+              "devices.id": item._id,
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              path: 1,
+              quantity: "$devices.quantity",
+            },
+          },
+        ])
+        .toArray();
+      item.projects = projects;
+
+      res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  public getItemByPath = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}/${req.params.path}`);
+      const items = await Device.db.db
+        .collection("devices")
+        .aggregate([
+          {
+            $lookup: {
+              from: "manufacturers",
+              localField: "manufacturerID",
+              foreignField: "_id",
+              as: "manufacturer",
+            },
+          },
+          {
+            $unwind: "$manufacturer",
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              manufacturer: "$manufacturer.name",
+              tags: 1,
+              quantity: 1,
+              status: 1,
+              path: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              documentation: 1,
+              configuration: 1,
+              images: 1,
+            },
+          },
+        ])
+        .toArray();
+
+      // Filter the array to only return the device with the specified path
+      const item = items.filter((item) => item.path === `/${req.params.path}`)[0];
+
+      // Show the projects that use this device
+      const projects = await Device.db.db
+        .collection("projects")
+        .aggregate([
+          {
+            $unwind: "$devices",
+          },
+          {
+            $match: {
+              "devices.id": item._id,
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              path: 1,
+              quantity: "$devices.quantity",
+            },
+          },
+        ])
+        .toArray();
+      item.projects = projects;
+
       res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
     } catch (error) {
       this.handleError(res, error);
