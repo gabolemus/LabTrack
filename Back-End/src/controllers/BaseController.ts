@@ -18,9 +18,7 @@ export class BaseController<T extends Document> {
   public getItems = async (req: Request, res: Response): Promise<void> => {
     try {
       // If the modelName ends in a 'y', remove the 'y' and add 'ies' instead
-      const pluralModelName = this.modelName.endsWith("y")
-        ? `${this.modelName.slice(0, -1)}ies`
-        : `${this.modelName}s`;
+      const pluralModelName = this.modelName.endsWith("y") ? `${this.modelName.slice(0, -1)}ies` : `${this.modelName}s`;
       logger.info(`GET /${pluralModelName}`);
       const items = await this.model.find();
       res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
@@ -33,6 +31,16 @@ export class BaseController<T extends Document> {
     try {
       logger.info(`GET /${this.modelName}?id=${req.query.id}`);
       const item = await this.model.findById(req.query.id);
+      res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  public getItemByPath = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}/${req.params.path}`);
+      const item = await this.model.findOne({ path: `/${req.params.path}` });
       res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
     } catch (error) {
       this.handleError(res, error);
