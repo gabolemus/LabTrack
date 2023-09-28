@@ -95,7 +95,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
           <ul className="mb-4">
             {equipment.projects.map((project) => (
               <li key={project.name}>
-                <Link to={`/projects/${project.path}`}>{project.name}</Link>
+                <Link to={`/projects${project.path}`}>{project.name}</Link>
               </li>
             ))}
           </ul>
