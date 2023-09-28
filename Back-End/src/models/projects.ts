@@ -8,6 +8,10 @@ const projectSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    path: {
+      type: String,
+      required: true,
+    },
     courses: {
       type: [String],
       required: true,
