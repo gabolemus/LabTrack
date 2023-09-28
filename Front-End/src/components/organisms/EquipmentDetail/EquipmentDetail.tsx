@@ -19,7 +19,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   useEffect(() => {
     // Scroll to top
     window.scrollTo(0, 0);
-    
+
     // Simulate fetching equipment data based on the ID from your data source
     const fetchData = async () => {
       try {
@@ -59,6 +59,21 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     setSelectedImage(image);
   };
 
+  const getDeviceStatus = (status: string) => {
+    switch (status) {
+      case "Available":
+        return "Disponible";
+      case "In Use":
+        return "En uso";
+      case "In Maintenance":
+        return "En mantenimiento";
+      case "Broken":
+        return "Dañado";
+      default:
+        return "Desconocido";
+    }
+  };
+
   return (
     <div className="equipment-detail mb-5">
       <h1>{equipment.name}</h1>
@@ -75,6 +90,19 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         </p>
         <EquipmentDocs equipment={equipment} />
         <hr className="divider" />
+        <h2>Proyectos en los que se ha utilizado</h2>
+        {equipment.projects && equipment.projects.length > 0 ? (
+          <ul className="mb-4">
+            {equipment.projects.map((project) => (
+              <li key={project.name}>
+                <Link to={`/projects/${project.path}`}>{project.name}</Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No se ha utilizado en ningún proyecto</p>
+        )}
+        <hr className="divider" />
         <h2>Información Adicional</h2>
         {equipment.notes && (
           <div className="notes">
@@ -84,11 +112,11 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         )}
         <div className="status mb-5">
           <h3>Estado</h3>
-          <p>{equipment.status}</p>
+          <p>{getDeviceStatus(equipment.status)}</p>
         </div>
         <div className="last-checked mb-5">
           <h3>Última Actualización</h3>
-          <p>{timestampToDate(equipment.lastUpdated)}</p>
+          <p>{timestampToDate(equipment.updatedAt)}</p>
         </div>
         {equipment.configuration && (
           <div className="configuration">

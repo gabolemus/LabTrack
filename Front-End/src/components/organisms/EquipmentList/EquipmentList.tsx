@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Equipment, sampleEquipmentData } from "./equipment";
+import { Equipment, getAllEquipment } from "./equipment";
 import { Link } from "react-router-dom";
-
 import "./EquipmentList.scss";
 
 const EquipmentList = () => {
-  const [equipment, setEquipment] = useState(sampleEquipmentData);
+  const [equipment, setEquipment] = useState<Array<Equipment>>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchManufacturers, setSearchManufacturers] = useState<string[]>([]);
   const [searchTags, setSearchTags] = useState<string[]>([]);
@@ -38,8 +37,19 @@ const EquipmentList = () => {
   };
 
   useEffect(() => {
-    // Initialize filtered equipment when the component first loads
-    handleSearchClick();
+    (async () => {
+      try {
+        // Fetch equipment data from the API
+        const devices = await getAllEquipment();
+        setEquipment(devices);
+        setFilteredEquipment(devices); // TODO: implement filtering
+
+        // Initialize filtered equipment when the component first loads
+        // handleSearchClick();
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, []);
 
   // Get unique manufacturers and tags for checkboxes
@@ -161,9 +171,9 @@ const EquipmentList = () => {
           </thead>
           <tbody>
             {filteredEquipment.map((item) => (
-              <tr key={item.id}>
+              <tr key={item._id}>
                 <td>
-                  <Link to={item.path}>{item.name}</Link>
+                  <Link to={`/equipment${item.path}`}>{item.name}</Link>
                 </td>
                 <td>{item.manufacturer}</td>
                 <td>{item.tags.join(", ")}</td>
