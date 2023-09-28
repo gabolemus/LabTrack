@@ -34,3 +34,5 @@ export const timestampToDate = (timestamp: string): string => {
 
   return `${day} de ${month} de ${year} a las ${time}`;
 };
+
+// TODO: read an environment file to get the IP address of the server
