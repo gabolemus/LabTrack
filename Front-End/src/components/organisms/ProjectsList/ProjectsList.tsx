@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Project, getProjects, sampleProjectData } from "./projects";
+import { Project, getProjects } from "./projects";
 
 import "./ProjectsList.scss";
 
