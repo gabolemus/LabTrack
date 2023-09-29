@@ -36,9 +36,6 @@ export type Project = {
   devices: ProjectDevices[];
 };
 
-/** Sample project data */
-export const sampleProjectData: Project[] = [];
-
 /** Gets all the projects */
 export const getProjects = async (): Promise<Array<Project>> => {
   try {
