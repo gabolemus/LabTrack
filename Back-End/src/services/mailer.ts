@@ -133,4 +133,87 @@ router.post("/mailer/send-test-email", async (req, res) => {
   }
 });
 
+const formatDate = (date: string) => {
+  const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const dateObject = new Date(date);
+  const day = dateObject.getDate();
+  const month = months[dateObject.getMonth()];
+  const year = dateObject.getFullYear();
+  return `${day} de ${month} de ${year}`;
+};
+
+router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
+  logger.info("POST /mailer/send-inquiry-confirmation-email");
+
+  // Check if the request has the required fields.
+  const requiredFields = ["to", "name", "project", "description", "devices", "timelapse", "acceptURL"];
+  for (const field of requiredFields) {
+    if (!req.body[field]) {
+      res.send({ success: false, message: `Missing required field: ${field}` });
+      return;
+    }
+  }
+
+  // Request parameters.
+  const { to, name, project, description, devices, timelapse } = req.body;
+
+  // Inquiry devices.
+  let devicesString = "<ul>";
+  for (const device of devices) {
+    devicesString += `<li><strong>Nombre:</strong> ${device.name}</li>
+    <li><strong>Cantidad:</strong> ${device.quantity}</li>`;
+  }
+  devicesString += "</ul>";
+
+  // Email body and footer.
+  const body = `<div>
+  <p>Estimado(a) ${name},</p>
+  <p>El motivo de este correo es para confirmar que se ha recibido su solicitud de apertura de proyecto en LabTrack.</p>
+  <p>Los detalles de su solicitud son los siguientes:</p>
+  <ul>
+    <li><strong>Nombre del proyecto:</strong> ${project}</li>
+    <li><strong>Descripción del proyecto:</strong> ${description}</li>
+    <li><strong>Dispositivos:</strong> ${devicesString}</li>
+    <li><strong>Duración:</strong> <ul>
+      <li><strong>Fecha de inicio:</strong> ${formatDate(timelapse.start)}</li>
+      <li><strong>Fecha de finalización:</strong> ${formatDate(timelapse.end)}</li>
+    </ul></li>
+  </ul>
+  <p>Para continuar con el proceso de apertura de proyecto, por favor haga clic en el siguiente enlace:</p>
+  <div style="line-height:16px;text-align:center;margin-bottom:16px">
+    <a style="font-size:14px;font-weight:500;padding:10px 20px;letter-spacing:.25px;text-decoration:none;text-transform:none;display:inline-block;border-radius:8px;background-color:#1a73e8;color:#fff" href="${
+      req.body.acceptURL
+    }">Aceptar solicitud</a>
+  </div>
+  <p>Si el enlace no funciona, por favor copie y pegue la siguiente URL en su navegador:</p>
+  <div style="font-weight:400;font-size:14px;line-height:20px;color:rgba(0,0,0,.87)">
+    <a href="${req.body.acceptURL}" target="_blank">${req.body.acceptURL}</a>
+  </div>
+  <p>Le estaremos notificando cuando su proyecto haya sido aprobado.</p>
+  <p>Atentamente,</p>
+  <p>LabTrack</p>
+</div>`;
+  const footer =
+    "<p>Ha recibido este correo electrónico como confirmación de su solicitud.</p><p>Si usted no ha realizado esta solicitud, por favor ignore este correo.</p>";
+
+  // Setup email data.
+  const mailOptions = {
+    from: '"LabTrack" <labtrack@unis.edu.gt>',
+    to,
+    subject: "LabTrack: Confirmación de Solicitud de Apertura de Proyecto",
+    text: "Este es un correo de prueba enviado desde LabTrack.",
+    html: generateEmailHTML(body, footer),
+  };
+
+  // Attempt to send the email.
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Inquiry confirmation email sent to ${info.envelope.to}`);
+    res.send({ success: true, message: `Inquiry confirmation email sent to ${info.envelope.to}` });
+  } catch (error) {
+    logger.error(`An error occured trying to send the inquiry confirmation email: ${error}`);
+    res.send({ success: false, message: `An error occured trying to send the inquiry confirmation email: ${error}` });
+  }
+});
+
 export default router;
