@@ -216,4 +216,67 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
   }
 });
 
+router.post("/mailer/send-new-project-inquiry-opening-email", async (req, res) => {
+  // TODO: add a direct URL field to open the project in the frontend
+  logger.info("POST /mailer/send-new-project-opening-email");
+
+  // Check if the request has the required fields.
+  const requiredFields = ["to", "name", "project", "description", "devices", "timelapse"];
+  for (const field of requiredFields) {
+    if (!req.body[field]) {
+      res.send({ success: false, message: `Missing required field: ${field}` });
+      return;
+    }
+  }
+
+  // Request parameters.
+  const { to, name, project, description, devices, timelapse } = req.body;
+
+  // Inquiry devices.
+  let devicesString = "<ul>";
+  for (const device of devices) {
+    devicesString += `<li><strong>Nombre:</strong> ${device.name}</li>
+    <li><strong>Cantidad:</strong> ${device.quantity}</li>`;
+  }
+  devicesString += "</ul>";
+
+  // Email body and footer.
+  const body = `<div>
+  <p>Notificación de apertura de proyecto en LabTrack.</p>
+  <p>Los detalles de la solicitud son los siguientes:</p>
+  <p><strong>Nombre del solicitante:</strong> ${name}</p>
+  <ul>
+    <li><strong>Nombre del proyecto:</strong> ${project}</li>
+    <li><strong>Descripción del proyecto:</strong> ${description}</li>
+    <li><strong>Dispositivos:</strong> ${devicesString}</li>
+    <li><strong>Duración:</strong> <ul>
+      <li><strong>Fecha de inicio:</strong> ${formatDate(timelapse.start)}</li>
+      <li><strong>Fecha de finalización:</strong> ${formatDate(timelapse.end)}</li>
+    </ul></li>
+  </ul>
+  <p>Atentamente,</p>
+  <p>LabTrack</p>
+</div>`;
+  const footer = "<p>Ha recibido este correo electrónico como notificación de apertura de proyecto porque usted es un administrador del sistema.</p>";
+
+  // Setup email data.
+  const mailOptions = {
+    from: '"LabTrack" <labtrack@unis.edu.gt>',
+    to,
+    subject: "LabTrack: Notificación de Apertura de Proyecto",
+    text: "Este es un correo de prueba enviado desde LabTrack.",
+    html: generateEmailHTML(body, footer),
+  };
+
+  // Attempt to send the email.
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`New project opening email sent to ${info.envelope.to}`);
+    res.send({ success: true, message: `New project opening email sent to ${info.envelope.to}` });
+  } catch (error) {
+    logger.error(`An error occured trying to send the new project opening email: ${error}`);
+    res.send({ success: false, message: `An error occured trying to send the new project opening email: ${error}` });
+  }
+});
+
 export default router;
