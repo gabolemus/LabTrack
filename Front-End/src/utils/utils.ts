@@ -36,3 +36,21 @@ export const timestampToDate = (timestamp: string): string => {
 };
 
 // TODO: read an environment file to get the IP address of the server
+
+/**
+ * Calls the callback with the given boolean and adds the `no-scroll` class to the
+ * body if the boolean is true or removes it if it is false.
+ * @param callback Callback to call with the boolean.
+ * @param bool Boolean to pass to the callback.
+ */
+export const toggleLoader = (
+  callback: (bool: boolean) => void,
+  bool: boolean
+) => {
+  callback(bool);
+  if (bool) {
+    document.body.classList.add("no-scroll");
+  } else {
+    document.body.classList.remove("no-scroll");
+  }
+};
