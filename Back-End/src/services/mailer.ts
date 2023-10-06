@@ -117,7 +117,7 @@ router.post("/mailer/send-test-email", async (req, res) => {
   const mailOptions = {
     from: '"LabTrack" <labtrack@unis.edu.gt>',
     to,
-    subject: "LabTrack: Correo de Prueba",
+    subject: "Correo de Prueba",
     text: "Este es un correo de prueba enviado desde LabTrack.",
     html: generateEmailHTML(body, footer),
   };
@@ -200,7 +200,7 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
   const mailOptions = {
     from: '"LabTrack" <labtrack@unis.edu.gt>',
     to,
-    subject: "LabTrack: Confirmación de Solicitud de Apertura de Proyecto",
+    subject: "Confirmación de Solicitud de Apertura de Proyecto",
     text: "Este es un correo de prueba enviado desde LabTrack.",
     html: generateEmailHTML(body, footer),
   };
@@ -263,7 +263,7 @@ router.post("/mailer/send-new-project-inquiry-opening-email", async (req, res) =
   const mailOptions = {
     from: '"LabTrack" <labtrack@unis.edu.gt>',
     to,
-    subject: "LabTrack: Notificación de Apertura de Proyecto",
+    subject: "Notificación de Apertura de Proyecto",
     text: "Este es un correo de prueba enviado desde LabTrack.",
     html: generateEmailHTML(body, footer),
   };
@@ -276,6 +276,73 @@ router.post("/mailer/send-new-project-inquiry-opening-email", async (req, res) =
   } catch (error) {
     logger.error(`An error occured trying to send the new project opening email: ${error}`);
     res.send({ success: false, message: `An error occured trying to send the new project opening email: ${error}` });
+  }
+});
+
+router.post("/mailer/send-project-opening-notification-email", async (req, res) => {
+  // TODO: add a direct URL field to open the project in the frontend if it was approved
+  logger.info("POST /mailer/send-project-opening-notification-email");
+
+  // Check if the request has the required fields.
+  const requiredFields = ["to", "name", "project", "description", "devices", "timelapse", "approved", "reason"];
+  for (const field of requiredFields) {
+    if (req.body[field] === undefined) {
+      res.send({ success: false, message: `Missing required field: ${field}` });
+      return;
+    }
+  }
+
+  // Request parameters.
+  const { to, name, project, description, devices, timelapse, approved } = req.body;
+
+  // Inquiry devices.
+  let devicesString = "<ul>";
+  for (const device of devices) {
+    devicesString += `<li><strong>Nombre:</strong> ${device.name}</li>
+    <li><strong>Cantidad:</strong> ${device.quantity}</li>`;
+  }
+  devicesString += "</ul>";
+
+  // Email body and footer.
+  const body = `<div>
+  <p>Estimado(a) ${name},</p>
+  <p>El motivo de este correo es para notificarle que su solicitud de apertura de proyecto ha sido ${approved ? "aprobada" : "denegada"}.</p>
+  ${
+    approved
+      ? `<p>Los detalles de su solicitud son los siguientes:</p>
+  <ul>
+    <li><strong>Nombre del proyecto:</strong> ${project}</li>
+    <li><strong>Descripción del proyecto:</strong> ${description}</li>
+    <li><strong>Dispositivos:</strong> ${devicesString}</li>
+    <li><strong>Duración:</strong> <ul>
+      <li><strong>Fecha de inicio:</strong> ${formatDate(timelapse.start)}</li>
+      <li><strong>Fecha de finalización:</strong> ${formatDate(timelapse.end)}</li>
+    </ul></li>
+  </ul>`
+      : `<p><strong>Motivo de la denegación:</strong> ${req.body.reason}</p>`
+  }
+  <p>Atentamente,</p>
+  <p>LabTrack</p>
+</div>`;
+  const footer = "<p>Ha recibido este correo electrónico dado que anteriormente solicitó la apertura de un proyecto.</p>";
+
+  // Setup email data.
+  const mailOptions = {
+    from: '"LabTrack" <labtrack@unis.edu.gt>',
+    to,
+    subject: `Solicitud de Apertura de Proyecto ${approved ? "Aprobada" : "Denegada"}`,
+    text: "Este es un correo de prueba enviado desde LabTrack.",
+    html: generateEmailHTML(body, footer),
+  };
+
+  // Attempt to send the email.
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    logger.info(`Project opening ${approved ? "approval" : "denial"} notification email sent to ${info.envelope.to}`);
+    res.send({ success: true, message: `Project opening notification email sent to ${info.envelope.to}` });
+  } catch (error) {
+    logger.error(`An error occured trying to send the project opening notification email: ${error}`);
+    res.send({ success: false, message: `An error occured trying to send the project opening notification email: ${error}` });
   }
 });
 
