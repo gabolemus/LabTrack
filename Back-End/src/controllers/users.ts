@@ -96,6 +96,26 @@ export class UsersController extends BaseController<IUser> {
     }
   };
 
+  /** Gets all the users filtered by their role */
+  public getFilteredUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}s`);
+
+      // Get the users
+      const users = await this.model.find();
+
+      // Create a map of roles to users
+      const usersByRole: Record<string, IUser[]> = {};
+      for (const role of Object.values(UserRole)) {
+        usersByRole[role] = users.filter((user) => user.role === role);
+      }
+
+      res.status(200).json({ success: true, length: users.length, [`${this.modelName}s`]: usersByRole });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   /** Handles the HTTP request to check if a password is correct for a given user */
   public checkPassword = async (req: Request, res: Response): Promise<void> => {
     logger.info(`POST /${this.modelName}/password ${JSON.stringify({ ...req.body, password: "********" })}`);

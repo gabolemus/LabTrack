@@ -11,5 +11,6 @@ usersRouter.delete("/user", usersController.deleteItem);
 usersRouter.delete("/all-users", usersController.deleteAllItems);
 usersRouter.get("/check-password", usersController.checkPassword);
 usersRouter.get("/users/role/:role", usersController.getUsersByRole);
+usersRouter.get("/filtered-users", usersController.getFilteredUsers);
 
 export default usersRouter;
