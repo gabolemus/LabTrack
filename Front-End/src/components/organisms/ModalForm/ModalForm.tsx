@@ -70,7 +70,7 @@ const ModalForm = ({
                   onClick={handleClose}></button>
               </div>
               <div className="modal-body">
-                <p>{body}</p>
+                <div dangerouslySetInnerHTML={{ __html: body }} />
                 <div className="d-flex justify-content-end">
                   <button
                     type="button"
