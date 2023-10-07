@@ -190,6 +190,10 @@ const ManufacturersList = () => {
                 Por favor, asegúrese de que los nombres de los manufacturadores
                 sean únicos.
               </p>
+              <p className="fs-6">
+                Ya existe un manufacturador con el nombre{" "}
+                {response.data.nonUniqueName}.
+              </p>
             </>
           );
         }

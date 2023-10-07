@@ -21,7 +21,8 @@ export class ManufacturersController extends BaseController<IManufacturer> {
       const names = manufacturers.map((manufacturer: IManufacturer) => manufacturer.name);
       const uniqueNames = [...new Set(names)];
       if (names.length !== uniqueNames.length) {
-        res.status(400).json({ success: false, error: "ENFORCE_UNIQUE_FIELD", message: "Each manufacturer's name must be unique" });
+        const nonUniqueName = names.find((name: string) => names.indexOf(name) !== names.lastIndexOf(name));
+        res.status(400).json({ success: false, error: "ENFORCE_UNIQUE_FIELD", message: "Each manufacturer's name must be unique", nonUniqueName });
         return;
       }
 
