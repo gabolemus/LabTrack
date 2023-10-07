@@ -1,5 +1,6 @@
 // This file contains the app's page routes.
 
+import Admins from "../components/pages/Admins";
 import Equipment from "../components/pages/Equipment";
 import Home from "../components/pages/Home";
 import Information from "../components/pages/Information";
@@ -24,14 +25,19 @@ const all = [
     element: <Projects />,
   },
   {
+    path: "/information",
+    name: "Información",
+    element: <Information />,
+  },
+  {
     path: "/inquiries",
     name: "Solicitudes",
     element: <Inquiries />,
   },
   {
-    path: "/information",
-    name: "Información",
-    element: <Information />,
+    path: "/admins",
+    name: "Administradores",
+    element: <Admins />,
   },
   {
     path: "/equipment/:equipmentId",
@@ -53,6 +59,6 @@ const all = [
 /** Object that contains all the pages and those to be rendered in the navbar. */
 export const pages = {
   all,
-  navbar: all.slice(0, 5),
+  navbar: all.slice(0, 6),
   // TODO: add diferent pages in the navbar for each user type
 };
