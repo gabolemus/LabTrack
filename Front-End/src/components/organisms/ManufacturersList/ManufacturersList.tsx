@@ -206,6 +206,14 @@ const ManufacturersList = () => {
     }
   };
 
+  /**
+   * Checks if the manufacturers names are equal to the updated manufacturers
+   * and if there are any empty names in the updated manufacturers.
+   */
+  const canUpdateManufacturers = () =>
+    areArraysEqual(manufacturers, updatedManufacturers) ||
+    updatedManufacturers.some((manufacturer) => manufacturer.name === "");
+
   return loading ? (
     <Loader loading={loading} />
   ) : (
@@ -229,7 +237,7 @@ const ManufacturersList = () => {
         </button>
         <button
           className="btn btn-primary manufacturers-btn"
-          disabled={areArraysEqual(manufacturers, updatedManufacturers)}
+          disabled={canUpdateManufacturers()}
           onClick={updateManufacturersInBulk}>
           Actualizar manufacturadores
         </button>
