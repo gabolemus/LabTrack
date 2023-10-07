@@ -33,7 +33,9 @@ export const getUserByID = async (id: string): Promise<User> => {
 };
 
 /** Gets all the users filtered by their role */
-export const getFilteredUsers = async (): Promise<Record<string, Array<User>>> => {
+export const getFilteredUsers = async (): Promise<
+  Record<string, Array<User>>
+> => {
   try {
     const response = await axios.get("http://localhost:8080/filtered-users");
     return response.data.users as Record<string, Array<User>>;
