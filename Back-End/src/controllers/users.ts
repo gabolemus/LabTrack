@@ -72,10 +72,34 @@ export class UsersController extends BaseController<IUser> {
     }
   };
 
+  /** Gets the users based on their role */
+  public getUsersByRole = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}s/role/${req.params.role}`);
+
+      // Check if the role provided is valid
+      if (!Object.values(UserRole).includes(req.params.role as UserRole)) {
+        res.status(400).json({
+          success: false,
+          error: "INVALID_ROLE",
+          message: `The role '${req.params.role}' is not a valid role`,
+        });
+        return;
+      }
+
+      // Get the users
+      const users = await this.model.find({ role: req.params.role });
+
+      res.status(200).json({ success: true, length: users.length, [`${this.modelName}s`]: users });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   /** Handles the HTTP request to check if a password is correct for a given user */
   public checkPassword = async (req: Request, res: Response): Promise<void> => {
     logger.info(`POST /${this.modelName}/password ${JSON.stringify({ ...req.body, password: "********" })}`);
-    
+
     // Check that the request body contains the required fields
     if (!req.body.email || !req.body.password) {
       res.status(400).json({
