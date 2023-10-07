@@ -7,7 +7,7 @@ interface ModalFormProps {
   handleClose: () => void;
   onAccept?: () => void;
   title?: string;
-  body: string;
+  body: string | JSX.Element;
   buttonText?: string;
   primaryBtnText?: string;
   primaryBtnClass?: string;
@@ -70,7 +70,11 @@ const ModalForm = ({
                   onClick={handleClose}></button>
               </div>
               <div className="modal-body">
-                <div dangerouslySetInnerHTML={{ __html: body }} />
+                {typeof body === "string" ? (
+                  <div dangerouslySetInnerHTML={{ __html: body }} />
+                ) : (
+                  body
+                )}
                 <div className="d-flex justify-content-end">
                   <button
                     type="button"
@@ -82,7 +86,7 @@ const ModalForm = ({
                     type="submit"
                     className={`btn ${primaryBtnClass || "btn-primary"}`}
                     onClick={handleAccept}>
-                    {primaryBtnText || "dfdffdsa"}
+                    {primaryBtnText || "Aceptar"}
                   </button>
                 </div>
               </div>
