@@ -99,7 +99,7 @@ export class UsersController extends BaseController<IUser> {
   /** Gets all the users filtered by their role */
   public getFilteredUsers = async (req: Request, res: Response): Promise<void> => {
     try {
-      logger.info(`GET /${this.modelName}s`);
+      logger.info(`GET /filtered-${this.modelName}s`);
 
       // Get the users
       const users = await this.model.find();
