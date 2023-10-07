@@ -3,6 +3,7 @@ import { User, getFilteredUsers } from "./admins";
 import Loader from "../../molecules/Loader/Loader";
 import ModalForm from "../ModalForm/ModalForm";
 import axios from "axios";
+import "./AdminsLists.scss";
 
 const AdminsLists = () => {
   const [superAdmins, setSuperAdmins] = useState<Array<User>>([]);
@@ -198,9 +199,9 @@ const AdminsLists = () => {
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>¿Eliminar?</th>
+              <th className="admins-table-column">Nombre</th>
+              <th className="admins-table-column">Correo</th>
+              <th className="admins-table-column">¿Eliminar?</th>
             </tr>
           </thead>
           <tbody>
@@ -237,9 +238,9 @@ const AdminsLists = () => {
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>¿Eliminar?</th>
+              <th className="admins-table-column">Nombre</th>
+              <th className="admins-table-column">Correo</th>
+              <th className="admins-table-column">¿Eliminar?</th>
             </tr>
           </thead>
           <tbody>
