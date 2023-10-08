@@ -34,6 +34,7 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
   const [modalBtnText, setModalBtnText] = useState("");
   const [modalBtnClass, setModalBtnClass] = useState("");
   let newDevice = {} as Equipment;
+  let images = {} as FileList;
 
   // Function to handle the search button click
   const handleSearchClick = () => {
@@ -99,11 +100,11 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
       device = { ...device, manufacturer: manufacturers[0].name };
     }
 
-    console.log(device);
+    const imagePaths = await handleUpload(device.manufacturer, device.name);
+    device = { ...device, images: imagePaths };
 
     try {
       const response = await axios.post("http://localhost:8080/device", device);
-      console.log(response);
       const data = response.data;
       setShowModal(true);
 
@@ -167,6 +168,46 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
         setShowModal(false);
       });
     }
+  };
+
+  /** Handles changing the images to be uploaded. */
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      images = event.target.files;
+    }
+  };
+
+  /** Handles uploading the images. */
+  // Returns an array of strings
+  const handleUpload = async (manufacturer: string, device: string): Promise<string[]> => {
+    if (images) {
+      const formData = new FormData();
+      formData.append("manufacturer", manufacturer);
+      formData.append("device", device);
+      for (const element of images) {
+        formData.append("images", element);
+      }
+
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/images/upload?imgType=device",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log("ImgUpload", response.data);
+
+        return response.data.imagePaths;
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    }
+
+    return [];
   };
 
   /** Shows the modal with a form to add a new device. */
@@ -309,6 +350,17 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
             className="form-control"
             id="deviceConfiguration"
             rows={3}></textarea>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="deviceConfiguration" className="form-label">
+            Imágenes
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+          />
         </div>
       </form>
     );
