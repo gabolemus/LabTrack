@@ -178,7 +178,6 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
   };
 
   /** Handles uploading the images. */
-  // Returns an array of strings
   const handleUpload = async (manufacturer: string, device: string): Promise<string[]> => {
     if (images) {
       const formData = new FormData();
