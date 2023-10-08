@@ -38,8 +38,8 @@ const EquipmentDetail = ({ id, allowUpdate }: EquipmentDetailProps) => {
   const [modalBtnClass, setModalBtnClass] = useState("");
 
   useEffect(() => {
-    // // Scroll to top
-    // window.scrollTo(0, 0);
+    // Scroll to top
+    window.scrollTo(0, 0);
 
     // Simulate fetching equipment data based on the ID from your data source
     const fetchData = async () => {
