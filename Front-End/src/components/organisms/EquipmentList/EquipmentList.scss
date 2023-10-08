@@ -56,3 +56,9 @@
   cursor: pointer;
   color: $darkestGray !important;
 }
+
+.new-device-form > div.mb-3 > .form-control,
+.new-device-form > div.mb-3 > .form-control:focus,
+.new-device-form > div.mb-3 > .form-select {
+  background-color: #f1f1f1;
+}
