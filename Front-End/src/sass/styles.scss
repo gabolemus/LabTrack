@@ -71,6 +71,17 @@ $light: $lightBlue;
   }
 }
 
+.btn-outline-primary {
+  border-color: $white !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $white !important;
+    border-color: $white !important;
+    color: $unisRed !important;
+  }
+}
+
 // Global styles
 #root {
   width: 100%;
