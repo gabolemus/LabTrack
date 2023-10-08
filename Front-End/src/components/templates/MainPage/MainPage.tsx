@@ -13,17 +13,15 @@ interface Props {
  * @param {Props} props - Properties passed to component
  */
 const MainPage: React.FC<Props> = ({ children }: Props) => {
-  const [showLogin, setShowLogin] = useState(false);
+  const [showLogin, setShowLogin] = useState(true);
 
   useEffect(() => {
-    if (localStorage.getItem("logged") === null) {
-      setShowLogin(true);
-    }
+    setShowLogin(localStorage.getItem("logged") === null);
   }, []);
 
   return (
     <>
-      <Navbar showLogin={showLogin} />
+      <Navbar showLogin={showLogin} setShowLogin={setShowLogin} />
       <main className="container">{children}</main>
     </>
   );

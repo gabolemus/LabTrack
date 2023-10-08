@@ -1,17 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.scss";
 import { pages } from "../../../utils/pages";
-import { useState } from "react";
 
 /** Interface for the props of the Navbar component */
 interface Props {
   /** Whether to show the login button */
   showLogin: boolean;
+  /** Callback to control the login button */
+  setShowLogin: (show: boolean) => void;
 }
 
 /** Component that renders the navbar */
-const Navbar = ({ showLogin }: Props) => {
-  const [showLoginBtn, setShowLoginBtn] = useState(showLogin);
+const Navbar = ({ showLogin, setShowLogin }: Props) => {
   const navigate = useNavigate();
 
   /** Callback to logout the user */
@@ -19,7 +19,7 @@ const Navbar = ({ showLogin }: Props) => {
     localStorage.removeItem("logged");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
-    setShowLoginBtn(true);
+    setShowLogin(true);
     navigate("/");
   };
 
@@ -53,11 +53,11 @@ const Navbar = ({ showLogin }: Props) => {
               </li>
             ))}
           </ul>
-          {(showLoginBtn && (
+          {showLogin ? (
             <Link className="btn btn-outline-primary me-2" to="/login">
               Iniciar sesión
             </Link>
-          )) || (
+          ) : (
             <button className="btn btn-outline-primary me-2" onClick={logout}>
               Cerrar sesión
             </button>
