@@ -11,6 +11,29 @@ export class UsersController extends BaseController<IUser> {
     super(User, "user", "email", true);
   }
 
+  public getItemByEmail = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}/${req.params.email}`);
+
+      // Find the user in the database
+      const user = await this.model.findOne({ email: req.params.email });
+
+      // Check if the user exists
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          error: "USER_NOT_FOUND",
+          message: `No user found with the email '${req.params.email}'`,
+        });
+        return;
+      }
+
+      res.status(200).json({ success: true, [this.modelName]: user });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   public createItem = async (req: Request, res: Response): Promise<void> => {
     try {
       // Blur the password in the logs
