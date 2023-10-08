@@ -4,7 +4,7 @@ import AdminsLists from "../organisms/AdminsLists/AdminsLists";
 
 const Admins = () => {
   return (
-    <MainPage>
+    <MainPage roles={["superAdmin"]}>
       <AdminsLists />
     </MainPage>
   );

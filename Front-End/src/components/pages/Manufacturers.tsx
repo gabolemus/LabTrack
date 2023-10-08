@@ -4,7 +4,7 @@ import ManufacturersList from "../organisms/ManufacturersList/ManufacturersList"
 
 const Manufacturers = () => {
   return (
-    <MainPage>
+    <MainPage roles={["superAdmin"]}>
       <ManufacturersList />
     </MainPage>
   );

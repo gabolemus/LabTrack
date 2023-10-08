@@ -8,7 +8,7 @@ const Inquiries = () => {
   const { inquiryID } = useParams();
 
   return (
-    <MainPage>
+    <MainPage roles={["admin", "superAdmin"]}>
       {inquiryID ? <InquiryDetail id={inquiryID} /> : <InquiriesList />}
     </MainPage>
   );
