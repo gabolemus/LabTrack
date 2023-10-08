@@ -21,8 +21,6 @@ const AdminsLists = () => {
     (async () => {
       setloading(true);
       const filteredUsers = await getFilteredUsers();
-      console.log(filteredUsers);
-      console.log(filteredUsers["Super Admin"]);
       setSuperAdmins(filteredUsers["Super Admin"]);
       setAdmins(filteredUsers["Admin"]);
       setloading(false);
