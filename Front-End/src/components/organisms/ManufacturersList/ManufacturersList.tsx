@@ -267,7 +267,7 @@ const ManufacturersList = () => {
                 <td>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control manufacturer-name"
                     defaultValue={manufacturer.name}
                     onChange={(e) => {
                       const newManufacturer = {
