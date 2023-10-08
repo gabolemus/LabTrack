@@ -6,16 +6,20 @@ import "./MainPage.scss";
 interface Props {
   /** Element(s) to be rendered inside the main page */
   children: ReactNode | ReactNode[];
+  /** Whether to show the login button */
+  showLogin?: boolean;
+  /** Whether to show the logout button */
+  showLogout?: boolean;
 }
 
 /**
  * Template for the components that will be rendered inside the main page
  * @param {Props} props - Properties passed to component
  */
-const MainPage: React.FC<Props> = ({ children }: Props) => {
+const MainPage: React.FC<Props> = ({ children, showLogin, showLogout }: Props) => {
   return (
     <>
-      <Navbar />
+      <Navbar showLogin={showLogin} showLogout={showLogout} />
       <main className="container">{children}</main>
     </>
   );
