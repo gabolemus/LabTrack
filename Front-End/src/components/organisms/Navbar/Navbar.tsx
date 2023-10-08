@@ -1,17 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.scss";
-import { pages } from "../../../utils/pages";
+import { Page } from "../../../utils/pages";
 
 /** Interface for the props of the Navbar component */
 interface Props {
   /** Whether to show the login button */
   showLogin: boolean;
-  /** Callback to control the login button */
-  setShowLogin: (show: boolean) => void;
+  /** Callback to be called when the logout button is clicked */
+  logoutCallback: () => void;
+  /** Pages to be shown in the navbar */
+  pages: Array<Page>;
 }
 
 /** Component that renders the navbar */
-const Navbar = ({ showLogin, setShowLogin }: Props) => {
+const Navbar = ({ showLogin, logoutCallback, pages }: Props) => {
   const navigate = useNavigate();
 
   /** Callback to logout the user */
@@ -19,7 +21,7 @@ const Navbar = ({ showLogin, setShowLogin }: Props) => {
     localStorage.removeItem("logged");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
-    setShowLogin(true);
+    logoutCallback();
     navigate("/");
   };
 
@@ -41,7 +43,7 @@ const Navbar = ({ showLogin, setShowLogin }: Props) => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {pages.navbar.map((page) => (
+            {pages.map((page) => (
               <li className="nav-item" key={page.name}>
                 <Link
                   className={`nav-link ${
