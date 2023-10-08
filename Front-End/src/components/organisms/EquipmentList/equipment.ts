@@ -21,6 +21,7 @@ export type Equipment = {
   name: string;
   manufacturer: string;
   tags: string[];
+  quantity: number;
   path: string;
   projects: Project[];
   documentation?: DocumentationLink[];
