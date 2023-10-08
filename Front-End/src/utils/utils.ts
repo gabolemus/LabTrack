@@ -62,7 +62,7 @@ export const toggleLoader = (
  * @param objB Second object.
  * @returns true if the objects are equal, false otherwise.
  */
-const areObjectsEqual = <T extends Record<string, unknown>>(
+export const areObjectsEqual = <T extends Record<string, unknown>>(
   objA: T,
   objB: T
 ): boolean => {
@@ -105,3 +105,12 @@ export const areArraysEqual = <T extends Record<string, unknown>>(
 
   return true;
 };
+
+/**
+ * Concatenates any amount of arrays of objects.
+ * @param arrays Arrays to concatenate.
+ * @returns Concatenated array.
+ */
+export const concatArrays = <T extends Record<string, unknown>>(
+  ...arrays: Array<Array<T>>
+): Array<T> => arrays.reduce((acc, curr) => acc.concat(curr), []);
