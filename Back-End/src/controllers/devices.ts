@@ -1,17 +1,84 @@
 import { Request, Response } from "express";
 import { BaseController } from "./BaseController";
 import Device from "../models/devices";
+import History from "../models/histories";
+import Projects from "../models/projects";
 import { IDevice } from "../types/device";
 import logger from "../utils/logger";
+import { HistoryEntry, IHistory } from "../types/history";
 
 export class DevicesController extends BaseController<IDevice> {
   constructor() {
     super(Device, "device", "name", true);
   }
 
+  /**
+   * Extracts the fields that are needed for the history item from the history entry.
+   * @param entry The history entry
+   * @returns The extracted fields as a partial history entry
+   */
+  private extractHistoryFields(entry: HistoryEntry): Partial<HistoryEntry> {
+    const { change, timestamp, description, projectId } = entry;
+    return { change, timestamp, description, projectId };
+  }
+
+  /**
+   * Processes the history of a history item.
+   * @param history The history of an equipment
+   * @returns The processed history
+   */
+  private processHistoryWithProjectPath = async (history: HistoryEntry[]): Promise<Partial<HistoryEntry>[]> => {
+    const modifiedHistory = [];
+
+    for (const entry of history) {
+      if (entry.projectId) {
+        const project = await Projects.findById(entry.projectId);
+
+        // If the project exists, add the "path" value to the history entry
+        if (project) {
+          const entryData = this.extractHistoryFields(entry);
+          delete entryData.projectId;
+
+          const entryCopy = {
+            ...entryData,
+            project: {
+              name: project.name,
+              path: project.path,
+              timelapse: project.timelapse,
+            },
+            _id: (entry as any)._id,
+          };
+
+          modifiedHistory.push(entryCopy);
+        }
+      } else {
+        // If the history entry doesn't have a "projectId" value, add it to the modified history array
+        modifiedHistory.push(entry);
+      }
+    }
+
+    return modifiedHistory;
+  };
+
+  private async getHistoryEntries(deviceId: string): Promise<Partial<HistoryEntry>[]> {
+    const historyEntries = await History.find({ equipmentId: deviceId }); // Replace 'equipmentId' with the actual field name
+
+    // Also, add the project fields for the history entries that contain them
+    const processedHistoryEntries = await this.processHistoryWithProjectPath(
+      historyEntries
+        .map((historyEntry: IHistory) => historyEntry.history)
+        .flat()
+        .sort((a: HistoryEntry, b: HistoryEntry) => a.timestamp.getTime() - b.timestamp.getTime()),
+    );
+
+    return processedHistoryEntries;
+  }
+
   public getItems = async (req: Request, res: Response): Promise<void> => {
     try {
-      logger.info(`GET /${this.modelName}s`);
+      const pluralModelName = this.getPluralName();
+      logger.info(`GET /${pluralModelName}`);
+
       // TODO: refactor this aggregate into a separate function
       const items = await Device.db.db
         .collection("devices")
@@ -45,7 +112,20 @@ export class DevicesController extends BaseController<IDevice> {
           },
         ])
         .toArray();
-      res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
+
+      // Iterate through the devices and retrieve the history entries for each one
+      const itemsWithHistory = await Promise.all(
+        items.map(async (item) => {
+          const historyEntries = await this.getHistoryEntries(item._id.toString());
+          return {
+            ...item,
+            history: historyEntries,
+          };
+        }),
+      );
+
+      // res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
+      res.status(200).json({ success: true, length: itemsWithHistory.length, [pluralModelName]: itemsWithHistory });
     } catch (error) {
       this.handleError(res, error);
     }
@@ -114,7 +194,19 @@ export class DevicesController extends BaseController<IDevice> {
         .toArray();
       item.projects = projects;
 
-      res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
+      if (!item || item.length === 0) {
+        res.status(404).json({ success: false, message: "Item not found" });
+        return;
+      }
+
+      // Retrieve the history entries for the device and add them to the response
+      const historyEntries = await this.getHistoryEntries(item._id.toString());
+      const deviceWithHistory = {
+        ...item,
+        history: historyEntries,
+      };
+
+      res.status(200).json({ success: true, [this.modelName]: deviceWithHistory });
     } catch (error) {
       this.handleError(res, error);
     }
@@ -183,7 +275,19 @@ export class DevicesController extends BaseController<IDevice> {
         .toArray();
       item.projects = projects;
 
-      res.status(item ? 200 : 404).json({ success: true, [this.modelName]: item });
+      if (!item || item.length === 0) {
+        res.status(404).json({ success: false, message: "Item not found" });
+        return;
+      }
+
+      // Retrieve the history entries for the device and add them to the response
+      const historyEntries = await this.getHistoryEntries(item._id.toString());
+      const deviceWithHistory = {
+        ...item,
+        history: historyEntries,
+      };
+
+      res.status(200).json({ success: true, [this.modelName]: deviceWithHistory });
     } catch (error) {
       this.handleError(res, error);
     }
