@@ -15,13 +15,17 @@ export class BaseController<T extends Document> {
     this.enforceUniqueField = enforceUniqueField;
   }
 
+  getPluralName(): string {
+    // If the modelName ends in a 'y', remove the 'y' and add 'ies' instead
+    return this.modelName.endsWith("y") ? `${this.modelName.slice(0, -1)}ies` : `${this.modelName}s`;
+  }
+
   public getItems = async (req: Request, res: Response): Promise<void> => {
     try {
-      // If the modelName ends in a 'y', remove the 'y' and add 'ies' instead
-      const pluralModelName = this.modelName.endsWith("y") ? `${this.modelName.slice(0, -1)}ies` : `${this.modelName}s`;
+      const pluralModelName = this.getPluralName();
       logger.info(`GET /${pluralModelName}`);
       const items = await this.model.find();
-      res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
+      res.status(200).json({ success: true, length: items.length, [pluralModelName]: items });
     } catch (error) {
       this.handleError(res, error);
     }
@@ -99,9 +103,10 @@ export class BaseController<T extends Document> {
 
   public deleteAllItems = async (req: Request, res: Response): Promise<void> => {
     try {
-      logger.info(`DELETE /${this.modelName}s`);
+      const pluralModelName = this.getPluralName();
+      logger.info(`DELETE /${pluralModelName}`);
       const deletedItems = await this.model.deleteMany({});
-      res.status(deletedItems ? 200 : 404).json({ success: true, [`${this.modelName}s`]: deletedItems });
+      res.status(deletedItems ? 200 : 404).json({ success: true, [pluralModelName]: deletedItems });
     } catch (error) {
       this.handleError(res, error);
     }
