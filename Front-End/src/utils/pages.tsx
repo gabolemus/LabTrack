@@ -61,11 +61,6 @@ const allUsersPages = [
     element: <Projects />,
   },
   {
-    path: "/projects",
-    name: "Proyectos",
-    element: <Projects />,
-  },
-  {
     path: "/information",
     name: "Información",
     element: <Information />,
@@ -204,7 +199,6 @@ const all = [
 /** Object that contains all the pages and those to be rendered in the navbar. */
 export const pages = {
   all,
-  navbar: all.slice(0, 6),
   inquiriesSupervisors: {
     pages: inquiriesSupervisorsPagesList,
     navbar: inquiriesSupervisorsPagesNavbar,
