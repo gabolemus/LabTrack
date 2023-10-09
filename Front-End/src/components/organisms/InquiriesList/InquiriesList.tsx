@@ -145,7 +145,7 @@ const InquiriesList = () => {
             {filteredInquiries.map((inquiry) => (
               <tr key={inquiry._id}>
                 <td>
-                  <Link to={`/inquiries/${inquiry._id}`}>{inquiry.projectName}</Link>
+                  <Link to={`/inquiries-registry/${inquiry._id}`}>{inquiry.projectName}</Link>
                 </td>
                 <td>{inquiry.projectRequester.name}</td>
                 <td>{inquiry.projectRequester.email}</td>

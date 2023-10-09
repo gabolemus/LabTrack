@@ -23,7 +23,7 @@ export interface Page {
 /** Array of pages visible for the inquiries supervisors. */
 const inquiriesSupervisorsPages = [
   {
-    path: "/inquiries",
+    path: "/inquiries-registry",
     name: "Solicitudes",
     element: <Inquiries />,
   },
@@ -61,6 +61,11 @@ const allUsersPages = [
     element: <Projects />,
   },
   {
+    path: "/projects",
+    name: "Proyectos",
+    element: <Projects />,
+  },
+  {
     path: "/information",
     name: "Información",
     element: <Information />,
@@ -78,7 +83,7 @@ const inquiriesSupervisorsPagesList = concatArrays(
   inquiriesSupervisorsPages,
   [
     {
-      path: "/inquiries/:inquiryID",
+      path: "/inquiries-registry/:inquiryID",
       name: "Solicitudes",
       element: <Inquiries />,
     },
@@ -90,7 +95,7 @@ const inquiriesSupervisorsPagesNavbar = inquiriesSupervisorsPagesList
   .slice(0, 4)
   .concat([
     {
-      path: "/inquiries/",
+      path: "/inquiries-registry/",
       name: "Solicitudes",
       element: <Inquiries />,
     },
@@ -103,7 +108,7 @@ const systemAdministratorsPagesList = concatArrays(
   systemAdministratorsPages,
   [
     {
-      path: "/inquiries/:inquiryID",
+      path: "/inquiries-registry/:inquiryID",
       name: "Solicitudes",
       element: <Inquiries />,
     },
@@ -116,7 +121,7 @@ const systemAdministratorsPagesNavbar = systemAdministratorsPagesList.slice(
   4
 ).concat([
   {
-    path: "/inquiries/",
+    path: "/inquiries-registry/",
     name: "Solicitudes",
     element: <Inquiries />,
   },
@@ -160,7 +165,7 @@ const all = [
     element: <Information />,
   },
   {
-    path: "/inquiries",
+    path: "/inquiries-registry",
     name: "Solicitudes",
     element: <Inquiries />,
   },
@@ -190,7 +195,7 @@ const all = [
     element: <Projects />,
   },
   {
-    path: "/inquiries/:inquiryID",
+    path: "/inquiries-registry/:inquiryID",
     name: "Solicitudes",
     element: <Inquiries />,
   },
