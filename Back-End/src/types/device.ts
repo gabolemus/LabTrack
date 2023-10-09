@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Document } from "mongoose";
 import { IManufacturer } from "./manufacturer";
+import { ITag } from "./tag";
 
 /** Enum that defines the possible device statuses */
 enum DeviceStatus {
@@ -21,7 +22,7 @@ export interface IDevice extends Document {
   id: string;
   name: string;
   manufacturerID: IManufacturer["_id"];
-  tags: string[];
+  tags: ITag["_id"][];
   quantity: number;
   status: DeviceStatus;
   path: string;
