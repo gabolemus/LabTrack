@@ -10,13 +10,7 @@ import {
   getAllManufacturers,
 } from "../ManufacturersList/manufacturers";
 
-/** Interface for the EquipmentList component props. */
-interface EquipmentListProps {
-  /** Whether to allow the user to add new devices. */
-  allowAddNewDevice?: boolean;
-}
-
-const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
+const EquipmentList = () => {
   const [equipment, setEquipment] = useState<Array<Equipment>>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchManufacturers, setSearchManufacturers] = useState<string[]>([]);
@@ -25,6 +19,7 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
     []
   );
   const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
+  const [allowAddNewDevice, setAllowAddNewDevice] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -61,6 +56,11 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
   };
 
   useEffect(() => {
+    const user = localStorage.getItem("role");
+    if (user === "superAdmin") {
+      setAllowAddNewDevice(true);
+    }
+    
     (async () => {
       setLoading(true);
 
@@ -178,7 +178,10 @@ const EquipmentList = ({ allowAddNewDevice }: EquipmentListProps) => {
   };
 
   /** Handles uploading the images. */
-  const handleUpload = async (manufacturer: string, device: string): Promise<string[]> => {
+  const handleUpload = async (
+    manufacturer: string,
+    device: string
+  ): Promise<string[]> => {
     if (images) {
       const formData = new FormData();
       formData.append("manufacturer", manufacturer);
