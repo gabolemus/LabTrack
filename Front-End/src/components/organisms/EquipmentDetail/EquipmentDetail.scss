@@ -26,6 +26,17 @@
 }
 
 .device-title-input {
-  // Make the font size the same as h1
   font-size: 2rem;
+}
+
+#requestedEquipment {
+  & > div.col-6 > input[type="number"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  & > div.col-6 > button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }

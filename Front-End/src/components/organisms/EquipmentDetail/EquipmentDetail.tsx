@@ -17,17 +17,20 @@ import axios from "axios";
 interface EquipmentDetailProps {
   /** Device ID */
   id: string;
-  /** Whether to allow the user to update the device */
-  allowUpdate?: boolean;
 }
 
-const EquipmentDetail = ({ id, allowUpdate }: EquipmentDetailProps) => {
+const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
+  const [userType, setUserType] = useState("");
   const [device, setDevice] = useState<Equipment>({} as Equipment);
   const [updatedDevice, setUpdatedDevice] = useState<Equipment>(
     {} as Equipment
   );
   const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [allowUpdate, setAllowUpdate] = useState(false);
+  const [requestedDevice, setRequestedDevice] = useState<Partial<Equipment>>(
+    {}
+  );
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -41,12 +44,23 @@ const EquipmentDetail = ({ id, allowUpdate }: EquipmentDetailProps) => {
     // Scroll to top
     window.scrollTo(0, 0);
 
+    const user = localStorage.getItem("role");
+    setUserType(user || "");
+    if (user === "superAdmin") {
+      setAllowUpdate(true);
+    }
+
     // Simulate fetching equipment data based on the ID from your data source
     const fetchData = async () => {
       try {
         // Get the equipment
         const data = await fetchEquipmentData(id);
         setDevice(data);
+        setRequestedDevice({
+          _id: data._id,
+          name: data.name,
+          quantity: Math.min(data.quantity, 1),
+        });
         setUpdatedDevice(data);
 
         // Get the manufacturers
@@ -244,6 +258,87 @@ const EquipmentDetail = ({ id, allowUpdate }: EquipmentDetailProps) => {
         />
         {device.images && <hr className="divider" />}
         <div className="equipment-details">
+          {!allowUpdate && userType !== "admin" && (
+            <>
+              <h2>Agregar a la solicitud</h2>
+              <label htmlFor="equipmentAmount">Cantidad</label>
+              <div
+                className="form-group mb-5 d-flex justify-content-between w-100"
+                id="requestedEquipment">
+                <div className="col-6">
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="equipmentAmount"
+                    placeholder="Cantidad por solicitar"
+                    min="1"
+                    step="1"
+                    max={device.quantity}
+                    value={requestedDevice.quantity}
+                    onChange={(e) => {
+                      setRequestedDevice({
+                        ...requestedDevice,
+                        quantity: Math.min(
+                          parseInt(e.target.value),
+                          device.quantity
+                        ),
+                      });
+                    }}
+                  />
+                </div>
+                <div className="col-6">
+                  <button
+                    className="btn btn-primary"
+                    disabled={requestedDevice.quantity === 0}
+                    onClick={() => {
+                      const requestedDevices =
+                        sessionStorage.getItem("requestedDevices");
+                      const parsedRequestedDevices = requestedDevices
+                        ? JSON.parse(requestedDevices)
+                        : [];
+                      const requestedDeviceIndex =
+                        parsedRequestedDevices.findIndex(
+                          (device: Equipment) =>
+                            device._id === requestedDevice._id
+                        );
+                      if (requestedDeviceIndex !== -1) {
+                        parsedRequestedDevices[requestedDeviceIndex].quantity =
+                          requestedDevice.quantity;
+                      } else {
+                        parsedRequestedDevices.push(requestedDevice);
+                      }
+                      sessionStorage.setItem(
+                        "requestedDevices",
+                        JSON.stringify(parsedRequestedDevices)
+                      );
+
+                      setShowModal(true);
+                      setModalTitle("Equipo Agregado");
+                      setModalBody(
+                        <>
+                          <p className="fs-6">
+                            El equipo fue agregado correctamente a la solicitud.
+                          </p>
+                          <p className="fs-6">
+                            Cuando desee realizar su solicitud, diríjase al
+                            apartado de{" "}
+                            <Link to="/inquiries">solicitudes</Link>.
+                          </p>
+                        </>
+                      );
+                      setModalBtnText("Aceptar");
+                      setModalBtnClass("btn-success");
+                      setModalCallback(() => () => {
+                        setShowModal(false);
+                      });
+                    }}>
+                    Agregar a la solicitud
+                  </button>
+                </div>
+              </div>
+              <hr className="divider" />
+            </>
+          )}
           <h2>Detalles del Equipo</h2>
           {allowUpdate ? (
             <div className="mb-5">
