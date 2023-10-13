@@ -146,7 +146,7 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
   logger.info("POST /mailer/send-inquiry-confirmation-email");
 
   // Check if the request has the required fields.
-  const requiredFields = ["to", "name", "project", "description", "devices", "timelapse", "acceptURL"];
+  const requiredFields = ["to", "name", "project", "description", "devices", "courses", "timelapse", "acceptURL"];
   for (const field of requiredFields) {
     if (!req.body[field]) {
       res.send({ success: false, message: `Missing required field: ${field}` });
@@ -155,15 +155,21 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
   }
 
   // Request parameters.
-  const { to, name, project, description, devices, timelapse } = req.body;
+  const { to, name, project, description, devices, timelapse, courses } = req.body;
 
   // Inquiry devices.
   let devicesString = "<ul>";
   for (const device of devices) {
-    devicesString += `<li><strong>Nombre:</strong> ${device.name}</li>
-    <li><strong>Cantidad:</strong> ${device.quantity}</li>`;
+    devicesString += `<li>${device.name} (${device.quantity})</li>`;
   }
   devicesString += "</ul>";
+
+  // Inquiry classes.
+  let coursesString = "<ul>";
+  for (const course of courses) {
+    coursesString += `<li>${course}</li>`;
+  }
+  coursesString += "</ul>";
 
   // Email body and footer.
   const body = `<div>
@@ -178,6 +184,7 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
       <li><strong>Fecha de inicio:</strong> ${formatDate(timelapse.start)}</li>
       <li><strong>Fecha de finalización:</strong> ${formatDate(timelapse.end)}</li>
     </ul></li>
+    <li><strong>Clases:</strong> ${coursesString}</li>
   </ul>
   <p>Para continuar con el proceso de apertura de proyecto, por favor haga clic en el siguiente enlace:</p>
   <div style="line-height:16px;text-align:center;margin-bottom:16px">
@@ -189,7 +196,7 @@ router.post("/mailer/send-inquiry-confirmation-email", async (req, res) => {
   <div style="font-weight:400;font-size:14px;line-height:20px;color:rgba(0,0,0,.87)">
     <a href="${req.body.acceptURL}" target="_blank">${req.body.acceptURL}</a>
   </div>
-  <p>Le estaremos notificando cuando su proyecto haya sido aprobado.</p>
+  <p>Después que haya aceptado la solicitud de apertura, le estaremos notificando cuando su proyecto haya sido aprobado.</p>
   <p>Atentamente,</p>
   <p>LabTrack</p>
 </div>`;
