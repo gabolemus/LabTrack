@@ -113,6 +113,7 @@ const NewInquiryForm = () => {
             name: device.name,
             quantity,
           })),
+          courses,
           timelapse: {
             start: shortDateToTimestamp(startDate),
             end: shortDateToTimestamp(endDate),
