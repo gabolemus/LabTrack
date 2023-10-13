@@ -40,6 +40,8 @@ export class InquiriesController extends BaseController<IInquiry> {
               },
             },
             projectName: 1,
+            description: 1,
+            timelapse: 1,
             courses: 1,
             status: 1,
             confirmationToken: 1,
@@ -84,6 +86,8 @@ export class InquiriesController extends BaseController<IInquiry> {
               },
             },
             projectName: 1,
+            description: 1,
+            timelapse: 1,
             courses: 1,
             status: 1,
             confirmationToken: 1,
@@ -130,6 +134,8 @@ export class InquiriesController extends BaseController<IInquiry> {
               },
             },
             projectName: 1,
+            description: 1,
+            timelapse: 1,
             courses: 1,
             status: 1,
             confirmationToken: 1,
@@ -206,6 +212,39 @@ export class InquiriesController extends BaseController<IInquiry> {
 
       // Return the inquiry
       res.status(201).json({ success: true, inquiry });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  /** Set the project request from "unconfirmed" to "pending" via its confirmation token. */
+  public confirmItem = async (req: Request, res: Response): Promise<void> => {
+    logger.info(`PUT /inquiry/confirm`);
+
+    // Check that confirmationToken is provided
+    if (!req.body.confirmationToken) {
+      res.status(400).json({
+        success: false,
+        error: "CONFIRMATION_TOKEN_NOT_PROVIDED",
+        message: "Confirmation token not provided",
+      });
+      return;
+    }
+
+    try {
+      const { confirmationToken } = req.body;
+      const inquiry = await Inquiry.findOneAndUpdate({ confirmationToken }, { status: "Pending" }, { new: true });
+
+      if (!inquiry) {
+        res.status(404).json({
+          success: false,
+          error: "INQUIRY_NOT_FOUND",
+          message: "Inquiry not found",
+        });
+        return;
+      }
+
+      res.status(200).json({ success: true, inquiry });
     } catch (error) {
       this.handleError(res, error);
     }
