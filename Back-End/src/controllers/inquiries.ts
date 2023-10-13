@@ -116,6 +116,8 @@ export class InquiriesController extends BaseController<IInquiry> {
 
   // Override the createItem method to verify that the amount of devices requested is available
   public createItem = async (req: Request, res: Response): Promise<void> => {
+    logger.info(`POST /inquiry - ${JSON.stringify(req.body)}`);
+
     try {
       const { devices } = req.body;
       let allDevicesAvailable = true;
