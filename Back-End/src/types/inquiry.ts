@@ -3,9 +3,16 @@ import { Document } from "mongoose";
 
 /** Enum that defines the possible inquiry statuses */
 enum InquiryStatus {
+  UNCONFIRMED = "Unconfirmed",
   PENDING = "Pending",
   ACCEPTED = "Accepted",
   REJECTED = "Rejected",
+}
+
+/** Project timelapse interface */
+interface ITimelapse {
+  start: Date;
+  end: Date;
 }
 
 /** Interface for the information of the person whose inquiring about starting a project */
@@ -22,12 +29,12 @@ interface IDeviceInquiry {
 
 /** Inquiry interface */
 export interface IInquiry extends Document {
-  id: string;
-  projectRequester: IProjectRequester;
-  devices: IDeviceInquiry[];
   projectName: string;
   courses: string[];
+  description: string;
+  timelapse: ITimelapse;
+  projectRequester: IProjectRequester;
+  devices: IDeviceInquiry[];
   status: InquiryStatus;
-  createdAt: Date;
-  updatedAt: Date;
+  confirmationToken: string;
 }

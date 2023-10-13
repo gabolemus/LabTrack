@@ -4,6 +4,28 @@ import { IInquiry } from "../types/inquiry";
 /** Mongoose schema for project inquiries */
 const inquirySchema: Schema = new Schema(
   {
+    projectName: {
+      type: String,
+      required: true,
+    },
+    courses: {
+      type: [String],
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    timelapse: {
+      start: {
+        type: Date,
+        required: true,
+      },
+      end: {
+        type: Date,
+        required: true,
+      },
+    },
     projectRequester: {
       name: {
         type: String,
@@ -27,17 +49,13 @@ const inquirySchema: Schema = new Schema(
       ],
       required: true,
     },
-    projectName: {
-      type: String,
-      required: true,
-    },
-    courses: {
-      type: [String],
-      required: true,
-    },
     status: {
       type: String,
       required: true,
+    },
+    confirmationToken: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true },

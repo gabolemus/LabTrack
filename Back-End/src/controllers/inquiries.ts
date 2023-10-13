@@ -4,6 +4,7 @@ import Inquiry from "../models/inquiries";
 import Device from "../models/devices";
 import { IInquiry } from "../types/inquiry";
 import logger from "../utils/logger";
+import crypto from "crypto";
 
 export class InquiriesController extends BaseController<IInquiry> {
   constructor() {
@@ -41,6 +42,7 @@ export class InquiriesController extends BaseController<IInquiry> {
             projectName: 1,
             courses: 1,
             status: 1,
+            confirmationToken: 1,
             createdAt: 1,
             updatedAt: 1,
           },
@@ -84,6 +86,7 @@ export class InquiriesController extends BaseController<IInquiry> {
             projectName: 1,
             courses: 1,
             status: 1,
+            confirmationToken: 1,
             createdAt: 1,
             updatedAt: 1,
           },
@@ -101,6 +104,14 @@ export class InquiriesController extends BaseController<IInquiry> {
   private checkDeviceAvailability = async (deviceId: string, quantity: number): Promise<boolean> => {
     const device = await Device.findById(deviceId);
     return device ? device.quantity >= quantity : false;
+  };
+
+  /** Creates a confirmation token to send the user via email. */
+  private createConfirmationToken = (): string => {
+    const tokenLength = 32;
+    const confirmationToken = crypto.randomBytes(tokenLength).toString("hex");
+
+    return confirmationToken;
   };
 
   // Override the createItem method to verify that the amount of devices requested is available
@@ -129,7 +140,10 @@ export class InquiriesController extends BaseController<IInquiry> {
       }
 
       // Create the inquiry
-      const newInquiry = new Inquiry(req.body);
+      const newInquiry = new Inquiry({
+        ...req.body,
+        confirmationToken: this.createConfirmationToken(),
+      });
       const inquiry = await newInquiry.save();
 
       // Return the inquiry
