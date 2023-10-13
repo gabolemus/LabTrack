@@ -1,6 +1,7 @@
 // This file contains the app's page routes.
 
 import Admins from "../components/pages/Admins";
+import ConfirmRequest from "../components/pages/ConfirmRequest";
 import Equipment from "../components/pages/Equipment";
 import Home from "../components/pages/Home";
 import Information from "../components/pages/Information";
@@ -203,6 +204,11 @@ const all = [
     path: "/inquiries-registry/:inquiryID",
     name: "Solicitudes",
     element: <Inquiries />,
+  },
+  {
+    path: "/confirm-request/:requestId",
+    name: "Confirmar solicitud",
+    element: <ConfirmRequest />,
   },
 ];
 
