@@ -100,6 +100,62 @@ export class InquiriesController extends BaseController<IInquiry> {
     }
   };
 
+  /** Get item by its confirmation token. */
+  public getItemByConfirmationToken = async (req: Request, res: Response): Promise<void> => {
+    logger.info(`GET /inquiry/token/${req.params.token}`);
+
+    try {
+      const items = await Inquiry.aggregate([
+        {
+          $lookup: {
+            from: "devices",
+            localField: "devices.id",
+            foreignField: "_id",
+            as: "devices",
+          },
+        },
+        {
+          $project: {
+            projectRequester: 1,
+            devices: {
+              $map: {
+                input: "$devices",
+                as: "device",
+                in: {
+                  id: "$$device._id",
+                  name: "$$device.name",
+                  quantity: 1,
+                  path: "$$device.path",
+                },
+              },
+            },
+            projectName: 1,
+            courses: 1,
+            status: 1,
+            confirmationToken: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      ]);
+
+      const inquiry = items.filter((item) => item.confirmationToken === req.params.token)[0];
+
+      if (!inquiry) {
+        res.status(404).json({
+          success: false,
+          error: "INQUIRY_NOT_FOUND",
+          message: "Inquiry not found",
+        });
+        return;
+      }
+
+      res.status(200).json({ success: true, inquiry });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   // Method to check if a device is available
   private checkDeviceAvailability = async (deviceId: string, quantity: number): Promise<boolean> => {
     const device = await Device.findById(deviceId);
