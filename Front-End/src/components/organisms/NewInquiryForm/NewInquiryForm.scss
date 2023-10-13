@@ -10,7 +10,9 @@
 
 #newInquiryForm {
   input[type="text"],
-  input[type="email"] {
+  input[type="email"],
+  input[type="number"],
+  input[type="date"] {
     background-color: #f1f1f1;
   }
 
@@ -19,7 +21,8 @@
   }
 }
 
-#newInquiryForm > #userData > div {
+#newInquiryForm > #userData > div,
+#newInquiryForm > #projectDates > div {
   width: 48.25%;
 }
 
@@ -53,7 +56,6 @@
   max-width: 100%;
 }
 
-
 .device-checkbox {
   background-color: #f1f1f1;
   margin-left: 2.5rem;
@@ -61,4 +63,14 @@
   &:hover {
     cursor: pointer;
   }
+}
+
+#projectDesc {
+  max-height: 17.5rem;
+  overflow-y: scroll;
+  background-color: #f1f1f1;
+}
+
+input[type="date"]:hover {
+  cursor: pointer;
 }
