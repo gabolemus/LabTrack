@@ -28,7 +28,6 @@ interface IProjectDevice {
 
 /** Lab project interface */
 export interface IProject extends Document {
-  id: string;
   name: string;
   path: string;
   courses: string[];
