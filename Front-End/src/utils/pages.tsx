@@ -7,6 +7,7 @@ import Information from "../components/pages/Information";
 import Inquiries from "../components/pages/Inquiries";
 import Login from "../components/pages/Login";
 import Manufacturers from "../components/pages/Manufacturers";
+import NewInquiries from "../components/pages/NewInquiry";
 import Projects from "../components/pages/Projects";
 import { concatArrays } from "./utils";
 
@@ -61,6 +62,11 @@ const allUsersPages = [
     element: <Projects />,
   },
   {
+    path: "/inquiries",
+    name: "Solicitudes",
+    element: <NewInquiries />,
+  },
+  {
     path: "/information",
     name: "Información",
     element: <Information />,
@@ -87,7 +93,7 @@ const inquiriesSupervisorsPagesList = concatArrays(
 
 /** Inquiries supervisors pages list for the navbar. */
 const inquiriesSupervisorsPagesNavbar = inquiriesSupervisorsPagesList
-  .slice(0, 4)
+  .slice(0, 3)
   .concat([
     {
       path: "/inquiries-registry/",
@@ -111,32 +117,31 @@ const systemAdministratorsPagesList = concatArrays(
 );
 
 /** System administrators pages list for the navbar. */
-const systemAdministratorsPagesNavbar = systemAdministratorsPagesList.slice(
-  0,
-  4
-).concat([
-  {
-    path: "/inquiries-registry/",
-    name: "Solicitudes",
-    element: <Inquiries />,
-  },
-  {
-    path: "/admins",
-    name: "Administradores",
-    element: <Admins />,
-  },
-  {
-    path: "/manufacturers",
-    name: "Manufacturadores",
-    element: <Manufacturers />,
-  }
-]);
+const systemAdministratorsPagesNavbar = systemAdministratorsPagesList
+  .slice(0, 3)
+  .concat([
+    {
+      path: "/inquiries-registry/",
+      name: "Solicitudes",
+      element: <Inquiries />,
+    },
+    {
+      path: "/admins",
+      name: "Administradores",
+      element: <Admins />,
+    },
+    {
+      path: "/manufacturers",
+      name: "Manufacturadores",
+      element: <Manufacturers />,
+    },
+  ]);
 
 /** All users pages list. */
 const allUsersPagesList = allUsersPages;
 
 /** All users pages list for the navbar. */
-const allUsersPagesNavbar = allUsersPagesList.slice(0, 4);
+const allUsersPagesNavbar = allUsersPagesList.slice(0, 5);
 
 const all = [
   {
@@ -158,6 +163,11 @@ const all = [
     path: "/information",
     name: "Información",
     element: <Information />,
+  },
+  {
+    path: "/inquiries",
+    name: "Solicitudes",
+    element: <NewInquiries />,
   },
   {
     path: "/inquiries-registry",
