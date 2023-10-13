@@ -84,7 +84,7 @@ export class BaseController<T extends Document> {
   public updateItem = async (req: Request, res: Response): Promise<void> => {
     try {
       logger.info(`PUT /${this.modelName}?id=${req.query.id} ${JSON.stringify(req.body)}`);
-      const updatedItem = await this.model.findByIdAndUpdate(req.query.id, req.body);
+      const updatedItem = await this.model.findByIdAndUpdate(req.query.id, req.body, { new: true });
       res.status(updatedItem ? 200 : 404).json({ success: true, [this.modelName]: updatedItem });
     } catch (error) {
       this.handleError(res, error);
