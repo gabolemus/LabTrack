@@ -12,6 +12,7 @@ import {
 
 /** Interface that represents a selected device */
 interface SelectedDevice {
+  _id: string;
   device: Equipment;
   quantity: number;
 }
@@ -42,6 +43,27 @@ const NewInquiryForm = () => {
 
     (async () => {
       const devicesResponse = await axios.get("http://localhost:8080/devices");
+
+      // Check if requestedDevices are in session storage
+      const requestedDevices = sessionStorage.getItem("requestedDevices");
+      if (requestedDevices) {
+        const parsedRequestedDevices = JSON.parse(requestedDevices);
+        const newSelectedDevices: SelectedDevice[] = [];
+        for (const requestedDevice of parsedRequestedDevices) {
+          const device = devicesResponse.data.devices.find(
+            (device: Equipment) => device._id === requestedDevice._id
+          );
+          if (device) {
+            newSelectedDevices.push({
+              _id: requestedDevice.id,
+              device,
+              quantity: requestedDevice.quantity,
+            });
+          }
+        }
+        setSelectedDevices(newSelectedDevices);
+      }
+
       setEquipment(devicesResponse.data.devices);
     })();
 
@@ -130,6 +152,7 @@ const NewInquiryForm = () => {
           confirmationEmailResponse.status === 200 &&
           confirmationEmailResponse.data.success
         ) {
+          sessionStorage.removeItem("requestedDevices");
           setUserName("");
           setUserEmail("");
           setProjectName("");
@@ -474,11 +497,18 @@ const NewInquiryForm = () => {
                           type="checkbox"
                           className="form-check-input device-checkbox"
                           id="selectedDevices"
+                          checked={
+                            selectedDevices.findIndex(
+                              (selectedDevice) =>
+                                selectedDevice.device._id === device._id
+                            ) !== -1
+                          }
                           onChange={(e) => {
                             const isChecked = e.target.checked;
                             if (isChecked) {
                               const newSelectedDevices = [...selectedDevices];
                               newSelectedDevices.push({
+                                _id: device._id,
                                 device,
                                 quantity: 1,
                               });
@@ -561,6 +591,23 @@ const NewInquiryForm = () => {
                             ) {
                               checkbox.checked = false;
                             }
+                          }
+
+                          // Remove from session storage
+                          const requestedDevices =
+                            sessionStorage.getItem("requestedDevices");
+                          if (requestedDevices) {
+                            const parsedRequestedDevices = JSON.parse(
+                              requestedDevices
+                            );
+                            const newRequestedDevices = parsedRequestedDevices.filter(
+                              (requestedDevice: SelectedDevice) =>
+                                requestedDevice._id !== device._id
+                            );
+                            sessionStorage.setItem(
+                              "requestedDevices",
+                              JSON.stringify(newRequestedDevices)
+                            );
                           }
                         }}>
                         Eliminar
