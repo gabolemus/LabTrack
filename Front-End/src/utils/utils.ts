@@ -21,7 +21,6 @@ export const roundToDecimalPlaces = (
  * @returns Date string.
  */
 export const timestampToDate = (timestamp: string): string => {
-  // E.g. 2021-08-01T12:00:00.000Z --> 1 de agosto de 2021 a las 12:00:00
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.toLocaleString("es-ES", { month: "long" });
@@ -33,6 +32,32 @@ export const timestampToDate = (timestamp: string): string => {
   });
 
   return `${day} de ${month} de ${year} a las ${time}`;
+};
+
+/**
+ * Converts a timestamp to a short date string (DD/MM/YYYY).
+ * The format used is YYYY-MM-DDTHH:mm:ss.sssZ.
+ * @param timestamp Timestamp to convert.
+ * @returns Date string.
+ */
+export const timestampToShortDate = (timestamp: string): string => {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
+/**
+ * Converts a short date string (DD/MM/YYYY) to a timestamp.
+ * The format used is YYYY-MM-DDTHH:mm:ss.sssZ.
+ * @param shortDate Short date string to convert.
+ * @returns Timestamp.
+ */
+export const shortDateToTimestamp = (shortDate: string): string => {
+  const [day, month, year] = shortDate.split("/");
+  return new Date(`${year}-${month}-${day}`).toISOString();
 };
 
 // TODO: read an environment file to get the IP address of the server
