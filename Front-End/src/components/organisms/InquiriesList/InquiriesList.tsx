@@ -166,7 +166,7 @@ const InquiriesList = () => {
         </div>
       </form>
       <div className="inquiries-table">
-        <table className="table table-bordered table-responsive">
+        <table className="table table-bordered table-responsive table-hover">
           <thead>
             <tr>
               <th>Solicitud</th>
