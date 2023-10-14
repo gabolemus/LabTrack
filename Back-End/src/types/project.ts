@@ -3,6 +3,7 @@ import { Document } from "mongoose";
 
 /** Enum that defines the possible project statuses */
 enum ProjectStatus {
+  NOT_STARTED = "Not Started",
   IN_PROGRESS = "In Progress",
   COMPLETED = "Completed",
   CANCELLED = "Cancelled",
