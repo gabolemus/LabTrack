@@ -42,8 +42,12 @@
   }
 
   &.status-indicator--pending {
-    background-color: $beige;
+    background-color: $brown;
   }
+}
+
+.fs-normal {
+  font-size: 1.15rem;
 }
 
 .project-request-card {
@@ -55,6 +59,21 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+#request-equipment-table {
+  th {
+    background-color: $gray;
+  }
+
+  // Intercalate row colors
+  td {
+    background-color: transparent;
+  }
+  
+  tbody tr:nth-child(odd) {
+    background-color: $lightGray;
+  }
 }
 
 .timeline-block {

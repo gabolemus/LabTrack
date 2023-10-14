@@ -30,6 +30,12 @@ interface ITimelapse {
   end: Date;
 }
 
+/** Interface for the user data that modified the inquiry */
+interface IModifiedBy {
+  name: string;
+  email: string;
+}
+
 /** Inquiry interface */
 export interface IInquiry {
   _id: string;
@@ -40,6 +46,9 @@ export interface IInquiry {
   description: string;
   timelapse: ITimelapse;
   status: InquiryStatus;
+  modifiedBy?: IModifiedBy;
+  createdAt: Date;
+  updatedAt: Date;  
 }
 
 /** Gets the inquiries filtered by the given name and status */

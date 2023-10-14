@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IInquiry, getInquiry } from "../InquiriesList/inquiries";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./InquiryDetail.scss";
 import ModalForm from "../ModalForm/ModalForm";
 import axios from "axios";
@@ -17,11 +17,13 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
   const [canApprove, setCanApprove] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const [modalCallback, setModalCallback] = useState<() => void>(() => {});
-  const [modalBody, setModalBody] = useState("");
+  const [modalBody, setModalBody] = useState(<></>);
   const [modalBtnText, setModalBtnText] = useState("");
   const [modalBtnClass, setModalBtnClass] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -84,41 +86,167 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
     return `${day} de ${month} de ${year}`;
   };
 
+  const convertTimeWithHour = (time: string) => {
+    const date = new Date(time);
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const hour = date.getHours();
+    const minutes = date.getMinutes();
+    let seconds = date.getSeconds().toString();
+
+    // Pad the seconds with a 0 if it's less than 10
+    if (parseInt(seconds) < 10) {
+      seconds = `0${seconds}`;
+    }
+
+    return `${day} de ${month} de ${year} a las ${hour}:${minutes}:${seconds}`;
+  };
+
   const handleAccept = () => {
     setShowModal(true);
+    setModalTitle("Confirmar Aprobación");
     setModalBtnText("Aceptar");
     setModalBtnClass("btn-success");
     setModalBody(
-      "¿Está seguro de que quiere aceptar esta solicitud de proyecto?"
+      <p className="fs-normal mb-4">
+        ¿Está seguro de que quiere aceptar esta solicitud de proyecto?
+      </p>
     );
     setModalCallback(() => async () => {
-      console.log("Acepting inquiry");
+      if (inquiry === null) return;
+      setLoading(true);
+
       try {
         await axios.put(`http://localhost:8080/inquiry?id=${id}`, {
           status: "Accepted",
+          modifiedByUserId: localStorage.getItem("userId"),
+        });
+
+        const newProject = {
+          name: inquiry.projectName,
+          courses: inquiry.courses,
+          description: inquiry.description,
+          lead: { ...inquiry.projectRequester },
+          timelapse: inquiry.timelapse,
+          status: "Not Started",
+          devices: inquiry.devices.map((device) => ({
+            id: device.id,
+            quantity: device.quantity,
+          })),
+        };
+
+        await axios.post("http://localhost:8080/project", newProject);
+
+        const newProjectEmail = {
+          to: inquiry.projectRequester.email,
+          name: inquiry.projectRequester.name,
+          project: inquiry.projectName,
+          description: inquiry.description,
+          devices: inquiry.devices.map((device) => ({
+            name: device.name,
+            quantity: device.quantity,
+          })),
+          timelapse: inquiry.timelapse,
+          reason: "projectOpening",
+          approved: true,
+        };
+
+        await axios.post(
+          "http://localhost:8080/mailer/send-project-opening-notification-email",
+          newProjectEmail
+        );
+
+        setShowModal(true);
+        setModalTitle("Solicitud de Proyecto Aceptada");
+        setModalBody(
+          <>
+            <p className="fs-normal mb-4">
+              La solicitud de proyecto fue aceptada exitosamente.
+            </p>
+            <p className="fs-normal mb-4">
+              Se ha enviado un correo electrónico a{" "}
+              <b>{inquiry.projectRequester.email}</b> con la información del
+              proyecto.
+            </p>
+          </>
+        );
+        setModalBtnClass("btn-success");
+        setModalBtnText("Aceptar");
+        setModalCallback(() => () => {
+          navigate("/inquiries-registry");
         });
       } catch (error) {
         console.error(error);
       }
+
+      setLoading(false);
     });
   };
 
   const handleReject = () => {
     setShowModal(true);
-    console.log("Rechazado");
+    setModalTitle("Confirmar Rechazo");
     setModalBtnText("Rechazar");
     setModalBtnClass("btn-danger");
     setModalBody(
-      "¿Está seguro de que quiere rechazar esta solicitud de proyecto?"
+      <p className="fs-normal mb-4">
+        ¿Está seguro de que quiere rechazar esta solicitud de proyecto?
+      </p>
     );
     setModalCallback(() => async () => {
+      if (inquiry === null) return;
+      setLoading(true);
+
       try {
         await axios.put(`http://localhost:8080/inquiry?id=${id}`, {
           status: "Rejected",
+          modifiedByUserId: localStorage.getItem("userId"),
+        });
+
+        const projectDevices = inquiry.devices.map((device) => ({
+          id: device.id,
+          quantity: device.quantity,
+        }));
+        const newProjectEmail = {
+          to: inquiry.projectRequester.email,
+          name: inquiry.projectRequester.name,
+          project: inquiry.projectName,
+          devices: projectDevices,
+          timelapse: inquiry.timelapse,
+          reason: "projectOpening",
+          approved: false,
+        };
+
+        await axios.post(
+          "http://localhost:8080/mailer/send-project-opening-notification-email",
+          newProjectEmail
+        );
+
+        setShowModal(true);
+        setModalTitle("Solicitud de Proyecto Rechazada");
+        setModalBody(
+          <>
+            <p className="fs-normal mb-4">
+              La solicitud de proyecto fue rechazada exitosamente.
+            </p>
+            <p className="fs-normal mb-4">
+              Se ha enviado un correo electrónico a{" "}
+              <b>{inquiry.projectRequester.email}</b> con la información del
+              proyecto.
+            </p>
+          </>
+        );
+        setModalBtnClass("btn-success");
+        setModalBtnText("Aceptar");
+        setModalCallback(() => () => {
+          navigate("/inquiries-registry");
         });
       } catch (error) {
         console.error(error);
       }
+
+      setLoading(false);
     });
   };
 
@@ -160,7 +288,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         show={showModal}
         handleClose={handleModalClose}
         onAccept={modalCallback}
-        title="Confirmar acción"
+        title={modalTitle}
         body={modalBody}
         primaryBtnText={modalBtnText}
         primaryBtnClass={modalBtnClass}
@@ -172,24 +300,27 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           <div className="card project-request-card mb-5">
             <div className="card-body">
               {canApprove && (
-                <div className="w-100 mb-5">
-                  <div className="d-flex justify-content-center btn-group w-75 mx-auto">
-                    <button
-                      className="btn btn-success w-100"
-                      onClick={handleAccept}>
-                      Aprobar
-                    </button>
-                    <button
-                      className="btn btn-danger w-100"
-                      onClick={handleReject}>
-                      Rechazar
-                    </button>
+                <>
+                  <div className="w-100 mb-5 mt-3">
+                    <div className="d-flex justify-content-center btn-group w-100 mx-auto">
+                      <button
+                        className="btn btn-success w-100"
+                        onClick={handleAccept}>
+                        Aprobar
+                      </button>
+                      <button
+                        className="btn btn-danger w-100"
+                        onClick={handleReject}>
+                        Rechazar
+                      </button>
+                    </div>
                   </div>
-                </div>
+                  <hr className="separator mb-5" />
+                </>
               )}
               <div className="w-100 mb-3 d-flex flex-row justify-content-between">
                 <div className="w-50 lead">
-                  <h3>Responsable</h3>
+                  <h4>Responsable</h4>
                   <p>
                     {inquiry.projectRequester.name}{" "}
                     <span className="text-muted">
@@ -202,7 +333,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
                   </p>
                 </div>
                 <div className="w-50 status">
-                  <h3>Estado</h3>
+                  <h4>Estado</h4>
                   <div
                     className={`status-indicator ${getStatusClass(
                       inquiry.status
@@ -212,12 +343,11 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
                 </div>
               </div>
               <div className="desc mb-5">
-                <h2>Descripción</h2>
+                <h4>Descripción</h4>
                 <p>{inquiry.description}</p>
               </div>
               <div className="courses mb-5">
-                {/* inquiry.classes is a list of strings */}
-                <h2>Cursos</h2>
+                <h4>Cursos</h4>
                 <ul>
                   {inquiry.courses.map((course) => (
                     <li key={course}>{course}</li>
@@ -225,8 +355,10 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
                 </ul>
               </div>
               <div className="equipment-list mb-5">
-                <h2>Equipos</h2>
-                <table className="table table-bordered">
+                <h4>Equipos</h4>
+                <table
+                  className="table table-bordered table-hover"
+                  id="request-equipment-table">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -247,8 +379,8 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
                   </tbody>
                 </table>
               </div>
-              <div className="timeline">
-                <h2>Duración</h2>
+              <div className="timeline mb-5">
+                <h4>Duración</h4>
                 <div className="timeline-row">
                   <div className="timeline-block start">
                     <div className="timeline-title">Inicio</div>
@@ -265,6 +397,66 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
                   </div>
                 </div>
               </div>
+              <hr className="separator mb-5" />
+              <div className="w-50 created-at">
+                <h4>Fecha de creación de la solicitud</h4>
+                <p>{convertTimeWithHour(inquiry.createdAt.toString())}</p>
+              </div>
+              {inquiry.status !== "Pending" && (
+                <>
+                  <hr className="separator mb-5 mt-5" />
+                  <div className="w-100 mb-3 d-flex flex-row justify-content-between">
+                    {inquiry.modifiedBy && (
+                      <div className="w-50 created-at">
+                        <h4>
+                          {inquiry.status === "Accepted"
+                            ? "Aprobado"
+                            : "Rechazado"}{" "}
+                          por
+                        </h4>
+                        <p>
+                          {inquiry.modifiedBy.name}{" "}
+                          <span className="text-muted">
+                            (
+                            <Link to={`mailto:${inquiry.modifiedBy.email}`}>
+                              {inquiry.modifiedBy.email}
+                            </Link>
+                            )
+                          </span>
+                        </p>
+                      </div>
+                    )}
+                    <div className="w-50 created-at">
+                      <h4>
+                        Fecha de{" "}
+                        {inquiry.status === "Accepted"
+                          ? "aceptación"
+                          : "rechazo"}
+                      </h4>
+                      <p>{convertTimeWithHour(inquiry.updatedAt.toString())}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+              {canApprove && (
+                <>
+                  <hr className="separator mt-5" />
+                  <div className="w-100 mt-5">
+                    <div className="d-flex justify-content-center btn-group w-100 mx-auto">
+                      <button
+                        className="btn btn-success w-100"
+                        onClick={handleAccept}>
+                        Aprobar
+                      </button>
+                      <button
+                        className="btn btn-danger w-100"
+                        onClick={handleReject}>
+                        Rechazar
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </>
