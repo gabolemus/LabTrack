@@ -43,12 +43,15 @@ const LoginCard = () => {
       if (response.data.success) {
         // Get the user role
         const userData = await axios.get(`http://localhost:8080/user/${email}`);
+        const userInfo = userData.data.user;
         const role =
           userData.data.user.role === "Super Admin" ? "superAdmin" : "admin";
 
         // Set logged in in the local storage
         localStorage.setItem("logged", "true");
         localStorage.setItem("email", email);
+        localStorage.setItem("name", userInfo.name);
+        localStorage.setItem("userId", userInfo._id);
         localStorage.setItem("role", role);
 
         navigate("/");
