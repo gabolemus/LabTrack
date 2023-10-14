@@ -25,6 +25,14 @@ export class InquiriesController extends BaseController<IInquiry> {
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "modifiedByUserId",
+            foreignField: "_id",
+            as: "modifiedBy",
+          },
+        },
+        {
           $project: {
             projectRequester: 1,
             devices: {
@@ -62,6 +70,21 @@ export class InquiriesController extends BaseController<IInquiry> {
             courses: 1,
             status: 1,
             confirmationToken: 1,
+            modifiedBy: {
+              $arrayElemAt: [
+                {
+                  $map: {
+                    input: "$modifiedBy",
+                    as: "user",
+                    in: {
+                      name: "$$user.name",
+                      email: "$$user.email",
+                    },
+                  },
+                },
+                0,
+              ],
+            },
             createdAt: 1,
             updatedAt: 1,
           },
@@ -88,6 +111,14 @@ export class InquiriesController extends BaseController<IInquiry> {
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "modifiedByUserId",
+            foreignField: "_id",
+            as: "modifiedBy",
+          },
+        },
+        {
           $project: {
             projectRequester: 1,
             devices: {
@@ -125,6 +156,21 @@ export class InquiriesController extends BaseController<IInquiry> {
             courses: 1,
             status: 1,
             confirmationToken: 1,
+            modifiedBy: {
+              $arrayElemAt: [
+                {
+                  $map: {
+                    input: "$modifiedBy",
+                    as: "user",
+                    in: {
+                      name: "$$user.name",
+                      email: "$$user.email",
+                    },
+                  },
+                },
+                0,
+              ],
+            },
             createdAt: 1,
             updatedAt: 1,
           },
@@ -153,6 +199,14 @@ export class InquiriesController extends BaseController<IInquiry> {
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "modifiedByUserId",
+            foreignField: "_id",
+            as: "modifiedBy",
+          },
+        },
+        {
           $project: {
             projectRequester: 1,
             devices: {
@@ -190,6 +244,21 @@ export class InquiriesController extends BaseController<IInquiry> {
             courses: 1,
             status: 1,
             confirmationToken: 1,
+            modifiedBy: {
+              $arrayElemAt: [
+                {
+                  $map: {
+                    input: "$modifiedBy",
+                    as: "user",
+                    in: {
+                      name: "$$user.name",
+                      email: "$$user.email",
+                    },
+                  },
+                },
+                0,
+              ],
+            },
             createdAt: 1,
             updatedAt: 1,
           },

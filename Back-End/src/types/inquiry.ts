@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Document } from "mongoose";
+import { IUser } from "./user";
 
 /** Enum that defines the possible inquiry statuses */
 enum InquiryStatus {
@@ -37,4 +38,5 @@ export interface IInquiry extends Document {
   devices: IDeviceInquiry[];
   status: InquiryStatus;
   confirmationToken: string;
+  modifiedByUserId?: IUser["_id"];
 }

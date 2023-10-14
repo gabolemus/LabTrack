@@ -57,6 +57,11 @@ const inquirySchema: Schema = new Schema(
       type: String,
       required: false,
     },
+    modifiedByUserId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
   },
   { timestamps: true },
 );
