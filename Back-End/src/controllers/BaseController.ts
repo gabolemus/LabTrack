@@ -45,7 +45,6 @@ export class BaseController<T extends Document> {
           $options: "i",
         };
       }
-      logger.debug(`Filters: ${JSON.stringify(filters)}`);
 
       const items = await this.model.find(filters as Record<string, any>);
       res.status(200).json({ success: true, length: items.length, [pluralModelName]: items });
