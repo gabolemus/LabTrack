@@ -4,14 +4,18 @@ import { Link } from "react-router-dom";
 import "./InquiryDetail.scss";
 import ModalForm from "../ModalForm/ModalForm";
 import axios from "axios";
+import Loader from "../../molecules/Loader/Loader";
 
 /** Interface for ProjectDetail props */
 interface InquiryDetailProps {
+  /** ID of the project request to be shown */
   id: string;
 }
 
 const InquiryDetail = ({ id }: InquiryDetailProps) => {
   const [inquiry, setInquiry] = useState<IInquiry | null>(null);
+  const [canApprove, setCanApprove] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const [modalCallback, setModalCallback] = useState<() => void>(() => {});
@@ -20,20 +24,27 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
   const [modalBtnClass, setModalBtnClass] = useState("");
 
   useEffect(() => {
-    // Simulate fetching equipment data based on the ID from your data source
-    const fetchData = async () => {
-      try {
-        const inquiry = await getInquiry(id);
-        setInquiry(inquiry);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchData();
   }, [id]);
 
-  if (!inquiry) {
+  const fetchData = async () => {
+    setLoading(true);
+
+    try {
+      const inquiry = await getInquiry(id);
+      if (inquiry.status === "Pending") {
+        setCanApprove(true);
+      }
+      console.log(inquiry);
+      setInquiry(inquiry);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setLoading(false);
+  };
+
+  if (!inquiry && !loading) {
     // Equipment not found by ID
     return (
       <>
@@ -42,30 +53,29 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           El proyecto con ID <b className="equipment-id">{id}</b> no fue
           encontrado.
         </p>
-        <Link className="btn btn-primary" to="/projects">
-          Ir al listado de proyectos
+        <Link className="btn btn-primary" to="/inquiries-registry">
+          Ir al listado de solicitudes
         </Link>
       </>
     );
   }
 
   const months = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio ",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre ",
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio ",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre ",
   ];
 
   const convertTime = (time: string) => {
-    // YYYY-MM-DD to DD de MM de YYYY
     const date = new Date(time);
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -76,7 +86,6 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
 
   const handleAccept = () => {
     setShowModal(true);
-    console.log("Aceptado");
     setModalBtnText("Aceptar");
     setModalBtnClass("btn-success");
     setModalBody(
@@ -117,6 +126,34 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
     setShowModal(false);
   };
 
+  /** Get the names for the requests status based on the status code */
+  const getStatusName = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "Pendiente";
+      case "Accepted":
+        return "Aceptado";
+      case "Rejected":
+        return "Rechazado";
+      default:
+        return "Desconocido";
+    }
+  };
+
+  /** Get the corresponding class name based on the status code */
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "status-indicator--pending";
+      case "Accepted":
+        return "status-indicator--accepted";
+      case "Rejected":
+        return "status-indicator--rejected";
+      default:
+        return "";
+    }
+  };
+
   return (
     <>
       <ModalForm
@@ -128,69 +165,110 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         primaryBtnText={modalBtnText}
         primaryBtnClass={modalBtnClass}
       />
-      <div className="equipment-detail mb-5">
-        <h1>{inquiry.projectName}</h1>
-        <div className="w-100 mb-5">
-          <div className="d-flex justify-content-center btn-group w-75 mx-auto">
-            <button className="btn btn-success w-100" onClick={handleAccept}>
-              Aprobar
-            </button>
-            <button className="btn btn-danger w-100" onClick={handleReject}>
-              Rechazar
-            </button>
+      <Loader loading={loading} />
+      {!loading && inquiry && (
+        <>
+          <h1>{inquiry.projectName}</h1>
+          <div className="card project-request-card mb-5">
+            <div className="card-body">
+              {canApprove && (
+                <div className="w-100 mb-5">
+                  <div className="d-flex justify-content-center btn-group w-75 mx-auto">
+                    <button
+                      className="btn btn-success w-100"
+                      onClick={handleAccept}>
+                      Aprobar
+                    </button>
+                    <button
+                      className="btn btn-danger w-100"
+                      onClick={handleReject}>
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="w-100 mb-3 d-flex flex-row justify-content-between">
+                <div className="w-50 lead">
+                  <h3>Responsable</h3>
+                  <p>
+                    {inquiry.projectRequester.name}{" "}
+                    <span className="text-muted">
+                      (
+                      <Link to={`mailto:${inquiry.projectRequester.email}`}>
+                        {inquiry.projectRequester.email}
+                      </Link>
+                      )
+                    </span>
+                  </p>
+                </div>
+                <div className="w-50 status">
+                  <h3>Estado</h3>
+                  <div
+                    className={`status-indicator ${getStatusClass(
+                      inquiry.status
+                    )}`}>
+                    {getStatusName(inquiry.status)}
+                  </div>
+                </div>
+              </div>
+              <div className="desc mb-5">
+                <h2>Descripción</h2>
+                <p>{inquiry.description}</p>
+              </div>
+              <div className="courses mb-5">
+                {/* inquiry.classes is a list of strings */}
+                <h2>Cursos</h2>
+                <ul>
+                  {inquiry.courses.map((course) => (
+                    <li key={course}>{course}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="equipment-list mb-5">
+                <h2>Equipos</h2>
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {inquiry.devices.map((device) => (
+                      <tr key={device.id}>
+                        <td>
+                          <Link to={`/equipment${device.path}`}>
+                            {device.name}
+                          </Link>
+                        </td>
+                        <td>{device.quantity}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="timeline">
+                <h2>Duración</h2>
+                <div className="timeline-row">
+                  <div className="timeline-block start">
+                    <div className="timeline-title">Inicio</div>
+                    <div className="timeline-time">
+                      {convertTime(inquiry.timelapse.start.toString())}
+                    </div>
+                  </div>
+                  <div className="timeline-connector"></div>
+                  <div className="timeline-block end">
+                    <div className="timeline-title">Fin</div>
+                    <div className="timeline-time">
+                      {convertTime(inquiry.timelapse.end.toString())}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="lead mb-5">
-          <h3>Responsable</h3>
-          <p>{inquiry.projectRequester.name}</p>
-        </div>
-        <div className="status mb-5">
-          <h3>Estado</h3>
-          <div
-            className={`status-indicator${
-              inquiry.status === "Accepted" ? " status-indicator--accepted" : ""
-            }`}>
-            {inquiry.status === "Accepted"
-              ? "Aceptado"
-              : inquiry.status === "Rejected"
-              ? "Rechazado"
-              : "Pendiente"}
-          </div>
-        </div>
-        <div className="desc mb-5">
-          <h2>Descripción</h2>
-          <p>{inquiry.status}</p>
-        </div>
-        <div className="equipment-list mb-5">
-          <h2>Equipos</h2>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inquiry.devices.map((device) => (
-                <tr key={device.id}>
-                  <td>
-                    <Link to={`/equipment${device.path}`}>{device.name}</Link>
-                  </td>
-                  <td>{device.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* <div className="Línea de tiempo mb-5">
-        <h2>Línea de tiempo</h2>
-        <p>
-          <b>Fecha de inicio:</b> {convertTime(inquiry)}
-          <br />
-          <b>Fecha de fin:</b> {convertTime(inquiry.timelapse.end)}
-        </p>
-      </div> */}
-      </div>
+        </>
+      )}
     </>
   );
 };

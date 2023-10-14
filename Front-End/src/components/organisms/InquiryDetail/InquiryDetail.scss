@@ -33,7 +33,65 @@
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
 
-  &.status-indicator--active {
+  &.status-indicator--accepted {
     background-color: $green;
   }
+
+  &.status-indicator--rejected {
+    background-color: #d63a32;
+  }
+
+  &.status-indicator--pending {
+    background-color: $beige;
+  }
+}
+
+.project-request-card {
+  padding: 1.25rem;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.timeline-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.625rem;
+  border-radius: 4px;
+
+  &.start {
+    background-color: #aedcae;
+  }
+
+  &.end {
+    background-color: #f8858b;
+  }
+
+  .timeline-time {
+    color: #333;
+    font-size: large;
+  }
+}
+
+.timeline-connector {
+  flex: 0 0 20px;
+  height: 100%;
+  background-color: #333;
+  border-radius: 4px;
+}
+
+.timeline-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.timeline-time {
+  font-weight: bold;
+  color: #333;
 }
