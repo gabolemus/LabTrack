@@ -13,8 +13,8 @@ $light: $lightBlue;
 .dropdown-menu {
   .dropdown-item:hover {
     cursor: pointer;
+    background-color: $darkGray;
     color: $white;
-    background-color: $white;
   }
 
   .dropdown-item.active {
