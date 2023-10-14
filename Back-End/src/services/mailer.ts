@@ -305,8 +305,7 @@ router.post("/mailer/send-project-opening-notification-email", async (req, res) 
   // Inquiry devices.
   let devicesString = "<ul>";
   for (const device of devices) {
-    devicesString += `<li><strong>Nombre:</strong> ${device.name}</li>
-    <li><strong>Cantidad:</strong> ${device.quantity}</li>`;
+    devicesString += `<li>${device.name} (${device.quantity})</li>`;
   }
   devicesString += "</ul>";
 
