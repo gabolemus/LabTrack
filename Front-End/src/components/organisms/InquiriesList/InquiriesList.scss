@@ -1,50 +1,21 @@
 @import "../../../sass/utilities/variables";
 
-.project-search-form {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 1rem;
-  width: 100%;
+.input-group-append {
+  button {
+    flex: 1;
 
-  .row.mb-3 {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 0 !important;
-    width: 100%;
-
-    .col-md-4 {
-      margin: 0 !important;
-      width: auto !important;
-      padding: 0;
-
-      .project-search-btn {
-        border-radius: 0 !important;
-        width: 76.5vw;
-        border-top-left-radius: 0.25rem !important;
-        border-bottom-left-radius: 0.25rem !important;
-      }
-
-      .project-lead-dropdown,
-      .project-active-dropdown {
-        border-radius: 0 !important;
-        border-right: 1px solid $white !important;
-      }
+    &.btn.btn-secondary {
+      border-radius: 0;
     }
 
-    .search-btn {
-      width: auto;
-      border-radius: 0 !important;
-      border-top-right-radius: 0.25rem !important;
-      border-bottom-right-radius: 0.25rem !important;
+    &.btn.btn-primary {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
     }
   }
 }
 
-.project-table {
+.inquiries-table {
   display: inline-block;
   width: 100%;
   margin-bottom: 2.5rem;
@@ -52,7 +23,6 @@
   overflow-y: auto;
 }
 
-.dropdown-menu .dropdown-item:hover {
-  cursor: pointer;
-  color: $darkestGray !important;
+.dropdown-item {
+  text-align: center;
 }
