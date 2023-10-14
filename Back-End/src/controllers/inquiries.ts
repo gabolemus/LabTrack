@@ -21,7 +21,7 @@ export class InquiriesController extends BaseController<IInquiry> {
             from: "devices",
             localField: "devices.id",
             foreignField: "_id",
-            as: "devices",
+            as: "equipment",
           },
         },
         {
@@ -29,13 +29,30 @@ export class InquiriesController extends BaseController<IInquiry> {
             projectRequester: 1,
             devices: {
               $map: {
-                input: "$devices",
-                as: "device",
+                input: "$equipment",
+                as: "item",
                 in: {
-                  id: "$$device._id",
-                  name: "$$device.name",
-                  quantity: 1,
-                  path: "$$device.path",
+                  id: "$$item._id",
+                  name: "$$item.name",
+                  quantity: {
+                    $arrayElemAt: [
+                      {
+                        $map: {
+                          input: {
+                            $filter: {
+                              input: "$devices",
+                              as: "device",
+                              cond: { $eq: ["$$device.id", "$$item._id"] },
+                            },
+                          },
+                          as: "device",
+                          in: "$$device.quantity",
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                  path: "$$item.path",
                 },
               },
             },
@@ -67,7 +84,7 @@ export class InquiriesController extends BaseController<IInquiry> {
             from: "devices",
             localField: "devices.id",
             foreignField: "_id",
-            as: "devices",
+            as: "equipment",
           },
         },
         {
@@ -75,13 +92,30 @@ export class InquiriesController extends BaseController<IInquiry> {
             projectRequester: 1,
             devices: {
               $map: {
-                input: "$devices",
-                as: "device",
+                input: "$equipment",
+                as: "item",
                 in: {
-                  id: "$$device._id",
-                  name: "$$device.name",
-                  quantity: 1,
-                  path: "$$device.path",
+                  id: "$$item._id",
+                  name: "$$item.name",
+                  quantity: {
+                    $arrayElemAt: [
+                      {
+                        $map: {
+                          input: {
+                            $filter: {
+                              input: "$devices",
+                              as: "device",
+                              cond: { $eq: ["$$device.id", "$$item._id"] },
+                            },
+                          },
+                          as: "device",
+                          in: "$$device.quantity",
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                  path: "$$item.path",
                 },
               },
             },
@@ -115,7 +149,7 @@ export class InquiriesController extends BaseController<IInquiry> {
             from: "devices",
             localField: "devices.id",
             foreignField: "_id",
-            as: "devices",
+            as: "equipment",
           },
         },
         {
@@ -123,13 +157,30 @@ export class InquiriesController extends BaseController<IInquiry> {
             projectRequester: 1,
             devices: {
               $map: {
-                input: "$devices",
-                as: "device",
+                input: "$equipment",
+                as: "item",
                 in: {
-                  id: "$$device._id",
-                  name: "$$device.name",
-                  quantity: 1,
-                  path: "$$device.path",
+                  id: "$$item._id",
+                  name: "$$item.name",
+                  quantity: {
+                    $arrayElemAt: [
+                      {
+                        $map: {
+                          input: {
+                            $filter: {
+                              input: "$devices",
+                              as: "device",
+                              cond: { $eq: ["$$device.id", "$$item._id"] },
+                            },
+                          },
+                          as: "device",
+                          in: "$$device.quantity",
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                  path: "$$item.path",
                 },
               },
             },
