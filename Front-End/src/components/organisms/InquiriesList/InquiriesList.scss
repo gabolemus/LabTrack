@@ -4,7 +4,8 @@
   button {
     flex: 1;
 
-    &.btn.btn-secondary {
+    &.btn.btn-secondary,
+    &.btn.btn-danger {
       border-radius: 0;
     }
 
@@ -24,5 +25,12 @@
 }
 
 .dropdown-item {
-  text-align: center;
+  text-align: start;
+
+  &:hover,
+  &:focus {
+    background-color: $darkGray !important;
+    color: $white !important;
+    cursor: pointer;
+  }
 }
