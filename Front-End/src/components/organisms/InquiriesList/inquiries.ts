@@ -3,7 +3,8 @@
 import axios from "axios";
 
 /** Enum that defines the possible inquiry statuses */
-enum InquiryStatus {
+export enum InquiryStatus {
+  UNCONFIRMED = "Unconfirmed",
   PENDING = "Pending",
   ACCEPTED = "Accepted",
   REJECTED = "Rejected",
@@ -33,10 +34,16 @@ export interface IInquiry {
   status: InquiryStatus;
 }
 
-/** Gets all the inquiries */
-export const getInquiries = async (): Promise<Array<IInquiry>> => {
+/** Gets the inquiries filtered by the given name and status */
+export const getFilteredInquiries = async (
+  name: string,
+  status: InquiryStatus
+): Promise<Array<IInquiry>> => {
   try {
-    const response = await axios.get("http://localhost:8080/inquiries");
+    const nameQuery = name ? `&projectName=${name}` : "";
+    const response = await axios.get(
+      `http://localhost:8080/inquiries/filtered?status=${status}${nameQuery}`
+    );
     return response.data.inquiries as Array<IInquiry>;
   } catch (error) {
     console.log(error);
