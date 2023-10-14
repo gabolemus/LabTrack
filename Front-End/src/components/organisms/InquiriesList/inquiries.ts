@@ -61,3 +61,22 @@ export const getInquiry = async (id: string): Promise<IInquiry> => {
     return {} as IInquiry;
   }
 };
+
+/** Get the state to show the requests based on the URL params */
+export const getShowState = (requestStatus: string | null): InquiryStatus => {
+  // If there is no status in the URL, show the pending requests
+  if (!requestStatus) {
+    return InquiryStatus.PENDING;
+  }
+
+  switch (requestStatus) {
+    case "Pending":
+      return InquiryStatus.PENDING;
+    case "Accepted":
+      return InquiryStatus.ACCEPTED;
+    case "Rejected":
+      return InquiryStatus.REJECTED;
+    default:
+      return InquiryStatus.PENDING;
+  }
+};
