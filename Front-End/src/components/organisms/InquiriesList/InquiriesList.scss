@@ -23,14 +23,3 @@
   max-height: 65vh;
   overflow-y: auto;
 }
-
-.dropdown-item {
-  text-align: start;
-
-  &:hover,
-  &:focus {
-    background-color: $darkGray !important;
-    color: $white !important;
-    cursor: pointer;
-  }
-}
