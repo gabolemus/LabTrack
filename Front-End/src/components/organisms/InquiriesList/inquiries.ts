@@ -24,6 +24,12 @@ interface IDeviceInquiry {
   quantity: number;
 }
 
+/** Project timelapse interface */
+interface ITimelapse {
+  start: Date;
+  end: Date;
+}
+
 /** Inquiry interface */
 export interface IInquiry {
   _id: string;
@@ -31,6 +37,8 @@ export interface IInquiry {
   devices: IDeviceInquiry[];
   projectName: string;
   courses: string[];
+  description: string;
+  timelapse: ITimelapse;
   status: InquiryStatus;
 }
 
