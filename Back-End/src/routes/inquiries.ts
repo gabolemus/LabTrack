@@ -4,6 +4,7 @@ import { inquiriesController } from "../controllers/inquiries";
 const inquiriesRouter = Router();
 
 inquiriesRouter.get("/inquiries", inquiriesController.getItems);
+inquiriesRouter.get("/inquiries/filtered", inquiriesController.getFilteredItems);
 inquiriesRouter.get("/inquiry", inquiriesController.getItem);
 inquiriesRouter.get("/inquiry/token/:token", inquiriesController.getItemByConfirmationToken);
 inquiriesRouter.post("/inquiry", inquiriesController.createItem);

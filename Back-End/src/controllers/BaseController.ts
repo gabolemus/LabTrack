@@ -16,7 +16,6 @@ export class BaseController<T extends Document> {
   }
 
   getPluralName(): string {
-    // If the modelName ends in a 'y', remove the 'y' and add 'ies' instead
     return this.modelName.endsWith("y") ? `${this.modelName.slice(0, -1)}ies` : `${this.modelName}s`;
   }
 
@@ -25,6 +24,30 @@ export class BaseController<T extends Document> {
       const pluralModelName = this.getPluralName();
       logger.info(`GET /${pluralModelName}`);
       const items = await this.model.find();
+      res.status(200).json({ success: true, length: items.length, [pluralModelName]: items });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  public getFilteredItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const pluralModelName = this.getPluralName();
+      logger.info(`GET /${pluralModelName}/filtered ${JSON.stringify(req.query)}`);
+
+      const filters: Partial<Record<string, any>> = {};
+      for (const [key, value] of Object.entries(req.query)) {
+        // If the value is a pipe-delimited string, split it into an array
+        const filterValue = typeof value === "string" && value.includes("|") ? value.split("|") : value;
+        filters[key] = {
+          // Regex to match any string that contains the filter value with case insensitivity
+          $regex: `.*${filterValue}.*`,
+          $options: "i",
+        };
+      }
+      logger.debug(`Filters: ${JSON.stringify(filters)}`);
+
+      const items = await this.model.find(filters as Record<string, any>);
       res.status(200).json({ success: true, length: items.length, [pluralModelName]: items });
     } catch (error) {
       this.handleError(res, error);
