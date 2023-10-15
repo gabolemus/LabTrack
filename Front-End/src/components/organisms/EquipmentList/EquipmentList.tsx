@@ -104,7 +104,7 @@ const EquipmentList = () => {
     device = { ...device, images: imagePaths };
 
     try {
-      const response = await axios.post("http://localhost:8080/device", device);
+      const response = await axios.post("http://20.163.78.89:8080/device", device);
       const data = response.data;
       setShowModal(true);
 
@@ -192,7 +192,7 @@ const EquipmentList = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8080/images/upload?imgType=device",
+          "http://20.163.78.89:8080/images/upload?imgType=device",
           formData,
           {
             headers: {

@@ -59,7 +59,7 @@ const AdminsLists = () => {
       if (!(userName === "" || userEmail === "" || userPassword === "")) {
         try {
           setloading(true);
-          const response = await axios.post("http://localhost:8080/user", {
+          const response = await axios.post("http://20.163.78.89:8080/user", {
             name: userName,
             email: userEmail,
             password: userPassword,
@@ -132,7 +132,7 @@ const AdminsLists = () => {
       try {
         setloading(true);
         const response = await axios.delete(
-          `http://localhost:8080/user?id=${user._id}`
+          `http://20.163.78.89:8080/user?id=${user._id}`
         );
 
         if (response.data.success) {

@@ -149,7 +149,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/device?id=${device._id}`,
+        `http://20.163.78.89:8080/device?id=${device._id}`,
         device
       );
       const data = response.data;

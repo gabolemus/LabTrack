@@ -42,7 +42,7 @@ const NewInquiryForm = () => {
     setLoading(true);
 
     (async () => {
-      const devicesResponse = await axios.get("http://localhost:8080/devices");
+      const devicesResponse = await axios.get("http://20.163.78.89:8080/devices");
 
       // Check if requestedDevices are in session storage
       const requestedDevices = sessionStorage.getItem("requestedDevices");
@@ -120,7 +120,7 @@ const NewInquiryForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/inquiry",
+        "http://20.163.78.89:8080/inquiry",
         inquiry
       );
 
@@ -144,7 +144,7 @@ const NewInquiryForm = () => {
         };
 
         const confirmationEmailResponse = await axios.post(
-          "http://localhost:8080/mailer/send-inquiry-confirmation-email",
+          "http://20.163.78.89:8080/mailer/send-inquiry-confirmation-email",
           confirmationEmailData
         );
 

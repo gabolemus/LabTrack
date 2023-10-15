@@ -35,7 +35,7 @@ const ManufacturersList = () => {
     if (name !== "") {
       try {
         const response = await axios.post(
-          "http://localhost:8080/manufacturer",
+          "http://20.163.78.89:8080/manufacturer",
           { name }
         );
         setShowModal(true);
@@ -153,7 +153,7 @@ const ManufacturersList = () => {
   /** Attempts to update the manufacturers in bulk. */
   const updateManufacturersInBulk = async () => {
     try {
-      const response = await axios.put("http://localhost:8080/manufacturers", {
+      const response = await axios.put("http://20.163.78.89:8080/manufacturers", {
         manufacturers: updatedManufacturers,
       });
       setShowModal(true);

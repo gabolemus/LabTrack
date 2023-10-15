@@ -23,7 +23,7 @@ const LoginCard = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8080/check-password",
+        "http://20.163.78.89:8080/check-password",
         {
           email,
           password,
@@ -42,7 +42,7 @@ const LoginCard = () => {
 
       if (response.data.success) {
         // Get the user role
-        const userData = await axios.get(`http://localhost:8080/user/${email}`);
+        const userData = await axios.get(`http://20.163.78.89:8080/user/${email}`);
         const userInfo = userData.data.user;
         const role =
           userData.data.user.role === "Super Admin" ? "superAdmin" : "admin";
