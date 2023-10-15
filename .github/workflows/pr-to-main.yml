@@ -1,0 +1,33 @@
+name: Open Pull Request to Main
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  pull-request-to-main:
+    name: Open PR to Main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Fetch and reset to develop
+        run: |
+          git fetch origin develop
+          git reset --hard origin/develop
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          branch: develop
+          base: main
+          commit-message: Update main
+          title: Add changes from `develop` to `main`
+          body: |
+            Automatic PR to update `main` with changes from `develop`.
+            The commit hash is: ${{ github.sha }}.
+          labels: |
+            automated pr
