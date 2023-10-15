@@ -1,5 +1,7 @@
 // This file contains general utility functions.
 
+export const BE_URL = process.env.REACT_APP_BACKEND_URL as string;
+
 /**
  * Rounds the given number to the given number of decimal places.
  * @param num Number to round.
@@ -59,8 +61,6 @@ export const shortDateToTimestamp = (shortDate: string): string => {
   const [day, month, year] = shortDate.split("/");
   return new Date(`${year}-${month}-${day}`).toISOString();
 };
-
-// TODO: read an environment file to get the IP address of the server
 
 /**
  * Calls the callback with the given boolean and adds the `no-scroll` class to the

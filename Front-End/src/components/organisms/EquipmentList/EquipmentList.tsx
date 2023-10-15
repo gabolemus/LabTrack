@@ -9,6 +9,7 @@ import {
   Manufacturer,
   getAllManufacturers,
 } from "../ManufacturersList/manufacturers";
+import { BE_URL } from "../../../utils/utils";
 
 const EquipmentList = () => {
   const [equipment, setEquipment] = useState<Array<Equipment>>([]);
@@ -104,7 +105,7 @@ const EquipmentList = () => {
     device = { ...device, images: imagePaths };
 
     try {
-      const response = await axios.post("http://20.163.78.89:8080/device", device);
+      const response = await axios.post(`${BE_URL}/device`, device);
       const data = response.data;
       setShowModal(true);
 
@@ -192,7 +193,7 @@ const EquipmentList = () => {
 
       try {
         const response = await axios.post(
-          "http://20.163.78.89:8080/images/upload?imgType=device",
+          `${BE_URL}/images/upload?imgType=device`,
           formData,
           {
             headers: {
@@ -200,7 +201,6 @@ const EquipmentList = () => {
             },
           }
         );
-        console.log("ImgUpload", response.data);
 
         return response.data.imagePaths;
       } catch (error) {

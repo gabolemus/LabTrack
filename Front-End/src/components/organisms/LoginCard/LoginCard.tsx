@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../../molecules/Loader/Loader";
 import ModalForm from "../ModalForm/ModalForm";
+import { BE_URL } from "../../../utils/utils";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ const LoginCard = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://20.163.78.89:8080/check-password",
+        `${BE_URL}/check-password`,
         {
           email,
           password,
@@ -42,7 +43,7 @@ const LoginCard = () => {
 
       if (response.data.success) {
         // Get the user role
-        const userData = await axios.get(`http://20.163.78.89:8080/user/${email}`);
+        const userData = await axios.get(`${BE_URL}/user/${email}`);
         const userInfo = userData.data.user;
         const role =
           userData.data.user.role === "Super Admin" ? "superAdmin" : "admin";
