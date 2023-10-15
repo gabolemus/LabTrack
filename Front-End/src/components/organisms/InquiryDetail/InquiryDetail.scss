@@ -114,3 +114,12 @@
   font-weight: bold;
   color: #333;
 }
+
+.request-rejection-reason,
+.request-rejection-reason:focus {
+  background-color: $lightGray;
+  font-size: 1.15rem;
+  height: 6rem;
+  max-height: 6rem;
+  overflow-y: auto;
+}

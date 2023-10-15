@@ -37,7 +37,6 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
       if (inquiry.status === "Pending") {
         setCanApprove(true);
       }
-      console.log(inquiry);
       setInquiry(inquiry);
     } catch (error) {
       console.error(error);
@@ -136,7 +135,10 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           })),
         };
 
-        await axios.post("http://localhost:8080/project", newProject);
+        const newProjectDoc = await axios.post(
+          "http://localhost:8080/project",
+          newProject
+        );
 
         const newProjectEmail = {
           to: inquiry.projectRequester.email,
@@ -150,6 +152,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           timelapse: inquiry.timelapse,
           reason: "projectOpening",
           approved: true,
+          projectPath: newProjectDoc.data.newproject.path,
         };
 
         await axios.post(
@@ -185,15 +188,28 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
   };
 
   const handleReject = () => {
+    let reason = "";
     setShowModal(true);
-    setModalTitle("Confirmar Rechazo");
-    setModalBtnText("Rechazar");
+    setModalTitle("Establecer Motivo de Rechazo");
+    setModalBtnText("Rechazar Solicitud");
     setModalBtnClass("btn-danger");
     setModalBody(
-      <p className="fs-normal mb-4">
-        ¿Está seguro de que quiere rechazar esta solicitud de proyecto?
-      </p>
+      <>
+        <p className="fs-normal mb-4">
+          ¿Está seguro de que quiere rechazar esta solicitud de proyecto?
+        </p>
+        <label htmlFor="rejection-reason" className="form-label">
+          Motivo de rechazo
+        </label>
+        <textarea
+          className="form-control request-rejection-reason mb-5"
+          id="rejection-reason"
+          placeholder="Escriba el motivo de rechazo de la solicitud..."
+          onChange={(e) => (reason = e.target.value)}
+        />
+      </>
     );
+
     setModalCallback(() => async () => {
       if (inquiry === null) return;
       setLoading(true);
@@ -204,17 +220,17 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           modifiedByUserId: localStorage.getItem("userId"),
         });
 
-        const projectDevices = inquiry.devices.map((device) => ({
-          id: device.id,
-          quantity: device.quantity,
-        }));
         const newProjectEmail = {
           to: inquiry.projectRequester.email,
           name: inquiry.projectRequester.name,
           project: inquiry.projectName,
-          devices: projectDevices,
+          description: inquiry.description,
+          devices: inquiry.devices.map((device) => ({
+            name: device.name,
+            quantity: device.quantity,
+          })),
           timelapse: inquiry.timelapse,
-          reason: "projectOpening",
+          reason,
           approved: false,
         };
 
