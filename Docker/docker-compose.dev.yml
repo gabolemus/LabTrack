@@ -1,11 +1,12 @@
 version: '3'
+name: labtrack
 services:
   frontend:
     container_name: labtrack-frontend
     image: labtrack-frontend
     build:
       context: ./Front-End/
-      dockerfile: Dockerfile
+      dockerfile: Docker/Dockerfile
     ports:
       - "3000:80"
     logging:
@@ -18,7 +19,7 @@ services:
     image: labtrack-backend
     build:
       context: ./Back-End/
-      dockerfile: Dockerfile
+      dockerfile: Docker/Dockerfile
     volumes:
       - ./volumes/logs:/app/logs
       - ./volumes/uploads:/app/uploads
