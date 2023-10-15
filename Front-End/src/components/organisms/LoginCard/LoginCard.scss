@@ -1,0 +1,27 @@
+@import "../../../sass/utilities/variables";
+
+.login-card-container {
+  z-index: 5000;
+}
+
+.login-card {
+  max-width: 65%;
+  width: 100%;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.forgot-password-link {
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.15s ease-in-out;
+}
+
+.login-form > .form-group > input[type="email"],
+.login-form > .form-group > input[type="password"],
+.login-form > .form-group > input[type="email"]:focus,
+.login-form > .form-group > input[type="password"]:focus {
+  background-color: #f1f1f1;
+}

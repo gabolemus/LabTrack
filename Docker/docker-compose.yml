@@ -1,0 +1,38 @@
+version: '3'
+name: labtrack
+services:
+  frontend:
+    image: gabolemus/labtrack-frontend
+    container_name: labtrack-frontend
+    ports:
+      - "3000:80"
+    logging:
+      driver: "none"
+    depends_on:
+      - backend
+
+  backend:
+    image: gabolemus/labtrack-backend
+    container_name: labtrack-backend
+    volumes:
+      - ../volumes/logs:/app/logs
+      - ../volumes/uploads:/app/uploads
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCKER=true
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    env_file: ../.env
+    volumes:
+      - ../volumes/data:/data/db
+      - ../volumes/logs:/usr/log
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "none"
+    command: mongod --quiet --logpath /usr/log/mongodb.log --logappend

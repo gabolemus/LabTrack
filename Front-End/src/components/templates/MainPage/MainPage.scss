@@ -1,0 +1,17 @@
+@import "../../../sass/utilities/variables";
+
+$body-bg: $lightGray;
+
+main.container {
+  background-color: $body-bg;
+  max-width: 100vw;
+  padding: 2.75rem 3.5rem 0 3.5rem !important;
+
+  &.no-background {
+    background-color: transparent !important;
+  }
+
+  &.whole-width {
+    max-width: 100% !important;
+  }
+}

@@ -1,0 +1,11 @@
+# VS Code settings
+.vscode
+
+# Workspace
+*.code-workspace
+
+# Environment variables
+.env
+
+# Docker volumes
+volumes

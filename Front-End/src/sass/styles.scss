@@ -1,0 +1,161 @@
+// Global variables
+@import "./utilities/variables";
+
+// Fonts
+// Nunito Sans
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;0,1000;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&display=swap");
+
+// Bootstrap overrides
+$body-bg: $lightGray;
+$dark: $darkestGray;
+$light: $lightBlue;
+
+.dropdown-menu {
+  .dropdown-item:hover {
+    cursor: pointer;
+    background-color: $darkGray;
+    color: $white;
+  }
+
+  .dropdown-item.active {
+    color: $white;
+    background-color: $green;
+
+    &:hover {
+      background-color: $green;
+    }
+  }
+}
+
+.btn-primary {
+  background-color: $brown !important;
+  border-color: $brown !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $darkBrown !important;
+    border-color: $darkBrown !important;
+  }
+}
+
+.btn-secondary {
+  background-color: $buttonAccent !important;
+  border-color: $buttonAccent !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $darkestGray !important;
+    border-color: $darkestGray !important;
+  }
+}
+
+.btn-success {
+  background-color: $buttonSuccess !important;
+  border-color: $buttonSuccess !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $buttonSuccessAccent !important;
+    border-color: $buttonSuccessAccent !important;
+  }
+}
+
+.btn-danger {
+  background-color: $buttonDanger !important;
+  border-color: $buttonDanger !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $buttonDangerAccent !important;
+    border-color: $buttonDangerAccent !important;
+  }
+}
+
+.btn-outline-primary {
+  border-color: $white !important;
+  color: $white !important;
+
+  &:hover {
+    background-color: $white !important;
+    border-color: $white !important;
+    color: $unisRed !important;
+  }
+}
+
+// Global styles
+#root {
+  width: 100%;
+}
+
+body {
+  background-color: $body-bg;
+  color: $dark;
+  font-family: "Nunito sans", sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+p {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Nunito sans", sans-serif;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+}
+
+.small-separator {
+  height: 15px;
+}
+
+.medium-separator {
+  height: 30px;
+}
+
+.bg-steel {
+  background-color: $darkBlue;
+}
+
+.card-separator {
+  margin: 0;
+  margin-bottom: 1.5rem;
+}
+
+.small-width {
+  width: 8.5vw;
+}
+
+.medium-width {
+  width: 5vw;
+}
+
+.form-hint {
+  color: $red;
+  font-size: 1rem;
+
+  &:after {
+    content: "";
+    display: inline-block;
+    width: 0px;
+  }
+}

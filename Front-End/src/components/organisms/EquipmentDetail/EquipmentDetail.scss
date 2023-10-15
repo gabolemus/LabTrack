@@ -1,0 +1,42 @@
+@import "../../../sass/utilities/variables";
+
+.divider {
+  border: 0;
+  height: 0.25rem;
+  background-color: $darkGray;
+  margin: 0 auto;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.equipment-notes {
+  width: 100%;
+  background-color: $white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.notes {
+  margin-bottom: 2.5rem;
+}
+
+.equipment-id {
+  color: $unisRed;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.device-title-input {
+  font-size: 2rem;
+}
+
+#requestedEquipment {
+  & > div.col-6 > input[type="number"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  & > div.col-6 > button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}

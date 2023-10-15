@@ -1,0 +1,25 @@
+@import "../../../sass/utilities/variables";
+
+.input-group-append {
+  button {
+    flex: 1;
+
+    &.btn.btn-secondary,
+    &.btn.btn-danger {
+      border-radius: 0;
+    }
+
+    &.btn.btn-primary {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+}
+
+.inquiries-table {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 2.5rem;
+  max-height: 65vh;
+  overflow-y: auto;
+}

@@ -1,0 +1,76 @@
+@import "../../../sass/utilities/variables";
+
+.form-card {
+  background-color: $white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  padding: 1.75rem;
+  margin-bottom: 3rem;
+}
+
+#newInquiryForm {
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="date"] {
+    background-color: #f1f1f1;
+  }
+
+  label {
+    margin-bottom: 0.25rem;
+  }
+}
+
+#newInquiryForm > #userData > div,
+#newInquiryForm > #projectDates > div {
+  width: 48.25%;
+}
+
+#projectClasses > div {
+  padding: 0;
+}
+
+#projectClasses > div.col-10 {
+  padding-left: calc(var(--bs-gutter-x) * 0.5);
+
+  & > input.form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+#projectClasses > div.col-2 {
+  padding-right: calc(var(--bs-gutter-x) * 0.5);
+
+  & > button.btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+#selectedDevicesContainer {
+  max-height: 17.5rem;
+  overflow-y: scroll;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.device-checkbox {
+  background-color: #f1f1f1;
+  margin-left: 2.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+#projectDesc {
+  max-height: 17.5rem;
+  overflow-y: scroll;
+  background-color: #f1f1f1;
+}
+
+input[type="date"]:hover {
+  cursor: pointer;
+}
