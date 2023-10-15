@@ -1,14 +1,15 @@
 version: '3'
+name: labtrack-backend
 services:
   api:
     container_name: labtrack-backend
     image: labtrack-backend
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: Docker/Dockerfile
     volumes:
-      - ./volumes/logs:/app/logs
-      - ./volumes/uploads:/app/uploads
+      - ../volumes/logs:/app/logs
+      - ../volumes/uploads:/app/uploads
     ports:
       - "8080:8080"
     environment:
@@ -20,8 +21,8 @@ services:
     image: mongo:latest
     container_name: mongodb
     volumes:
-      - ./volumes/data:/data/db
-      - ./volumes/mongodb-logs:/usr/log
+      - ../volumes/data:/data/db
+      - ../volumes/mongodb-logs:/usr/log
     ports:
       - "27017:27017"
     environment:
