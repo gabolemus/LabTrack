@@ -119,7 +119,6 @@ const AdminsLists = () => {
     });
   };
 
-  // TODO: prevent a super admin from deleting their own account
   /** Displays modal form to confirm deletion of an admin. */
   const handleDeleteAdmin = (user: User, role: string) => {
     setModalTitle("Confirmar acción");
@@ -210,13 +209,15 @@ const AdminsLists = () => {
                   <a href={`mailto:${superAdmin.email}`}>{superAdmin.email}</a>
                 </td>
                 <td>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() =>
-                      handleDeleteAdmin(superAdmin, "Super Admin")
-                    }>
-                    Eliminar
-                  </button>
+                  {superAdmin._id !== localStorage.getItem("userId") && (
+                    <button
+                      className="btn btn-danger"
+                      onClick={() =>
+                        handleDeleteAdmin(superAdmin, "Super Admin")
+                      }>
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
