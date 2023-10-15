@@ -1,6 +1,7 @@
 // This file contains the type definitions for the Project component.
 
 import axios from "axios";
+import { BE_URL } from "../../../utils/utils";
 
 /** User type definition */
 export type User = {
@@ -13,7 +14,7 @@ export type User = {
 /** Gets all the users */
 export const getAllUsers = async (): Promise<Array<User>> => {
   try {
-    const response = await axios.get("http://20.163.78.89:8080/users");
+    const response = await axios.get(`${BE_URL}/users`);
     return response.data.users as Array<User>;
   } catch (error) {
     console.log(error);
@@ -24,7 +25,7 @@ export const getAllUsers = async (): Promise<Array<User>> => {
 /** Gets a user by id */
 export const getUserByID = async (id: string): Promise<User> => {
   try {
-    const response = await axios.get(`http://20.163.78.89:8080/user/${id}`);
+    const response = await axios.get(`${BE_URL}/user/${id}`);
     return response.data.user as User;
   } catch (error) {
     console.log(error);
@@ -37,7 +38,7 @@ export const getFilteredUsers = async (): Promise<
   Record<string, Array<User>>
 > => {
   try {
-    const response = await axios.get("http://20.163.78.89:8080/filtered-users");
+    const response = await axios.get(`${BE_URL}/filtered-users`);
     return response.data.users as Record<string, Array<User>>;
   } catch (error) {
     console.log(error);

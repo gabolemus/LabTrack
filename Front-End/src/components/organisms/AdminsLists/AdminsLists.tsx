@@ -4,6 +4,7 @@ import Loader from "../../molecules/Loader/Loader";
 import ModalForm from "../ModalForm/ModalForm";
 import axios from "axios";
 import "./AdminsLists.scss";
+import { BE_URL } from "../../../utils/utils";
 
 const AdminsLists = () => {
   const [superAdmins, setSuperAdmins] = useState<Array<User>>([]);
@@ -59,7 +60,7 @@ const AdminsLists = () => {
       if (!(userName === "" || userEmail === "" || userPassword === "")) {
         try {
           setloading(true);
-          const response = await axios.post("http://20.163.78.89:8080/user", {
+          const response = await axios.post(`${BE_URL}/user`, {
             name: userName,
             email: userEmail,
             password: userPassword,
@@ -132,7 +133,7 @@ const AdminsLists = () => {
       try {
         setloading(true);
         const response = await axios.delete(
-          `http://20.163.78.89:8080/user?id=${user._id}`
+          `${BE_URL}/user?id=${user._id}`
         );
 
         if (response.data.success) {

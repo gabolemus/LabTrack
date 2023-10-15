@@ -1,6 +1,7 @@
 // This file contains the type definitions for the Project component.
 
 import axios from "axios";
+import { BE_URL } from "../../../utils/utils";
 
 /** Type definition for the equipment used in a project */
 type ProjectDevices = {
@@ -39,7 +40,7 @@ export type Project = {
 /** Gets all the projects */
 export const getProjects = async (): Promise<Array<Project>> => {
   try {
-    const response = await axios.get("http://20.163.78.89:8080/projects");
+    const response = await axios.get(`${BE_URL}/projects`);
     response.data.projects.forEach((project: Project) => {
       if (project.status === "In Progress") {
         project.active = true;
@@ -57,7 +58,7 @@ export const getProjects = async (): Promise<Array<Project>> => {
 /** Fetches equipment data from the server */
 export const fetchProject = async (id: string): Promise<Project> => {
   try {
-    const response = await axios.get(`http://20.163.78.89:8080/project/${id}`);
+    const response = await axios.get(`${BE_URL}/project/${id}`);
     response.data.project.active =
       response.data.project.status === "In Progress";
     return response.data.project as Project;

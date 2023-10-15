@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BE_URL } from "../../../utils/utils";
 
 // This file contains the type definitions for the Equipment component.
 
@@ -38,7 +39,7 @@ export const sampleEquipmentData: Equipment[] = [];
 /** Get all the devices from the server */
 export const getAllEquipment = async (): Promise<Array<Equipment>> => {
   try {
-    const response = await axios.get("http://20.163.78.89:8080/devices");
+    const response = await axios.get(`${BE_URL}/devices`);
     const devices = response.data.devices as Array<Equipment>;
     return devices;
   } catch (error) {
@@ -50,7 +51,7 @@ export const getAllEquipment = async (): Promise<Array<Equipment>> => {
 /** Fetches equipment data from the server */
 export const fetchEquipmentData = async (id: string): Promise<Equipment> => {
   try {
-    const response = await axios.get(`http://20.163.78.89:8080/device/${id}`);
+    const response = await axios.get(`${BE_URL}/device/${id}`);
     const device = response.data.device as Equipment;
     return device;
   } catch (error) {

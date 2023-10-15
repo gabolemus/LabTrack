@@ -6,6 +6,7 @@ import axios from "axios";
 import "./NewInquiryForm.scss";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  BE_URL,
   shortDateToTimestamp,
   timestampToShortDate,
 } from "../../../utils/utils";
@@ -42,7 +43,7 @@ const NewInquiryForm = () => {
     setLoading(true);
 
     (async () => {
-      const devicesResponse = await axios.get("http://20.163.78.89:8080/devices");
+      const devicesResponse = await axios.get(`${BE_URL}/devices`);
 
       // Check if requestedDevices are in session storage
       const requestedDevices = sessionStorage.getItem("requestedDevices");
@@ -120,7 +121,7 @@ const NewInquiryForm = () => {
 
     try {
       const response = await axios.post(
-        "http://20.163.78.89:8080/inquiry",
+        `${BE_URL}/inquiry`,
         inquiry
       );
 
@@ -144,7 +145,7 @@ const NewInquiryForm = () => {
         };
 
         const confirmationEmailResponse = await axios.post(
-          "http://20.163.78.89:8080/mailer/send-inquiry-confirmation-email",
+          `${BE_URL}/mailer/send-inquiry-confirmation-email`,
           confirmationEmailData
         );
 
