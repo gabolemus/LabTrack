@@ -1,0 +1,34 @@
+name: Build and Publish BE Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
+  DOCKER_TOKEN: ${{secrets.DOCKER_TOKEN}}
+  BE_REPO_NAME: ${{secrets.BE_REPO_NAME}}
+
+jobs:
+  build-and-publish-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker login
+        run: docker login -u $DOCKER_USER -p $DOCKER_TOKEN
+
+      - name: Get the current commit hash
+        id: get_commit_hash
+        run: echo ::set-env name=COMMIT_HASH::$(git rev-parse --short HEAD)
+
+      - name: Build and tag the backend image
+        run: |
+          docker build ./Back-End -f ./Back-End/Docker/Dockerfile -t $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH
+          docker tag $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH $DOCKER_USER/$BE_REPO_NAME:latest
+
+      - name: Push the backend image
+        run: |
+          docker push $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH
+          docker push $DOCKER_USER/$BE_REPO_NAME:latest

@@ -25,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build": "docker build -t labtrack-frontend .",
+    "docker:build": "docker build -f Docker/Dockerfile -t labtrack-frontend .",
     "docker:run": "docker run -d --rm -p 3000:80 --name labtrack-frontend labtrack-frontend"
   },
   "eslintConfig": {

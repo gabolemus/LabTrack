@@ -59,8 +59,6 @@ const MONGO_URI = `mongodb://${env.db.username}:${encodedPassword}@${MONGO_HOST}
 let retries = 5;
 let failedFirstAttempt = false;
 while (true) {
-  retries--;
-
   if (retries === 0) {
     logger.error(`Could not connect to MongoDB after ${retries} retries`);
     process.exit(-1);
@@ -85,6 +83,8 @@ while (true) {
 
     setTimeout(() => {}, 750);
   }
+
+  retries--;
 }
 
 // Start server
