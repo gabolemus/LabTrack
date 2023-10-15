@@ -19,16 +19,12 @@ jobs:
       - name: Docker login
         run: docker login -u $DOCKER_USER -p $DOCKER_TOKEN
 
-      - name: Get the current commit hash
-        id: get_commit_hash
-        run: echo ::set-env name=COMMIT_HASH::$(git rev-parse --short HEAD)
-
       - name: Build and tag the backend image
         run: |
-          docker build ./Back-End -f ./Back-End/Docker/Dockerfile -t $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH
-          docker tag $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH $DOCKER_USER/$BE_REPO_NAME:latest
+          docker build ./Back-End -f ./Back-End/Docker/Dockerfile -t $DOCKER_USER/$BE_REPO_NAME:$GITHUB_SHA
+          docker tag $DOCKER_USER/$BE_REPO_NAME:$GITHUB_SHA $DOCKER_USER/$BE_REPO_NAME:latest
 
-      - name: Push the backend image
+      - name: Push the frontend image
         run: |
-          docker push $DOCKER_USER/$BE_REPO_NAME:$COMMIT_HASH
+          docker push $DOCKER_USER/$BE_REPO_NAME:$GITHUB_SHA
           docker push $DOCKER_USER/$BE_REPO_NAME:latest
