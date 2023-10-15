@@ -300,7 +300,7 @@ router.post("/mailer/send-project-opening-notification-email", async (req, res) 
   }
 
   // Request parameters.
-  const { to, name, project, description, devices, timelapse, approved } = req.body;
+  const { to, name, project, description, devices, timelapse, approved, projectPath } = req.body;
 
   // Inquiry devices.
   let devicesString = "<ul>";
@@ -324,7 +324,19 @@ router.post("/mailer/send-project-opening-notification-email", async (req, res) 
       <li><strong>Fecha de inicio:</strong> ${formatDate(timelapse.start)}</li>
       <li><strong>Fecha de finalización:</strong> ${formatDate(timelapse.end)}</li>
     </ul></li>
-  </ul>`
+  </ul>
+  <p>Para acceder a su proyecto, por favor haga clic en el siguiente enlace:</p>
+  <div style="line-height:16px;text-align:center;margin-bottom:16px">
+    <a style="font-size:14px;font-weight:500;padding:10px 20px;letter-spacing:.25px;text-decoration:none;text-transform:none;display:inline-block;border-radius:8px;background-color:#1a73e8;color:#fff" href="${
+      env.frontend.host
+    }:${env.frontend.port}/projects${projectPath}">Abrir proyecto</a>
+  </div>
+  <p>Si el enlace no funciona, por favor copie y pegue la siguiente URL en su navegador:</p>
+  <div style="font-weight:400;font-size:14px;line-height:20px;color:rgba(0,0,0,.87)">
+    <a href="${env.frontend.host}:${env.frontend.port}/projects${projectPath}" target="_blank">${env.frontend.host}:${
+      env.frontend.port
+    }/projects${projectPath}</a>
+  </div>`
       : `<p><strong>Motivo de la denegación:</strong> ${req.body.reason}</p>`
   }
   <p>Atentamente,</p>
