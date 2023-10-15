@@ -3,3 +3,9 @@
 
 # Workspace
 *.code-workspace
+
+# Environment variables
+.env
+
+# Docker volumes
+volumes

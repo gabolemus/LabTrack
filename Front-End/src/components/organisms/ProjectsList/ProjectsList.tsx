@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Project, sampleProjectData } from "./projects";
+import { Project, getProjects } from "./projects";
 
 import "./ProjectsList.scss";
 
 const ProjectsList = () => {
-  const [projects, setProjects] = useState(sampleProjectData);
+  const [projects, setProjects] = useState<Array<Project>>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLead, setSearchLead] = useState<string[]>([]);
   const [searchActive, setSearchActive] = useState<string[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Array<Project>>([]);
 
   // Function to handle the search button click
   const handleSearchClick = () => {
@@ -18,7 +18,7 @@ const ProjectsList = () => {
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const leadMatch =
-        searchLead.length === 0 || searchLead.includes(project.lead);
+        searchLead.length === 0 || searchLead.includes(project.lead.name);
       const activeMatch =
         searchActive.length === 0 ||
         searchActive.includes(project.active ? "true" : "false");
@@ -35,8 +35,14 @@ const ProjectsList = () => {
   };
 
   useEffect(() => {
-    // Initialize filtered projects when the component first loads
-    handleSearchClick();
+    (async () => {
+      const projects: Array<Project> = await getProjects();
+      setProjects(projects);
+      setFilteredProjects(projects);
+
+      // Initialize filtered projects when the component first loads
+      // handleSearchClick();  // TODO: implement project filtering
+    })();
   }, []);
 
   // Get unique project leads and active for checkboxes
@@ -72,25 +78,27 @@ const ProjectsList = () => {
                 className="dropdown-menu"
                 aria-labelledby="manufacturerDropdown">
                 {leads.map((lead) => (
-                  <li key={lead}>
+                  <li key={lead.name}>
                     <a className="dropdown-item" href="#">
                       <div className="form-check">
                         <input
                           className="form-check-input"
                           type="checkbox"
-                          value={lead}
-                          checked={searchLead.includes(lead)}
+                          value={lead.name}
+                          checked={searchLead.includes(lead.name)}
                           onChange={() =>
                             setSearchLead((prevSelected) => {
-                              if (prevSelected.includes(lead)) {
-                                return prevSelected.filter((l) => l !== lead);
+                              if (prevSelected.includes(lead.name)) {
+                                return prevSelected.filter(
+                                  (l) => l !== lead.name
+                                );
                               } else {
-                                return [...prevSelected, lead];
+                                return [...prevSelected, lead.name];
                               }
                             })
                           }
                         />
-                        <label className="form-check-label">{lead}</label>
+                        <label className="form-check-label">{lead.name}</label>
                       </div>
                     </a>
                   </li>
@@ -149,19 +157,19 @@ const ProjectsList = () => {
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th>Project Name</th>
-              <th>Project Lead</th>
-              <th>Active</th>
+              <th>Proyecto</th>
+              <th>Responsable</th>
+              <th>Activo</th>
             </tr>
           </thead>
           <tbody>
             {filteredProjects.map((project) => (
-              <tr key={project.id}>
+              <tr key={project._id}>
                 <td>
-                  <Link to={`/projects/${project.id}`}>{project.name}</Link>
+                  <Link to={`/projects${project.path}`}>{project.name}</Link>
                 </td>
-                <td>{project.lead}</td>
-                <td>{project.active ? "Yes" : "No"}</td>
+                <td>{project.lead.name}</td>
+                <td>{project.active ? "Sí" : "No"}</td>
               </tr>
             ))}
           </tbody>

@@ -7,11 +7,11 @@ interface EquipmentDocsProps {
 }
 
 const EquipmentDocs = ({ equipment }: EquipmentDocsProps) => {
-  return equipment.documentationLinks ? (
+  return equipment.documentation ? (
     <>
       <p>Enlaces de documentación: </p>
       <ul className="mb-4">
-        {equipment.documentationLinks.map((link, index) => (
+        {equipment.documentation.map((link, index) => (
           <li key={index}>
             <a href={link.url} target="_blank" rel="noopener noreferrer">
               {link.name}

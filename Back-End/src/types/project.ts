@@ -1,12 +1,18 @@
 /* eslint-disable no-unused-vars */
 import { Document } from "mongoose";
-import { IDevice } from "./device";
 
 /** Enum that defines the possible project statuses */
 enum ProjectStatus {
+  NOT_STARTED = "Not Started",
   IN_PROGRESS = "In Progress",
   COMPLETED = "Completed",
   CANCELLED = "Cancelled",
+}
+
+/** Interface for the project's lead information */
+interface ILead {
+  name: string;
+  email: string;
 }
 
 /** Project timelapse interface */
@@ -15,15 +21,21 @@ interface ITimelapse {
   end: Date;
 }
 
+/** Interface that represents a device used in a project */
+interface IProjectDevice {
+  id: string;
+  quantity: number;
+}
+
 /** Lab project interface */
 export interface IProject extends Document {
-  id: string;
   name: string;
+  path: string;
   courses: string[];
   description: string;
-  lead: string;
+  lead: ILead;
   timelapse: ITimelapse;
   status: ProjectStatus;
   notes?: string;
-  equipment: IDevice[];
+  devices: IProjectDevice[];
 }

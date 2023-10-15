@@ -1,0 +1,125 @@
+@import "../../../sass/utilities/variables";
+
+.divider {
+  border: 0;
+  height: 0.25rem;
+  background-color: $darkGray;
+  margin: 0 auto;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.equipment-notes {
+  width: 100%;
+  background-color: $white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.notes {
+  margin-bottom: 2.5rem;
+}
+
+.equipment-id {
+  color: $unisRed;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: auto;
+  background-color: $darkGray;
+  color: $white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+
+  &.status-indicator--accepted {
+    background-color: $green;
+  }
+
+  &.status-indicator--rejected {
+    background-color: #d63a32;
+  }
+
+  &.status-indicator--pending {
+    background-color: $brown;
+  }
+}
+
+.fs-normal {
+  font-size: 1.15rem;
+}
+
+.project-request-card {
+  padding: 1.25rem;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#request-equipment-table {
+  th {
+    background-color: $gray;
+  }
+
+  // Intercalate row colors
+  td {
+    background-color: transparent;
+  }
+  
+  tbody tr:nth-child(odd) {
+    background-color: $lightGray;
+  }
+}
+
+.timeline-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.625rem;
+  border-radius: 4px;
+
+  &.start {
+    background-color: #aedcae;
+  }
+
+  &.end {
+    background-color: #f8858b;
+  }
+
+  .timeline-time {
+    color: #333;
+    font-size: large;
+  }
+}
+
+.timeline-connector {
+  flex: 0 0 20px;
+  height: 100%;
+  background-color: #333;
+  border-radius: 4px;
+}
+
+.timeline-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.timeline-time {
+  font-weight: bold;
+  color: #333;
+}
+
+.request-rejection-reason,
+.request-rejection-reason:focus {
+  background-color: $lightGray;
+  font-size: 1.15rem;
+  height: 6rem;
+  max-height: 6rem;
+  overflow-y: auto;
+}

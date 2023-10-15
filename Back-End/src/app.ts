@@ -13,6 +13,8 @@ import inquiriesRouter from "./routes/inquiries";
 import manufacturersRouter from "./routes/manufacturers";
 import projectsRouter from "./routes/projects";
 import usersRouter from "./routes/users";
+import tagsRouter from "./routes/tags";
+import historyRouter from "./routes/histories";
 
 // Services imports
 import mailRouter from "./services/mailer";
@@ -29,8 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use(indexRouter);
 app.use(devicesRouter);
+app.use(historyRouter);
 app.use(inquiriesRouter);
 app.use(manufacturersRouter);
+app.use(tagsRouter);
 app.use(projectsRouter);
 app.use(usersRouter);
 

@@ -4,23 +4,63 @@ import { IInquiry } from "../types/inquiry";
 /** Mongoose schema for project inquiries */
 const inquirySchema: Schema = new Schema(
   {
-    email: {
+    projectName: {
       type: String,
       required: true,
     },
-    projectID: {
-      type: Schema.Types.ObjectId,
-      ref: "Project",
+    courses: {
+      type: [String],
       required: true,
     },
-    devicesID: {
-      type: [Schema.Types.ObjectId],
-      ref: "Device",
+    description: {
+      type: String,
+      required: true,
+    },
+    timelapse: {
+      start: {
+        type: Date,
+        required: true,
+      },
+      end: {
+        type: Date,
+        required: true,
+      },
+    },
+    projectRequester: {
+      name: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
+    },
+    devices: {
+      type: [
+        {
+          id: {
+            type: Schema.Types.ObjectId,
+            ref: "Device",
+            required: false,
+          },
+          quantity: Number,
+        },
+      ],
       required: true,
     },
     status: {
       type: String,
       required: true,
+    },
+    confirmationToken: {
+      type: String,
+      required: false,
+    },
+    modifiedByUserId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
     },
   },
   { timestamps: true },

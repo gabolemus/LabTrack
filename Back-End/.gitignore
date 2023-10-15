@@ -135,3 +135,6 @@ data
 
 # Images uploads
 uploads
+
+# Docker volumes
+volumes

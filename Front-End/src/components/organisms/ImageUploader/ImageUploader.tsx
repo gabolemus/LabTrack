@@ -23,9 +23,11 @@ const ImageUploader = () => {
         formData.append("images", element);
       }
 
+      // TODO: change this to allow to specify whether the image is for a device or a project
+      const imgType = "device";
       try {
         const response = await axios.post(
-          "http://localhost:8080/images/upload",
+          `http://localhost:8080/images/upload?imgType=${imgType}`,
           formData,
           {
             headers: {
@@ -64,6 +66,7 @@ const ImageUploader = () => {
             onChange={(e) => setDevice(e.target.value)}
           />
           <div className="form-group">
+            {/* TODO: disable the button when there are no images or the fields are empty */}
             <button onClick={handleUpload} className="btn btn-primary">
               Upload
             </button>

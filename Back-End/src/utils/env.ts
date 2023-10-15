@@ -22,4 +22,8 @@ export default {
     maxFileSizeMB: Number(process.env.MAX_LOG_FILE_SIZE) ?? 500,
     maxFiles: Number(process.env.MAX_LOG_FILES) ?? 10,
   },
+  frontend: {
+    host: process.env.FRONTEND_HOST ?? "localhost",
+    port: process.env.FRONTEND_PORT ?? 3000,
+  },
 };

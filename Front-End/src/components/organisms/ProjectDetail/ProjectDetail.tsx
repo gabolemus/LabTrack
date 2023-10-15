@@ -72,7 +72,7 @@ const ProjectDetail = ({ id }: ProjectDetailProps) => {
       <h1>{project.name}</h1>
       <div className="lead mb-5">
         <h3>Responsable</h3>
-        <p>{project.lead}</p>
+        <p>{project.lead.name}</p>
       </div>
       <div className="status mb-5">
         <h3>Estado</h3>
@@ -97,14 +97,12 @@ const ProjectDetail = ({ id }: ProjectDetailProps) => {
             </tr>
           </thead>
           <tbody>
-            {project.equipmentUsed.map((equipment) => (
-              <tr key={equipment.id}>
+            {project.devices.map((device) => (
+              <tr key={device._id}>
                 <td>
-                  <Link to={`/equipment/${equipment.id}`}>
-                    {equipment.name}
-                  </Link>
+                  <Link to={`/equipment${device.path}`}>{device.name}</Link>
                 </td>
-                <td>{equipment.quantity}</td>
+                <td>{device.quantity}</td>
               </tr>
             ))}
           </tbody>
@@ -113,15 +111,17 @@ const ProjectDetail = ({ id }: ProjectDetailProps) => {
       <div className="Línea de tiempo mb-5">
         <h2>Línea de tiempo</h2>
         <p>
-          <b>Fecha de inicio:</b> {convertTime(project.startDate)}
+          <b>Fecha de inicio:</b> {convertTime(project.timelapse.start)}
           <br />
-          <b>Fecha de fin:</b> {convertTime(project.dueDate)}
+          <b>Fecha de fin:</b> {convertTime(project.timelapse.end)}
         </p>
       </div>
-      <div className="notes">
-        <h3>Notas</h3>
-        <p className="equipment-notes">{project.notes}</p>
-      </div>
+      {project.notes && (
+        <div className="notes">
+          <h3>Notas</h3>
+          <p className="equipment-notes">{project.notes}</p>
+        </div>
+      )}
     </div>
   );
 };

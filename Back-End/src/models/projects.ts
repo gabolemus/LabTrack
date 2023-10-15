@@ -8,6 +8,10 @@ const projectSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    path: {
+      type: String,
+      required: true,
+    },
     courses: {
       type: [String],
       required: true,
@@ -17,8 +21,14 @@ const projectSchema: Schema = new Schema(
       required: true,
     },
     lead: {
-      type: String,
-      required: true,
+      name: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
     },
     timelapse: {
       start: {
@@ -38,10 +48,18 @@ const projectSchema: Schema = new Schema(
       type: String,
       required: false,
     },
-    equipment: {
-      type: [Schema.Types.ObjectId],
-      ref: "Device",
-      required: false,
+    devices: {
+      type: [
+        {
+          id: {
+            type: Schema.Types.ObjectId,
+            ref: "Device",
+            required: false,
+          },
+          quantity: Number,
+        },
+      ],
+      required: true,
     },
   },
   { timestamps: true },

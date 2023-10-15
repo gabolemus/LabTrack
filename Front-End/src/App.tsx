@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import { pages } from "./utils/pages";
 
 /** Component that render the web application */

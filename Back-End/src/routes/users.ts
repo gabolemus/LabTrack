@@ -5,8 +5,13 @@ const usersRouter = Router();
 
 usersRouter.get("/users", usersController.getItems);
 usersRouter.get("/user", usersController.getItem);
+usersRouter.get("/user/:email", usersController.getItemByEmail);
 usersRouter.post("/user", usersController.createItem);
 usersRouter.put("/user", usersController.updateItem);
 usersRouter.delete("/user", usersController.deleteItem);
+usersRouter.delete("/all-users", usersController.deleteAllItems);
+usersRouter.post("/check-password", usersController.checkPassword);
+usersRouter.get("/users/role/:role", usersController.getUsersByRole);
+usersRouter.get("/filtered-users", usersController.getFilteredUsers);
 
 export default usersRouter;
