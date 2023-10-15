@@ -27,9 +27,9 @@ services:
     environment:
       - DOCKER=true
     depends_on:
-      - mongo
+      - mongodb
 
-  mongo:
+  mongodb:
     image: mongo:latest
     container_name: mongodb
     volumes:
