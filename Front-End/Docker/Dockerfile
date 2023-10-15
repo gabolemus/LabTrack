@@ -9,7 +9,7 @@ RUN yarn install --frozen-lockfile && \
 COPY . .
 RUN yarn build
 
-FROM nginx:latest
+FROM nginx:1.25
 
 # Remove the default Nginx configuration file
 RUN rm /etc/nginx/conf.d/default.conf
