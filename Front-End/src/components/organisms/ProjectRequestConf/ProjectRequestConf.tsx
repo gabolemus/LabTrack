@@ -37,7 +37,7 @@ const ProjectRequestConf = ({ requestId }: ProjectRequestProps) => {
     (async () => {
       try {
         const projectRequest = await axios.get(
-          `http://localhost:8080/inquiry/token/${requestId}`
+          `http://20.163.78.89:8080/inquiry/token/${requestId}`
         );
 
         if (projectRequest.status === 200 && projectRequest.data.success) {
@@ -67,7 +67,7 @@ const ProjectRequestConf = ({ requestId }: ProjectRequestProps) => {
 
     try {
       const requestConfirmation = await axios.put(
-        "http://localhost:8080/inquiry/confirm",
+        "http://20.163.78.89:8080/inquiry/confirm",
         {
           confirmationToken: requestId,
         }

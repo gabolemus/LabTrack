@@ -59,7 +59,7 @@ export const getFilteredInquiries = async (
   try {
     const nameQuery = name ? `&projectName=${name}` : "";
     const response = await axios.get(
-      `http://localhost:8080/inquiries/filtered?status=${status}${nameQuery}`
+      `http://20.163.78.89:8080/inquiries/filtered?status=${status}${nameQuery}`
     );
     return response.data.inquiries as Array<IInquiry>;
   } catch (error) {
@@ -71,7 +71,7 @@ export const getFilteredInquiries = async (
 /** Gets a specific inquiry */
 export const getInquiry = async (id: string): Promise<IInquiry> => {
   try {
-    const response = await axios.get(`http://localhost:8080/inquiry?id=${id}`);
+    const response = await axios.get(`http://20.163.78.89:8080/inquiry?id=${id}`);
     return response.data.inquiry as IInquiry;
   } catch (error) {
     console.log(error);

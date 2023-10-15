@@ -27,7 +27,7 @@ const ImageUploader = () => {
       const imgType = "device";
       try {
         const response = await axios.post(
-          `http://localhost:8080/images/upload?imgType=${imgType}`,
+          `http://20.163.78.89:8080/images/upload?imgType=${imgType}`,
           formData,
           {
             headers: {

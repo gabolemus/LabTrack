@@ -39,7 +39,7 @@ export type Project = {
 /** Gets all the projects */
 export const getProjects = async (): Promise<Array<Project>> => {
   try {
-    const response = await axios.get("http://localhost:8080/projects");
+    const response = await axios.get("http://20.163.78.89:8080/projects");
     response.data.projects.forEach((project: Project) => {
       if (project.status === "In Progress") {
         project.active = true;
@@ -57,7 +57,7 @@ export const getProjects = async (): Promise<Array<Project>> => {
 /** Fetches equipment data from the server */
 export const fetchProject = async (id: string): Promise<Project> => {
   try {
-    const response = await axios.get(`http://localhost:8080/project/${id}`);
+    const response = await axios.get(`http://20.163.78.89:8080/project/${id}`);
     response.data.project.active =
       response.data.project.status === "In Progress";
     return response.data.project as Project;

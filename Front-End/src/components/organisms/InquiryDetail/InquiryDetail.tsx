@@ -117,7 +117,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
       setLoading(true);
 
       try {
-        await axios.put(`http://localhost:8080/inquiry?id=${id}`, {
+        await axios.put(`http://20.163.78.89:8080/inquiry?id=${id}`, {
           status: "Accepted",
           modifiedByUserId: localStorage.getItem("userId"),
         });
@@ -136,7 +136,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         const newProjectDoc = await axios.post(
-          "http://localhost:8080/project",
+          "http://20.163.78.89:8080/project",
           newProject
         );
 
@@ -156,7 +156,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         await axios.post(
-          "http://localhost:8080/mailer/send-project-opening-notification-email",
+          "http://20.163.78.89:8080/mailer/send-project-opening-notification-email",
           newProjectEmail
         );
 
@@ -215,7 +215,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
       setLoading(true);
 
       try {
-        await axios.put(`http://localhost:8080/inquiry?id=${id}`, {
+        await axios.put(`http://20.163.78.89:8080/inquiry?id=${id}`, {
           status: "Rejected",
           modifiedByUserId: localStorage.getItem("userId"),
         });
@@ -235,7 +235,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         await axios.post(
-          "http://localhost:8080/mailer/send-project-opening-notification-email",
+          "http://20.163.78.89:8080/mailer/send-project-opening-notification-email",
           newProjectEmail
         );
 
