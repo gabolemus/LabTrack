@@ -4,7 +4,7 @@ import Loader from "../../molecules/Loader/Loader";
 import ModalForm from "../ModalForm/ModalForm";
 import "./ManufacturersList.scss";
 import axios from "axios";
-import { areArraysEqual } from "../../../utils/utils";
+import { BE_URL, areArraysEqual } from "../../../utils/utils";
 
 const ManufacturersList = () => {
   const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
@@ -35,7 +35,7 @@ const ManufacturersList = () => {
     if (name !== "") {
       try {
         const response = await axios.post(
-          "http://20.163.78.89:8080/manufacturer",
+          `${BE_URL}/manufacturer`,
           { name }
         );
         setShowModal(true);
@@ -153,7 +153,7 @@ const ManufacturersList = () => {
   /** Attempts to update the manufacturers in bulk. */
   const updateManufacturersInBulk = async () => {
     try {
-      const response = await axios.put("http://20.163.78.89:8080/manufacturers", {
+      const response = await axios.put(`${BE_URL}/manufacturers`, {
         manufacturers: updatedManufacturers,
       });
       setShowModal(true);

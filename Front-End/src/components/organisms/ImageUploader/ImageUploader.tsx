@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { BE_URL } from "../../../utils/utils";
 
 const ImageUploader = () => {
   const [images, setImages] = useState<FileList | null>(null);
@@ -27,7 +28,7 @@ const ImageUploader = () => {
       const imgType = "device";
       try {
         const response = await axios.post(
-          `http://20.163.78.89:8080/images/upload?imgType=${imgType}`,
+          `${BE_URL}/images/upload?imgType=${imgType}`,
           formData,
           {
             headers: {

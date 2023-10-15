@@ -1,6 +1,7 @@
 // This file contains the type definitions for the Inquiries component.
 
 import axios from "axios";
+import { BE_URL } from "../../../utils/utils";
 
 /** Enum that defines the possible inquiry statuses */
 export enum InquiryStatus {
@@ -59,7 +60,7 @@ export const getFilteredInquiries = async (
   try {
     const nameQuery = name ? `&projectName=${name}` : "";
     const response = await axios.get(
-      `http://20.163.78.89:8080/inquiries/filtered?status=${status}${nameQuery}`
+      `${BE_URL}/inquiries/filtered?status=${status}${nameQuery}`
     );
     return response.data.inquiries as Array<IInquiry>;
   } catch (error) {
@@ -71,7 +72,7 @@ export const getFilteredInquiries = async (
 /** Gets a specific inquiry */
 export const getInquiry = async (id: string): Promise<IInquiry> => {
   try {
-    const response = await axios.get(`http://20.163.78.89:8080/inquiry?id=${id}`);
+    const response = await axios.get(`${BE_URL}/inquiry?id=${id}`);
     return response.data.inquiry as IInquiry;
   } catch (error) {
     console.log(error);

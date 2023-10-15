@@ -5,6 +5,7 @@ import "./InquiryDetail.scss";
 import ModalForm from "../ModalForm/ModalForm";
 import axios from "axios";
 import Loader from "../../molecules/Loader/Loader";
+import { BE_URL } from "../../../utils/utils";
 
 /** Interface for ProjectDetail props */
 interface InquiryDetailProps {
@@ -117,7 +118,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
       setLoading(true);
 
       try {
-        await axios.put(`http://20.163.78.89:8080/inquiry?id=${id}`, {
+        await axios.put(`${BE_URL}/inquiry?id=${id}`, {
           status: "Accepted",
           modifiedByUserId: localStorage.getItem("userId"),
         });
@@ -136,7 +137,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         const newProjectDoc = await axios.post(
-          "http://20.163.78.89:8080/project",
+          `${BE_URL}/project`,
           newProject
         );
 
@@ -156,7 +157,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         await axios.post(
-          "http://20.163.78.89:8080/mailer/send-project-opening-notification-email",
+          `${BE_URL}/mailer/send-project-opening-notification-email`,
           newProjectEmail
         );
 
@@ -215,7 +216,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
       setLoading(true);
 
       try {
-        await axios.put(`http://20.163.78.89:8080/inquiry?id=${id}`, {
+        await axios.put(`${BE_URL}/inquiry?id=${id}`, {
           status: "Rejected",
           modifiedByUserId: localStorage.getItem("userId"),
         });
@@ -235,7 +236,7 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
         };
 
         await axios.post(
-          "http://20.163.78.89:8080/mailer/send-project-opening-notification-email",
+          `${BE_URL}/mailer/send-project-opening-notification-email`,
           newProjectEmail
         );
 

@@ -6,7 +6,7 @@ import { Equipment } from "../EquipmentList/equipment";
 import ModalForm from "../ModalForm/ModalForm";
 import Loader from "../../molecules/Loader/Loader";
 import "./ProjectRequestConf.scss";
-import { timestampToShortDate } from "../../../utils/utils";
+import { BE_URL, timestampToShortDate } from "../../../utils/utils";
 
 /** Interface to define the props of the component */
 interface ProjectRequestProps {
@@ -37,7 +37,7 @@ const ProjectRequestConf = ({ requestId }: ProjectRequestProps) => {
     (async () => {
       try {
         const projectRequest = await axios.get(
-          `http://20.163.78.89:8080/inquiry/token/${requestId}`
+          `${BE_URL}/inquiry/token/${requestId}`
         );
 
         if (projectRequest.status === 200 && projectRequest.data.success) {
@@ -67,7 +67,7 @@ const ProjectRequestConf = ({ requestId }: ProjectRequestProps) => {
 
     try {
       const requestConfirmation = await axios.put(
-        "http://20.163.78.89:8080/inquiry/confirm",
+        `${BE_URL}/inquiry/confirm`,
         {
           confirmationToken: requestId,
         }

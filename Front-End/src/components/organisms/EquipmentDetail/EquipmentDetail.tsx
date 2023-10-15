@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Equipment, fetchEquipmentData } from "../EquipmentList/equipment";
 import EquipmentImgView from "../EquipmentImgView/EquipmentImgView";
 import EquipmentDocs from "../../molecules/EquipmentDocs/EquipmentDocs";
-import { areObjectsEqual, timestampToDate } from "../../../utils/utils";
+import { BE_URL, areObjectsEqual, timestampToDate } from "../../../utils/utils";
 import { Link } from "react-router-dom";
 import "./EquipmentDetail.scss";
 import Loader from "../../molecules/Loader/Loader";
@@ -149,7 +149,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
 
     try {
       const response = await axios.put(
-        `http://20.163.78.89:8080/device?id=${device._id}`,
+        `${BE_URL}/device?id=${device._id}`,
         device
       );
       const data = response.data;
