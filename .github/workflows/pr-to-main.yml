@@ -1,0 +1,33 @@
+name: Open Pull Request to Main
+
+on:
+  push:
+    branches:
+      - qa
+
+jobs:
+  pull-request-to-main:
+    name: Open PR to Main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Fetch and reset to qa
+        run: |
+          git fetch origin qa
+          git reset --hard origin/qa
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: qa
+          base: main
+          commit-message: Update main
+          title: Add changes from `qa` to `main`
+          body: |
+            Automatic PR to update `main` with changes from `qa`.
+            The commit hash is: ${{ github.sha }}.
+          labels: |
+            automated pr
