@@ -131,6 +131,62 @@ export class DevicesController extends BaseController<IDevice> {
     }
   };
 
+  public getFilteredItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}/filtered?name=${req.query.name}`);
+      const items = await Device.db.db
+        .collection("devices")
+        .aggregate([
+          {
+            $lookup: {
+              from: "manufacturers",
+              localField: "manufacturerID",
+              foreignField: "_id",
+              as: "manufacturer",
+            },
+          },
+          {
+            $unwind: "$manufacturer",
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              manufacturer: "$manufacturer.name",
+              tags: 1,
+              quantity: 1,
+              status: 1,
+              path: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              documentation: 1,
+              configuration: 1,
+              images: 1,
+            },
+          },
+        ])
+        .toArray();
+
+      // Filter the array to only return the devices that contain the specified name
+      const filteredItems = items.filter((item) => item.name.toLowerCase().includes((req.query.name as string).toLowerCase()));
+
+      // Iterate through the devices and retrieve the history entries for each one
+      const filteredItemsWithHistory = await Promise.all(
+        filteredItems.map(async (item) => {
+          const historyEntries = await this.getHistoryEntries(item._id.toString());
+          return {
+            ...item,
+            history: historyEntries,
+          };
+        }),
+      );
+
+      res.status(200).json({ success: true, length: filteredItemsWithHistory.length, [`${this.modelName}s`]: filteredItemsWithHistory });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
   public getItem = async (req: Request, res: Response): Promise<void> => {
     try {
       logger.info(`GET /${this.modelName}?id=${req.query.id}`);
