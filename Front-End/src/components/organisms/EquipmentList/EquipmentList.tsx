@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Equipment, getAllEquipment } from "./equipment";
-import { Link } from "react-router-dom";
+import { Equipment, getAllEquipment, getFilteredEquipment } from "./equipment";
+import { Link, useSearchParams } from "react-router-dom";
 import "./EquipmentList.scss";
 import ModalForm from "../ModalForm/ModalForm";
 import Loader from "../../molecules/Loader/Loader";
@@ -12,13 +12,16 @@ import {
 import { BE_URL } from "../../../utils/utils";
 
 const EquipmentList = () => {
-  const [equipment, setEquipment] = useState<Array<Equipment>>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  // URL search params
+  const [searchParams, setSearchParams] = useSearchParams();
+  const equipmentName = searchParams.get("equipment");
+
+  // Component state
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [currSearchTerm, setCurrSearchTerm] = useState("");
+  const [lastSearchTerm, setLastSearchTerm] = useState("");
   const [searchManufacturers, setSearchManufacturers] = useState<string[]>([]);
   const [searchTags, setSearchTags] = useState<string[]>([]);
-  const [filteredEquipment, setFilteredEquipment] = useState<Array<Equipment>>(
-    []
-  );
   const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
   const [allowAddNewDevice, setAllowAddNewDevice] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,28 +35,24 @@ const EquipmentList = () => {
   let newDevice = {} as Equipment;
   let images = {} as FileList;
 
-  // Function to handle the search button click
-  const handleSearchClick = () => {
-    const newFilteredEquipment = equipment.filter((item) => {
-      const nameMatch = item.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const manufacturerMatch =
-        searchManufacturers.length === 0 ||
-        searchManufacturers.includes(item.manufacturer);
-      const tagMatch =
-        searchTags.length === 0 ||
-        searchTags.some((tag) => item.tags.includes(tag));
-      return nameMatch && manufacturerMatch && tagMatch;
-    });
-
-    setFilteredEquipment(newFilteredEquipment);
-  };
-
   // Function to handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSearchClick();
+    filterEquipment();
+  };
+
+  /** Filters inquiries by project name and status */
+  const filterEquipment = async (equipmentName: string = currSearchTerm) => {
+    setLoading(true);
+    const equipmentRes: Array<Equipment> =
+      await getFilteredEquipment(equipmentName);
+    console.log("equipmentRes=", equipmentRes);
+    setEquipment(equipmentRes);
+    setLastSearchTerm(equipmentName);
+    setSearchParams({
+      ...(equipmentName !== "" && { equipment: currSearchTerm }),
+    });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -61,7 +60,7 @@ const EquipmentList = () => {
     if (user === "superAdmin") {
       setAllowAddNewDevice(true);
     }
-    
+
     (async () => {
       setLoading(true);
 
@@ -69,7 +68,6 @@ const EquipmentList = () => {
         // Fetch equipment data from the API
         const devices = await getAllEquipment();
         setEquipment(devices);
-        setFilteredEquipment(devices); // TODO: implement filtering
 
         // Get the manufacturers from the API
         const manufacturersResponse = await getAllManufacturers();
@@ -83,13 +81,11 @@ const EquipmentList = () => {
 
       setLoading(false);
     })();
-  }, []);
 
-  // Get unique manufacturers and tags for checkboxes
-  const filteredManufacturers = [
-    ...new Set(equipment.map((item) => item.manufacturer)),
-  ];
-  const filteredTags = [...new Set(equipment.flatMap((item) => item.tags))];
+    console.log("equipment=", equipmentName);
+
+    filterEquipment();
+  }, []);
 
   /** Modal callback to add a new device. */
   const addDevice = async (device: Equipment) => {
@@ -111,10 +107,6 @@ const EquipmentList = () => {
 
       if (response.status === 201 && data.success) {
         setEquipment((prev) => [
-          ...prev,
-          { ...data.newdevice, manufacturer: device.manufacturer },
-        ]);
-        setFilteredEquipment((prev) => [
           ...prev,
           { ...data.newdevice, manufacturer: device.manufacturer },
         ]);
@@ -370,6 +362,10 @@ const EquipmentList = () => {
     setModalBtnClass("btn-success");
   };
 
+  /** Determines if a search can be made */
+  const canMakeSearch = () =>
+    currSearchTerm !== "" && currSearchTerm !== lastSearchTerm;
+
   return !loading ? (
     <div>
       <ModalForm
@@ -393,102 +389,48 @@ const EquipmentList = () => {
         <h1>Equipo de Laboratorio</h1>
       )}
       <form className="equipment-search-form" onSubmit={handleSubmit}>
-        <div className="row mb-3">
-          <div className="col-md-4">
-            <input
-              type="text"
-              id="searchTerm"
-              className="form-control equipment-search-btn"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Nombre del equipo"
-            />
-          </div>
-          <div className="col-md-4">
-            <div className="dropdown">
-              <button
-                className="btn btn-secondary dropdown-toggle equipment-manufacturer-dropdown"
-                type="button"
-                id="manufacturerDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Fabricante
-              </button>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="manufacturerDropdown">
-                {filteredManufacturers.map((manufacturer) => (
-                  <li key={manufacturer}>
-                    <a className="dropdown-item" href="#">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={manufacturer}
-                          checked={searchManufacturers.includes(manufacturer)}
-                          onChange={() =>
-                            setSearchManufacturers((prevSelected) => {
-                              if (prevSelected.includes(manufacturer)) {
-                                return prevSelected.filter(
-                                  (manu) => manu !== manufacturer
-                                );
-                              } else {
-                                return [...prevSelected, manufacturer];
-                              }
-                            })
-                          }
-                        />
-                        <label className="form-check-label">
-                          {manufacturer}
-                        </label>
-                      </div>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+        <div className="row mb-3" id="equipmentSearchForm">
+          <div className="col px-0">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nombre del equipo"
+                aria-label="Nombre del equipo"
+                aria-describedby="button-addon2"
+                onChange={(e) => setCurrSearchTerm(e.target.value)}
+              />
+              <div className="input-group-append">
+                {/* // TODO: add dropdown to filter by status */}
+                <button
+                  className="btn btn-danger"
+                  type="button"
+                  onClick={() => {
+                    // Clear the text input
+                    const input = document.querySelector(
+                      "#equipmentSearchForm input"
+                    ) as HTMLInputElement;
+                    input.value = "";
+
+                    setLastSearchTerm("");
+                    setCurrSearchTerm("");
+                    filterEquipment("");
+                  }}
+                >
+                  Borrar filtros
+                </button>
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={!canMakeSearch()}
+                  onClick={
+                    canMakeSearch() ? () => filterEquipment() : undefined
+                  }>
+                  Buscar
+                </button>
+              </div>
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="dropdown">
-              <button
-                className="btn btn-secondary dropdown-toggle equipment-tags-dropdown"
-                type="button"
-                id="tagsDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Etiquetas
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="tagsDropdown">
-                {filteredTags.map((tag) => (
-                  <li key={tag}>
-                    <a className="dropdown-item" href="#">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={tag}
-                          checked={searchTags.includes(tag)}
-                          onChange={() =>
-                            setSearchTags((prevSelected) => {
-                              if (prevSelected.includes(tag)) {
-                                return prevSelected.filter((t) => t !== tag);
-                              } else {
-                                return [...prevSelected, tag];
-                              }
-                            })
-                          }
-                        />
-                        <label className="form-check-label">{tag}</label>
-                      </div>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <button type="submit" className="btn btn-primary search-btn">
-            Buscar
-          </button>
         </div>
       </form>
       <div className="equipment-table">
@@ -501,7 +443,7 @@ const EquipmentList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredEquipment.map((item) => (
+            {equipment.map((item) => (
               <tr key={item._id}>
                 <td>
                   <Link to={`/equipment${item.path}`}>{item.name}</Link>

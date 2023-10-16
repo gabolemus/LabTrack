@@ -59,3 +59,18 @@ export const fetchEquipmentData = async (id: string): Promise<Equipment> => {
     return {} as Equipment;
   }
 };
+
+/** Gets the equipment filtered by the given name */
+export const getFilteredEquipment = async (
+  name: string,
+): Promise<Array<Equipment>> => {
+  try {
+    const response = await axios.get(
+      `${BE_URL}/devices/filtered?name=${name}`
+    );
+    return response.data.devices as Array<Equipment>;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
