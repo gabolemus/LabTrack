@@ -3,8 +3,6 @@ import { BaseController } from "./BaseController";
 import Project from "../models/projects";
 import { IProject } from "../types/project";
 import logger from "../utils/logger";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
 
 export class ProjectsController extends BaseController<IProject> {
   constructor() {
@@ -16,6 +14,47 @@ export class ProjectsController extends BaseController<IProject> {
 
     try {
       const items = await Project.find().populate({
+        path: "devices.id",
+        select: "name path",
+      });
+
+      const reshapedItems = items.map((item) => {
+        const devices = item.devices.map((device) => {
+          return {
+            ...(device.id as any).toObject(),
+            quantity: device.quantity,
+          };
+        });
+
+        return {
+          ...item.toObject(),
+          devices,
+        };
+      });
+
+      res.status(200).json({ success: true, length: reshapedItems.length, projects: reshapedItems });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  // The getFilteredItems method will be overriden to allow for filtering by project name
+  public getFilteredItems = async (req: Request, res: Response): Promise<void> => {
+    logger.info(`GET /projects/filtered ${JSON.stringify(req.query)}`);
+
+    try {
+      const filters: Partial<Record<string, any>> = {};
+      for (const [key, value] of Object.entries(req.query)) {
+        // If the value is a pipe-delimited string, split it into an array
+        const filterValue = typeof value === "string" && value.includes("|") ? value.split("|") : value;
+        filters[key] = {
+          // Regex to match any string that contains the filter value with case insensitivity
+          $regex: `.*${filterValue}.*`,
+          $options: "i",
+        };
+      }
+
+      const items = await Project.find(filters as Record<string, any>).populate({
         path: "devices.id",
         select: "name path",
       });
