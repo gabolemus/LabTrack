@@ -1,156 +1,93 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Project, getProjects } from "./projects";
+import { Link, useSearchParams } from "react-router-dom";
+import { Project, getFilteredProjects } from "./projects";
 
 import "./ProjectsList.scss";
+import Loader from "../../molecules/Loader/Loader";
 
 const ProjectsList = () => {
-  const [projects, setProjects] = useState<Array<Project>>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchLead, setSearchLead] = useState<string[]>([]);
-  const [searchActive, setSearchActive] = useState<string[]>([]);
-  const [filteredProjects, setFilteredProjects] = useState<Array<Project>>([]);
+  // URL search params
+  const [searchParams, setSearchParams] = useSearchParams();
+  const projectName = searchParams.get("project");
 
-  // Function to handle the search button click
-  const handleSearchClick = () => {
-    const newFilteredProjects = projects.filter((project) => {
-      const nameMatch = project.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const leadMatch =
-        searchLead.length === 0 || searchLead.includes(project.lead.name);
-      const activeMatch =
-        searchActive.length === 0 ||
-        searchActive.includes(project.active ? "true" : "false");
-      return nameMatch && leadMatch && activeMatch;
-    });
-
-    setFilteredProjects(newFilteredProjects);
-  };
+  // Component state
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [currSearchTerm, setCurrSearchTerm] = useState(projectName ?? "");
+  const [lastSearchTerm, setLastSearchTerm] = useState(projectName ?? "");
+  const [loading, setLoading] = useState(false);
 
   // Function to handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSearchClick();
+    filterProjects();
   };
 
   useEffect(() => {
-    (async () => {
-      const projects: Array<Project> = await getProjects();
-      setProjects(projects);
-      setFilteredProjects(projects);
-
-      // Initialize filtered projects when the component first loads
-      // handleSearchClick();  // TODO: implement project filtering
-    })();
+    filterProjects();
   }, []);
 
-  // Get unique project leads and active for checkboxes
-  const leads = [...new Set(projects.map((project) => project.lead))];
-  const active = [...new Set(projects.flatMap((project) => project.active))];
+  /** Filters projects by name */
+  const filterProjects = async (projectName: string = currSearchTerm) => {
+    setLoading(true);
+    const projectsRes: Array<Project> = await getFilteredProjects(projectName);
+    setProjects(projectsRes);
+    setLastSearchTerm(currSearchTerm);
+    setSearchParams({
+      ...(projectName !== "" && { project: currSearchTerm }),
+    });
+    setLoading(false);
+  };
+
+  /** Determines if a search can be made */
+  const canMakeSearch = () =>
+    currSearchTerm !== "" && currSearchTerm !== lastSearchTerm;
 
   return (
     <div>
+      <Loader loading={loading} />
       <h1>Proyectos</h1>
       <form className="project-search-form" onSubmit={handleSubmit}>
-        <div className="row mb-3">
-          <div className="col-md-4">
-            <input
-              type="text"
-              id="searchTerm"
-              className="form-control project-search-btn"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Project Name"
-            />
-          </div>
-          <div className="col-md-4">
-            <div className="dropdown">
-              <button
-                className="btn btn-secondary dropdown-toggle project-lead-dropdown"
-                type="button"
-                id="manufacturerDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Responsable
-              </button>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="manufacturerDropdown">
-                {leads.map((lead) => (
-                  <li key={lead.name}>
-                    <a className="dropdown-item" href="#">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={lead.name}
-                          checked={searchLead.includes(lead.name)}
-                          onChange={() =>
-                            setSearchLead((prevSelected) => {
-                              if (prevSelected.includes(lead.name)) {
-                                return prevSelected.filter(
-                                  (l) => l !== lead.name
-                                );
-                              } else {
-                                return [...prevSelected, lead.name];
-                              }
-                            })
-                          }
-                        />
-                        <label className="form-check-label">{lead.name}</label>
-                      </div>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+        <div className="row mb-3" id="projectsSearchForm">
+          <div className="col px-0">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nombre del proyecto"
+                aria-label="Nombre del proyecto"
+                aria-describedby="button-addon2"
+                onChange={(e) => setCurrSearchTerm(e.target.value)}
+              />
+              <div className="input-group-append">
+                {/* // TODO: add dropdowns for the leads and project state */}
+                <button
+                  className="btn btn-danger"
+                  type="button"
+                  onClick={() => {
+                    // Clear the text input
+                    const input = document.querySelector(
+                      "#projectsSearchForm input"
+                    ) as HTMLInputElement;
+                    input.value = "";
+
+                    setLastSearchTerm("");
+                    setCurrSearchTerm("");
+                    filterProjects("");
+                  }}>
+                  Borrar filtros
+                </button>
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={!canMakeSearch()}
+                  onClick={
+                    canMakeSearch() ? () => filterProjects() : undefined
+                  }>
+                  Buscar
+                </button>
+              </div>
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="dropdown">
-              <button
-                className="btn btn-secondary dropdown-toggle project-active-dropdown"
-                type="button"
-                id="tagsDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Activo
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="tagsDropdown">
-                {active.map((active, index) => (
-                  <li key={index}>
-                    <a className="dropdown-item" href="#">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value={active ? "true" : "false"}
-                          checked={searchActive.includes(String(active))}
-                          onChange={() =>
-                            setSearchActive((prevSelected) => {
-                              if (prevSelected.includes(String(active))) {
-                                return prevSelected.filter(
-                                  (a) => a !== String(active)
-                                );
-                              } else {
-                                return [...prevSelected, String(active)];
-                              }
-                            })
-                          }
-                        />
-                        <label className="form-check-label">
-                          {active ? "Sí" : "No"}
-                        </label>
-                      </div>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <button type="submit" className="btn btn-primary search-btn">
-            Search
-          </button>
         </div>
       </form>
       <div className="project-table">
@@ -163,7 +100,7 @@ const ProjectsList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProjects.map((project) => (
+            {projects.map((project) => (
               <tr key={project._id}>
                 <td>
                   <Link to={`/projects${project.path}`}>{project.name}</Link>

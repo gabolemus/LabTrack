@@ -67,3 +67,18 @@ export const fetchProject = async (id: string): Promise<Project> => {
     return {} as Project;
   }
 };
+
+/** Gets the projects filtered by the given name */
+export const getFilteredProjects = async (
+  name: string
+): Promise<Array<Project>> => {
+  try {
+    const response = await axios.get(
+      `${BE_URL}/projects/filtered?name=${name}`
+    );
+    return response.data.projects as Array<Project>;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
