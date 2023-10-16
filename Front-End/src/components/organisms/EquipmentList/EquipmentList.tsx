@@ -18,11 +18,11 @@ const EquipmentList = () => {
 
   // Component state
   const [equipment, setEquipment] = useState<Equipment[]>([]);
-  const [currSearchTerm, setCurrSearchTerm] = useState("");
-  const [lastSearchTerm, setLastSearchTerm] = useState("");
+  const [currSearchTerm, setCurrSearchTerm] = useState(equipmentName ?? "");
+  const [lastSearchTerm, setLastSearchTerm] = useState(equipmentName ?? "");
   const [searchManufacturers, setSearchManufacturers] = useState<string[]>([]);
   const [searchTags, setSearchTags] = useState<string[]>([]);
-  const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [allowAddNewDevice, setAllowAddNewDevice] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -415,8 +415,7 @@ const EquipmentList = () => {
                     setLastSearchTerm("");
                     setCurrSearchTerm("");
                     filterEquipment("");
-                  }}
-                >
+                  }}>
                   Borrar filtros
                 </button>
                 <button
