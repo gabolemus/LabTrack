@@ -1,6 +1,9 @@
 // This file contains general utility functions.
 
-export const BE_URL = process.env.REACT_APP_BACKEND_URL as string;
+export const BE_URL =
+  process.env.NODE_ENV === "production"
+    ? "http://20.163.78.89:8080"
+    : "http://localhost:8080";
 
 /**
  * Rounds the given number to the given number of decimal places.
