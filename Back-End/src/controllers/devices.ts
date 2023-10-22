@@ -406,31 +406,10 @@ export class DevicesController extends BaseController<IDevice> {
       // Make the name of the device in lowercase and changing whitespaces to hyphens its path
       req.body.path = "/" + req.body.name.toLowerCase().replace(/\s/g, "-");
 
-      // // Encode the URLs for the images
-      // if (req.body.images) {
-      //   req.body.images = req.body.images.map((image: string) => encodeURI(image));
-      // }
-
       // Create the device
       const newDevice = new this.model(req.body);
       const savedDevice = await newDevice.save();
       res.status(201).json({ success: true, [`new${this.modelName}`]: savedDevice });
-    } catch (error) {
-      this.handleError(res, error);
-    }
-  };
-
-  public updateItem = async (req: Request, res: Response): Promise<void> => {
-    logger.info(`PUT fdfdsa /${this.modelName} ${JSON.stringify(req.body)}`);
-
-    try {
-      // Encode the URLs for the images
-      if (req.body.images) {
-        req.body.images = req.body.images.map((image: string) => encodeURI(image));
-      }
-
-      const updatedItem = await this.model.findByIdAndUpdate(req.query.id, req.body);
-      res.status(updatedItem ? 200 : 404).json({ success: true, [this.modelName]: updatedItem });
     } catch (error) {
       this.handleError(res, error);
     }
