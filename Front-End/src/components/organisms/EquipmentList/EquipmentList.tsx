@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Equipment, getAllEquipment, getFilteredEquipment } from "./equipment";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "./EquipmentList.scss";
 import ModalForm from "../ModalForm/ModalForm";
 import Loader from "../../molecules/Loader/Loader";
@@ -11,6 +11,11 @@ import {
 } from "../ManufacturersList/manufacturers";
 import { BE_URL } from "../../../utils/utils";
 
+interface DocLink {
+  name: string;
+  url: string;
+}
+
 const EquipmentList = () => {
   // URL search params
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,8 +25,6 @@ const EquipmentList = () => {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [currSearchTerm, setCurrSearchTerm] = useState(equipmentName ?? "");
   const [lastSearchTerm, setLastSearchTerm] = useState(equipmentName ?? "");
-  const [searchManufacturers, setSearchManufacturers] = useState<string[]>([]);
-  const [searchTags, setSearchTags] = useState<string[]>([]);
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [allowAddNewDevice, setAllowAddNewDevice] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,8 +35,23 @@ const EquipmentList = () => {
   const [modalBody, setModalBody] = useState(<></>);
   const [modalBtnText, setModalBtnText] = useState("");
   const [modalBtnClass, setModalBtnClass] = useState("");
+  const [newDocs, setNewDocs] = useState<DocLink[]>([]);
   let newDevice = {} as Equipment;
   let images = {} as FileList;
+  const navigate = useNavigate();
+
+  const [testBool, setTestBool] = useState(true);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    manufacturer: "",
+    quantity: 0,
+    status: "Available",
+    documentation: [],
+    // ... other form fields
+  });
+
+  const { name, manufacturer, quantity, status, documentation } = formData;
 
   // Function to handle form submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,7 +64,6 @@ const EquipmentList = () => {
     setLoading(true);
     const equipmentRes: Array<Equipment> =
       await getFilteredEquipment(equipmentName);
-    console.log("equipmentRes=", equipmentRes);
     setEquipment(equipmentRes);
     setLastSearchTerm(equipmentName);
     setSearchParams({
@@ -81,8 +98,6 @@ const EquipmentList = () => {
 
       setLoading(false);
     })();
-
-    console.log("equipment=", equipmentName);
 
     filterEquipment();
   }, []);
@@ -206,6 +221,9 @@ const EquipmentList = () => {
 
   /** Shows the modal with a form to add a new device. */
   const handleAddDevice = () => {
+    let newDocumentationName = "";
+    let newDocumentationURL = "";
+
     setShowModal(true);
     setModalTitle("Agregar nuevo dispositivo");
     setModalBody(
@@ -297,18 +315,72 @@ const EquipmentList = () => {
               className="form-control"
               id="deviceDocumentation"
               placeholder="Nombre"
+              onChange={(e) => (newDocumentationName = e.target.value)}
             />
             <input
               type="text"
               className="form-control"
               id="deviceDocumentation"
               placeholder="URL"
+              onChange={(e) => (newDocumentationURL = e.target.value)}
             />
-            <button className="btn btn-outline-secondary" type="button">
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={() => {
+                console.log("Clicked!");
+                console.log(newDocumentationName);
+                console.log(newDocumentationURL);
+
+                if (newDocumentationName && newDocumentationURL) {
+                  newDevice = {
+                    ...newDevice,
+                    documentation: [
+                      ...(newDevice.documentation ?? []),
+                      {
+                        name: newDocumentationName,
+                        url: newDocumentationURL,
+                      },
+                    ],
+                  };
+                  console.log(newDevice);
+                  setNewDocs((prev) => [
+                    ...prev,
+                    {
+                      name: newDocumentationName,
+                      url: newDocumentationURL,
+                    },
+                  ]);
+                  console.log(newDocs);
+                  setModalCallback(() => () => {
+                    addDevice(newDevice);
+                  });
+                }
+              }}>
               Agregar
             </button>
           </div>
         </div>
+        {newDocs.length > 0 && (
+          <div className="mb-3">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>URL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {newDocs.map((doc) => (
+                  <tr key={doc.name}>
+                    <td>{doc.name}</td>
+                    <td>{doc.url}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         <div className="mb-3">
           <label htmlFor="deviceTags" className="form-label">
             Etiquetas
@@ -381,7 +453,7 @@ const EquipmentList = () => {
       {allowAddNewDevice ? (
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h1>Equipo de Laboratorio</h1>
-          <button className="btn btn-success" onClick={handleAddDevice}>
+          <button className="btn btn-success" onClick={() => navigate("/new-equipment")}>
             Agregar nuevo equipo
           </button>
         </div>
