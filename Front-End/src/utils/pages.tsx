@@ -11,6 +11,7 @@ import Manufacturers from "../components/pages/Manufacturers";
 import NewEquipment from "../components/pages/NewEquipment";
 import NewInquiries from "../components/pages/NewInquiry";
 import Projects from "../components/pages/Projects";
+import Tags from "../components/pages/Tags";
 import { concatArrays } from "./utils";
 
 /** Interface for the pages to be shown in the navbar */
@@ -81,6 +82,7 @@ const systemAdministratorsPagesNavbar = systemAdministratorsPagesList
     page("/inquiries-registry", "Solicitudes", <Inquiries />),
     page("/admins", "Administradores", <Admins />),
     page("/manufacturers", "Manufacturadores", <Manufacturers />),
+    page("/tags", "Etiquetas", <Tags />),
   ]);
 
 /** All users pages list. */
@@ -98,6 +100,7 @@ const all = [
   page("/inquiries-registry", "Solicitudes", <Inquiries />),
   page("/admins", "Administradores", <Admins />),
   page("/manufacturers", "Manufacturadores", <Manufacturers />),
+  page("/tags", "Etiquetas", <Tags />),
   page("/login", "Iniciar sesión", <Login />),
   page("/equipment/:equipmentId", "Equipo", <Equipment />),
   page("/projects/:projectId", "Proyectos", <Projects />),
