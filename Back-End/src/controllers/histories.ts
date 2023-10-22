@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { BaseController } from "./BaseController";
 import Histories from "../models/histories";
 import Projects from "../models/projects";
+import Users from "../models/users";
 import { IHistory, HistoryEntry } from "../types/history";
 import logger from "../utils/logger";
 
@@ -58,6 +59,16 @@ export class HistoryItemsController extends BaseController<IHistory> {
     return modifiedHistory;
   };
 
+  /**
+   * Gets the user with the given ID.
+   * @param userId The ID of the user
+   * @returns The user
+   */
+  private getUser = async (userId: string) => {
+    const user = await Users.findById(userId);
+    return { name: user?.name, email: user?.email };
+  }
+
   public getItems = async (req: Request, res: Response): Promise<void> => {
     try {
       const pluralModelName = this.getPluralName();
@@ -72,7 +83,18 @@ export class HistoryItemsController extends BaseController<IHistory> {
         }),
       );
 
+      // Add the name and email of the user who created the history item
+      const itemsWithUser = await Promise.all(
+        itemsWithHistory.map(async (item) => {
+          const { userId } = item.history[0];
+          const user = await this.getUser(userId);
+          return { ...item, history: [{ ...item.history[0], user }] };
+        }),
+      );
+      logger.debug(itemsWithUser);
+
       res.status(200).json({ success: true, length: items.length, [pluralModelName]: itemsWithHistory });
+      // res.status(200).json({ success: true, length: items.length, [pluralModelName]: itemsWithUser });
     } catch (error) {
       this.handleError(res, error);
     }
@@ -108,7 +130,7 @@ export class HistoryItemsController extends BaseController<IHistory> {
       logger.info(`POST /${this.modelName} ${JSON.stringify(req.body)}`);
 
       const { equipmentId, history } = req.body;
-      const [{ change, timestamp, description, projectId }] = history as HistoryEntry[];
+      const [{ change, timestamp, description, userId, projectId }] = history as HistoryEntry[];
       const currentTimestamp = new Date();
 
       // Use the Histories model to check if a document with the same equipmentId value already exists
@@ -120,6 +142,7 @@ export class HistoryItemsController extends BaseController<IHistory> {
           change,
           timestamp: timestamp || currentTimestamp,
           description,
+          userId,
           projectId,
         });
         await existingHistory.save();
@@ -133,6 +156,7 @@ export class HistoryItemsController extends BaseController<IHistory> {
               change,
               timestamp: timestamp || currentTimestamp,
               description,
+              userId,
               projectId,
             },
           ],

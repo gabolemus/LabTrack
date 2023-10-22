@@ -47,7 +47,12 @@ const deviceSchema: Schema = new Schema(
       required: false,
     },
     images: {
-      type: [String],
+      type: [
+        {
+          caption: String,
+          url: String,
+        },
+      ],
       required: false,
     },
   },

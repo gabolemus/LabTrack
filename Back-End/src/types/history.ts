@@ -2,6 +2,7 @@
 import { Document } from "mongoose";
 import { IDevice } from "./device";
 import { IProject } from "./project";
+import { IUser } from "./user";
 
 /** Enum that represents the possible history changes of a lab device */
 export enum HistoryChange {
@@ -15,6 +16,7 @@ export type HistoryEntry = {
   change: HistoryChange,
   timestamp: Date,
   description: string,
+  userId: IUser["_id"],
   projectId?: IProject["_id"],
 };
 

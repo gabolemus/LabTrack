@@ -24,9 +24,15 @@ const historiesSchema: Schema = new Schema(
           type: String,
           required: true,
         },
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: false,
+        },
         projectId: {
           type: Schema.Types.ObjectId,
           ref: "Project",
+          required: false,
         },
       },
     ],
