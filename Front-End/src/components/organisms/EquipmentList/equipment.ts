@@ -16,6 +16,12 @@ export type Project = {
   quantity: number;
 };
 
+/** Type that defines the images a device has */
+export type Image = {
+  caption: string;
+  url: string;
+};
+
 /** Equipment type definition */
 export type Equipment = {
   _id: string;
@@ -26,7 +32,7 @@ export type Equipment = {
   path: string;
   projects: Project[];
   documentation?: DocumentationLink[];
-  images?: string[];
+  images?: Image[];
   notes?: string;
   configuration?: string;
   status: string;
