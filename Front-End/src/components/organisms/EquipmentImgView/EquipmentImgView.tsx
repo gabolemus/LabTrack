@@ -24,12 +24,12 @@ const EquipmentImgView = ({
             equipment.images.map((image, index) => (
               <img
                 key={index}
-                src={image}
+                src={image.url}
                 alt={equipment.name}
                 className={`img-fluid additional-image${
-                  selectedImage === image ? " selected" : ""
+                  selectedImage === image.url ? " selected" : ""
                 }`}
-                onClick={() => handleImageClick(image)}
+                onClick={() => handleImageClick(image.url)}
               />
             ))}
         </div>
