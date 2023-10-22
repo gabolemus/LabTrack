@@ -1,5 +1,7 @@
 // This file contains general utility functions.
 
+import { isEqual } from "lodash";
+
 export const BE_URL =
   process.env.NODE_ENV === "production"
     ? "http://20.163.78.89:8080"
@@ -90,25 +92,7 @@ export const toggleLoader = (
  * @param objB Second object.
  * @returns true if the objects are equal, false otherwise.
  */
-export const areObjectsEqual = <T extends Record<string, unknown>>(
-  objA: T,
-  objB: T
-): boolean => {
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  for (const key of keysA) {
-    if (objA[key] !== objB[key]) {
-      return false;
-    }
-  }
-
-  return true;
-};
+export const areObjectsEqual = isEqual;
 
 /**
  * Checks if 2 arrays of objects are equal. AKA checks if all the key-value pairs
