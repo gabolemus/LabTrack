@@ -5,44 +5,120 @@ import "./EquipmentImgView.scss";
 
 /** Interface for EquipmentImgView props */
 interface EquipmentImgViewProps {
-  equipment: Equipment;
+  /** Equipment object */
+  equipment: Partial<Equipment>;
+  /** Callback to update the equipment object */
+  updateEquipment: (equipment: Partial<Equipment>) => void;
+  /** Currently selected image */
   selectedImage: string | null;
+  /** Function to handle image click */
   handleImageClick: (image: string) => void;
+  /** Whether to show the buttons to delete the image */
+  showDeleteButton?: boolean;
 }
 
 const EquipmentImgView = ({
   equipment,
+  updateEquipment,
   selectedImage,
   handleImageClick,
+  showDeleteButton,
 }: EquipmentImgViewProps) => {
   return (
-    <div className={`img-container${selectedImage ? " has-image" : ""}`}>
-      <div className="equipment-img">
-        <div className="additional-images">
-          {equipment.images &&
-            equipment.images.length > 0 &&
-            equipment.images.map((image, index) => (
+    <div className="equipment-img-view">
+      <div className={`img-container${selectedImage ? " has-image" : ""}`}>
+        <div className="equipment-img">
+          <div className="additional-images">
+            {equipment.images &&
+              equipment.images.length > 0 &&
+              equipment.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image.url}
+                  alt={equipment.name}
+                  className={`img-fluid additional-image${
+                    selectedImage === image.url ? " selected" : ""
+                  }${image.delete ? " delete" : ""}${image.new ? " new" : ""}`}
+                  onClick={() => handleImageClick(image.url)}
+                />
+              ))}
+          </div>
+        </div>
+        <div className="main-equipment-img">
+          {selectedImage && (
+            <div className="img-caption">
               <img
-                key={index}
-                src={image.url}
+                src={selectedImage}
                 alt={equipment.name}
-                className={`img-fluid additional-image${
-                  selectedImage === image.url ? " selected" : ""
+                className={`img-fluid main-image${
+                  equipment.images?.find((image) => image.url === selectedImage)
+                    ?.delete
+                    ? " delete"
+                    : ""
                 }`}
-                onClick={() => handleImageClick(image.url)}
               />
-            ))}
+              <div className="caption my-3 text-center">
+                <p>
+                  {
+                    equipment.images?.find(
+                      (image) => image.url === selectedImage
+                    )?.caption
+                  }
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      <div className="main-equipment-img">
-        {selectedImage && (
-          <img
-            src={selectedImage}
-            alt={equipment.name}
-            className="img-fluid main-image"
-          />
-        )}
-      </div>
+      {showDeleteButton && (
+        <div className="row mb-4">
+          <div className="col">
+            <button
+              className="btn btn-danger w-100"
+              disabled={
+                equipment.images?.find((image) => image.url === selectedImage)
+                  ?.delete
+              }
+              onClick={() => {
+                const images = equipment.images?.map((image) => {
+                  console.log(image.url);
+                  console.log(image.url === selectedImage);
+                  if (image.url === selectedImage) {
+                    image.delete = !image.delete;
+                  }
+                  return image;
+                });
+                console.log(selectedImage);
+                console.log(images);
+                console.log({ ...equipment, images });
+                updateEquipment({ ...equipment, images });
+              }}>
+              Eliminar Imagen
+            </button>
+          </div>
+          <div className="col">
+            <button
+              className="btn btn-secondary w-100"
+              disabled={
+                !equipment.images?.find((image) => image.url === selectedImage)
+                  ?.delete
+              }
+              onClick={() => {
+                const images = equipment.images?.map((image) => {
+                  if (image.url === selectedImage) {
+                    image.delete = !image.delete;
+                  }
+                  return image;
+                });
+                console.log(images);
+                console.log({ ...equipment, images });
+                updateEquipment({ ...equipment, images });
+              }}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
