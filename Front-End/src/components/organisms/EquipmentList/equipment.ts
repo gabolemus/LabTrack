@@ -20,6 +20,8 @@ export type Project = {
 export type Image = {
   caption: string;
   url: string;
+  delete?: boolean;
+  new?: boolean;
 };
 
 /** Equipment type definition */
