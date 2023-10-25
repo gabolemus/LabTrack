@@ -19,3 +19,8 @@
   max-width: 5rem;
   word-wrap: break-word;
 }
+
+#equipment-history-table-container {
+  max-height: 20rem !important;
+  overflow-y: auto !important;
+}
