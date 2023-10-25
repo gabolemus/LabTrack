@@ -56,10 +56,24 @@ const projectSchema: Schema = new Schema(
             ref: "Device",
             required: false,
           },
+          _id: {
+            type: Schema.Types.ObjectId,
+            ref: "Device",
+            required: false,
+          },
           quantity: Number,
         },
       ],
       required: true,
+    },
+    images: {
+      type: [
+        {
+          caption: String,
+          url: String,
+        },
+      ],
+      required: false,
     },
   },
   { timestamps: true },

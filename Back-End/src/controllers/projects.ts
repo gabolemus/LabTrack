@@ -86,6 +86,7 @@ export class ProjectsController extends BaseController<IProject> {
         const devices = item.devices.map((device) => {
           return {
             ...(device.id as any).toObject(),
+            id: (device.id as any)._id,
             quantity: device.quantity,
           };
         });
@@ -101,8 +102,8 @@ export class ProjectsController extends BaseController<IProject> {
         reshapedItems.map(async (item) => {
           const historyEntries = await this.getHistoryEntries(item._id.toString());
           return { ...item, history: historyEntries };
-        }
-      ));
+        }),
+      );
 
       res.status(200).json({ success: true, length: reshapedItems.length, projects: itemsWithHistory });
     } catch (error) {
@@ -135,6 +136,7 @@ export class ProjectsController extends BaseController<IProject> {
         const devices = item.devices.map((device) => {
           return {
             ...(device.id as any).toObject(),
+            id: (device.id as any)._id,
             quantity: device.quantity,
           };
         });
@@ -150,8 +152,8 @@ export class ProjectsController extends BaseController<IProject> {
         reshapedItems.map(async (item) => {
           const historyEntries = await this.getHistoryEntries(item._id.toString());
           return { ...item, history: historyEntries };
-        }
-      ));
+        }),
+      );
 
       res.status(200).json({ success: true, length: reshapedItems.length, projects: itemsWithHistory });
     } catch (error) {
@@ -174,6 +176,7 @@ export class ProjectsController extends BaseController<IProject> {
           devices: item.devices.map((device) => {
             return {
               ...(device.id as any).toObject(),
+              id: (device.id as any)._id,
               quantity: device.quantity,
             };
           }),
@@ -199,13 +202,18 @@ export class ProjectsController extends BaseController<IProject> {
         path: "devices.id",
         select: "name path",
       });
+      logger.debug("Found:");
+      logger.debug(JSON.stringify(item));
 
       if (item) {
         const reshapedItem = {
           ...item.toObject(),
           devices: item.devices.map((device) => {
+            logger.debug("Device:");
+            logger.debug(JSON.stringify(device));
             return {
               ...(device.id as any).toObject(),
+              id: (device.id as any)._id,
               quantity: device.quantity,
             };
           }),
