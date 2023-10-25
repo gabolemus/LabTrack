@@ -103,6 +103,17 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
     return `${day} de ${month} de ${year} a las ${hour}:${minutes}:${seconds}`;
   };
 
+  const getPrettyDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+
+    return `${day}/${month}/${year} a las ${hours}:${minutes}:${seconds}`;
+  };
+
   const handleAccept = () => {
     setShowModal(true);
     setModalTitle("Confirmar Aprobación");
@@ -136,10 +147,25 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
           })),
         };
 
-        const newProjectDoc = await axios.post(
-          `${BE_URL}/project`,
-          newProject
+        const newProjectDoc = await axios.post(`${BE_URL}/project`, newProject);
+
+        const currDate = new Date();
+        const prettyDate = getPrettyDate(currDate);
+        const newProjectEntryObj = {
+          projectID: newProjectDoc.data.newproject._id,
+          history: [
+            {
+              change: "created",
+              description: `Proyecto "${inquiry.projectName}" fue creado el ${prettyDate}`,
+              userId: localStorage.getItem("userId"),
+            },
+          ],
+        };
+        const newProjectEntryHistory = await axios.post(
+          `${BE_URL}/history`,
+          newProjectEntryObj
         );
+        console.log(newProjectEntryHistory);
 
         const newProjectEmail = {
           to: inquiry.projectRequester.email,
