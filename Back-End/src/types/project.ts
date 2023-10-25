@@ -23,8 +23,15 @@ interface ITimelapse {
 
 /** Interface that represents a device used in a project */
 interface IProjectDevice {
+  _id: string;
   id: string;
   quantity: number;
+}
+
+/** Interface that represents an image with a caption */
+export interface IImage {
+  caption: string;
+  url: string;
 }
 
 /** Lab project interface */
@@ -38,4 +45,5 @@ export interface IProject extends Document {
   status: ProjectStatus;
   notes?: string;
   devices: IProjectDevice[];
+  images?: IImage[];
 }

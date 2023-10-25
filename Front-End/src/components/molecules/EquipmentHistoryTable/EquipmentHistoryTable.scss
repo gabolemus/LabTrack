@@ -1,0 +1,26 @@
+@import "../../../sass/utilities/variables";
+
+.history-item-desc {
+  max-width: 10rem;
+  word-wrap: break-word;
+}
+
+.history-item-timestamp {
+  max-width: 3rem;
+  word-wrap: break-word;
+}
+
+.history-item-username {
+  max-width: 5rem;
+  word-wrap: break-word;
+}
+
+.history-item-useremail {
+  max-width: 5rem;
+  word-wrap: break-word;
+}
+
+#equipment-history-table-container {
+  max-height: 20rem !important;
+  overflow-y: auto !important;
+}

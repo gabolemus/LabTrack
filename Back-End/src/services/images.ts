@@ -150,4 +150,32 @@ router.get("/images/projects/:project/:filename", (req: Request, res: Response) 
   }
 });
 
+// Deletes a group of images given their paths
+router.delete("/images/delete", (req: Request, res: Response) => {
+  const { imagePaths } = req.body;
+  logger.info(`DELETE /images/delete: ${imagePaths}`);
+
+  // Check if the request contains any image paths
+  if (!imagePaths || imagePaths.length === 0) {
+    return res.status(400).json({ error: "No image paths provided" });
+  }
+
+  // Delete the images
+  imagePaths.forEach((imagePath: string) => {
+    const decodedImagePath = decodeURI(imagePath);
+    const relativeImagePath = decodedImagePath.replace(`${env.images.host}:${env.port}/images`, "");
+
+    // Check if the image file exists
+    const absoluteImagePath = path.join(`${__dirname}/../../uploads`, relativeImagePath);
+    logger.info(`Deleting image: ${absoluteImagePath}`);
+    fs.unlink(absoluteImagePath, (err) => {
+      if (err) {
+        logger.error(`Error deleting image: ${err.message}`);
+      }
+    });
+  });
+
+  return res.status(200).json({ message: "Images deleted successfully" });
+});
+
 export default router;

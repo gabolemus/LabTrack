@@ -8,6 +8,8 @@ import {
 } from "./inquiries";
 import "./InquiriesList.scss";
 import Loader from "../../molecules/Loader/Loader";
+import DropdownSelector from "../DropdownSelector/DropdownSelector";
+import { DropdownOption } from "../DropdownSelector/dropdown";
 
 const InquiriesList = () => {
   // URL search params
@@ -75,6 +77,32 @@ const InquiriesList = () => {
     }
   };
 
+  /**
+   * Returns a callback for the dropdown options
+   * @param name Name of the state  to be shown
+   * @param stateName Name of the state
+   * @param state State to be shown
+   */
+  const getDropdownOption = (
+    name: string,
+    stateName: string,
+    state: InquiryStatus
+  ) => {
+    return {
+      name,
+      onClick: () => {
+        setCurrState(stateName);
+        setShowState(state);
+      },
+    };
+  };
+
+  const dropdownOptions: DropdownOption[] = [
+    getDropdownOption("Pendientes", "Pending", InquiryStatus.PENDING),
+    getDropdownOption("Aprobadas", "Accepted", InquiryStatus.ACCEPTED),
+    getDropdownOption("Rechazadas", "Rejected", InquiryStatus.REJECTED),
+  ];
+
   return (
     <div>
       <Loader loading={loading} />
@@ -92,46 +120,10 @@ const InquiriesList = () => {
                 onChange={(e) => setCurrSearchTerm(e.target.value)}
               />
               <div className="input-group-append">
-                <div className="btn-group dropdown">
-                  <button
-                    type="button"
-                    className="btn btn-secondary dropdown-toggle"
-                    data-toggle="dropdown"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                    Estado: {getStatusName(showState)}{" "}
-                  </button>
-                  <div className="dropdown-menu">
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => {
-                        setCurrState("Pending");
-                        setShowState(InquiryStatus.PENDING);
-                      }}>
-                      Pendientes
-                    </button>
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => {
-                        setCurrState("Accepted");
-                        setShowState(InquiryStatus.ACCEPTED);
-                      }}>
-                      Aprobados
-                    </button>
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => {
-                        setCurrState("Rejected");
-                        setShowState(InquiryStatus.REJECTED);
-                      }}>
-                      Rechazados
-                    </button>
-                  </div>
-                </div>
+                <DropdownSelector
+                  title={`Estado: ${getStatusName(showState)}`}
+                  options={dropdownOptions}
+                />
                 <button
                   className="btn btn-danger"
                   type="button"

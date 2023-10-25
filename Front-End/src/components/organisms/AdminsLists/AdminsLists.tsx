@@ -14,7 +14,7 @@ const AdminsLists = () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const [modalCallback, setModalCallback] = useState<() => void>(() => {});
   const [modalTitle, setModalTitle] = useState("");
-  const [modalBody, setModalBody] = useState("");
+  const [modalBody, setModalBody] = useState(<></>);
   const [modalBtnText, setModalBtnText] = useState("");
   const [modalBtnClass, setModalBtnClass] = useState("");
 
@@ -32,20 +32,44 @@ const AdminsLists = () => {
   const handleCreateAdmin = (role: string) => {
     setModalTitle("Nuevo súper administrador");
     setModalBody(
-      `<form id="create-admin-form">
-        <div class="mb-3">
-          <label for="name" class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="name" placeholder="Nombre" required>
+      <form id="create-admin-form">
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">
+            Nombre
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="name"
+            placeholder="Nombre"
+            required
+          />
         </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Correo</label>
-          <input type="email" class="form-control" id="email" placeholder="Correo" required>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            Correo
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="Correo"
+            required
+          />
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            placeholder="Contraseña"
+            required
+          />
         </div>
-      </form>`
+      </form>
     );
     setModalBtnText("Crear");
     setModalBtnClass("btn-success");
@@ -91,7 +115,9 @@ const AdminsLists = () => {
             }
             setModalTitle("Usuario creado");
             setModalBody(
-              `<p class="fs-6 mb-3">El usuario ${userName} ha sido creado exitosamente.</p>`
+              <p className="fs-6 mb-3">
+                El usuario {userName} ha sido creado exitosamente.
+              </p>
             );
             setModalBtnText("Aceptar");
             setModalBtnClass("btn-success");
@@ -101,7 +127,10 @@ const AdminsLists = () => {
           } else {
             setModalTitle("Error");
             setModalBody(
-              `<p class="fs-5 mb-3">No se pudo crear al usuario ${userName}. Por favor, inténtelo de nuevo.</p>`
+              <p className="fs-5 mb-3">
+                No se pudo crear al usuario {userName}. Por favor, inténtelo de
+                nuevo.
+              </p>
             );
             setModalBtnText("Aceptar");
             setModalBtnClass("btn-danger");
@@ -124,7 +153,23 @@ const AdminsLists = () => {
   const handleDeleteAdmin = (user: User, role: string) => {
     setModalTitle("Confirmar acción");
     setModalBody(
-      `<p class="fs-6 mb-2">¿Estás seguro de que quieres eliminar a este usuario?</p><ul><li><p class="fs-6"><strong>Nombre:</strong> ${user.name}</p></li><li><p class="fs-6"><strong>Correo:</strong> ${user.email}</p></li></ul>`
+      <>
+        <p className="fs-6 mb-2">
+          ¿Estás seguro de que quieres eliminar a este usuario?
+        </p>
+        <ul>
+          <li>
+            <p className="fs-6">
+              <strong>Nombre:</strong> {user.name}
+            </p>
+          </li>
+          <li>
+            <p className="fs-6">
+              <strong>Correo:</strong> {user.email}
+            </p>
+          </li>
+        </ul>
+      </>
     );
     setModalBtnText("Eliminar");
     setModalBtnClass("btn-danger");
@@ -132,14 +177,12 @@ const AdminsLists = () => {
     setModalCallback(() => async () => {
       try {
         setloading(true);
-        const response = await axios.delete(
-          `${BE_URL}/user?id=${user._id}`
-        );
+        const response = await axios.delete(`${BE_URL}/user?id=${user._id}`);
 
         if (response.data.success) {
           setModalTitle("Usuario eliminado");
           setModalBody(
-            `<p class="fs-6 mb-3">El usuario ${user.name} ha sido eliminado exitosamente.</p>`
+            <p className="fs-6 mb-3">El usuario {user.name} ha sido eliminado exitosamente.</p>
           );
           setModalBtnText("Aceptar");
           setModalBtnClass("btn-success");
@@ -149,7 +192,7 @@ const AdminsLists = () => {
         } else {
           setModalTitle("Error");
           setModalBody(
-            `<p class="fs-5 mb-3">No se pudo eliminar al usuario ${user.name}. Por favor, inténtelo de nuevo.</p>`
+            <p className="fs-5 mb-3">No se pudo eliminar al usuario {user.name}. Por favor, inténtelo de nuevo.</p>
           );
           setModalBtnText("Aceptar");
           setModalBtnClass("btn-danger");
