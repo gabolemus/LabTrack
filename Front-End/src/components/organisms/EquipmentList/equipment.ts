@@ -24,6 +24,25 @@ export type Image = {
   new?: boolean;
 };
 
+/** Enum that represents the possible history changes of a lab device */
+export enum HistoryChange {
+  CREATED = "created",
+  UPDATED = "updated",
+  USED_IN_PROJECT = "used in project",
+}
+
+/** Type that defines the history of a device */
+export type HistoryEntry = {
+  _id: string,
+  change: HistoryChange,
+  timestamp: Date,
+  description: string,
+  user: {
+    name: string,
+    email: string,
+  },
+};
+
 /** Equipment type definition */
 export type Equipment = {
   _id: string;
@@ -37,6 +56,7 @@ export type Equipment = {
   images?: Image[];
   notes?: string;
   configuration?: string;
+  history: HistoryEntry[];
   status: string;
   updatedAt: string;
 };
