@@ -11,6 +11,7 @@ import {
   getAllManufacturers,
 } from "../ManufacturersList/manufacturers";
 import axios from "axios";
+import EquipmentHistoryTable from "../../molecules/EquipmentHistoryTable/EquipmentHistoryTable";
 
 /** Interface for EquipmentDetail props */
 interface EquipmentDetailProps {
@@ -45,8 +46,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   const [modalBtnClass, setModalBtnClass] = useState("");
 
   useEffect(() => {
-    // Scroll to top
-    window.scrollTo(0, 0);
+    // // Scroll to top
+    // window.scrollTo(0, 0);
 
     const user = localStorage.getItem("role");
     setUserType(user || "");
@@ -779,9 +780,20 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
                 </div>
               )}
             </div>
-            <div className="last-checked">
+            <div className="last-checked mb-5">
               <h3>Última Actualización</h3>
               <p>{timestampToDate(device.updatedAt ?? "")}</p>
+            </div>
+            <div className="last-checked">
+              <h3>Cambios históricos</h3>
+              {device.history && device.history.length > 0 ? (
+                <EquipmentHistoryTable
+                  historyItems={device.history}
+                  showUser={allowUpdate}
+                />
+              ) : (
+                <p className="mb-4">No hay cambios históricos</p>
+              )}
             </div>
             {device.configuration && (
               <div className="configuration">
