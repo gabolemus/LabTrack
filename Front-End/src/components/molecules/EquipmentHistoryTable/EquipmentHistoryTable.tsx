@@ -1,6 +1,6 @@
 import React from "react";
 import { HistoryEntry } from "../../organisms/EquipmentList/equipment";
-import { timestampToShortDate } from "../../../utils/utils";
+import { timestampToDate } from "../../../utils/utils";
 import "./EquipmentHistoryTable.scss";
 
 /** Props for EquipmentHistoryTable component */
@@ -38,7 +38,7 @@ const EquipmentHistoryTable = ({
                 ))}
               </td>
               <td className="history-item-timestamp">
-                {timestampToShortDate(historyItem.timestamp.toString())}
+                {timestampToDate(historyItem.timestamp.toString())}
               </td>
               {showUser && (
                 <td className="history-item-username">
