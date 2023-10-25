@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Equipment, fetchEquipmentData } from "../EquipmentList/equipment";
 import EquipmentImgView from "../EquipmentImgView/EquipmentImgView";
-import EquipmentDocs from "../../molecules/EquipmentDocs/EquipmentDocs";
 import { BE_URL, areObjectsEqual, timestampToDate } from "../../../utils/utils";
 import { Link } from "react-router-dom";
 import "./EquipmentDetail.scss";
@@ -12,6 +11,7 @@ import {
   getAllManufacturers,
 } from "../ManufacturersList/manufacturers";
 import axios from "axios";
+import EquipmentHistoryTable from "../../molecules/EquipmentHistoryTable/EquipmentHistoryTable";
 
 /** Interface for EquipmentDetail props */
 interface EquipmentDetailProps {
@@ -21,10 +21,15 @@ interface EquipmentDetailProps {
 
 const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   const [userType, setUserType] = useState("");
-  const [device, setDevice] = useState<Equipment>({} as Equipment);
-  const [updatedDevice, setUpdatedDevice] = useState<Equipment>(
-    {} as Equipment
+  const [device, setDevice] = useState<Partial<Equipment>>(
+    {} as Partial<Equipment>
   );
+  const [updatedDevice, setUpdatedDevice] = useState<Partial<Equipment>>(
+    {} as Partial<Equipment>
+  );
+  const [currDocName, setCurrDocName] = useState("");
+  const [currDocLink, setCurrDocLink] = useState("");
+  const [images, setImages] = useState<FileList | null>(null);
   const [manufacturers, setManufacturers] = useState<Array<Manufacturer>>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [allowUpdate, setAllowUpdate] = useState(false);
@@ -45,7 +50,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     window.scrollTo(0, 0);
 
     const user = localStorage.getItem("role");
-    setUserType(user || "");
+    setUserType(user ?? "");
     if (user === "superAdmin") {
       setAllowUpdate(true);
     }
@@ -55,13 +60,24 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       try {
         // Get the equipment
         const data = await fetchEquipmentData(id);
+
+        // Add the "delete" field to the images
+        if (data.images && data.images.length > 0) {
+          data.images = data.images.map((image) => ({
+            ...image,
+            delete: false,
+            new: false,
+          }));
+        }
+
         setDevice(data);
         setRequestedDevice({
           _id: data._id,
           name: data.name,
           quantity: Math.min(data.quantity, 1),
         });
-        setUpdatedDevice(data);
+        // Copy the values of the device by value, not by reference
+        setUpdatedDevice(JSON.parse(JSON.stringify(data)));
 
         // Get the manufacturers
         const manufacturersData = await getAllManufacturers();
@@ -69,7 +85,9 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
 
         // Select the first image as the initially selected image
         if (data.images && data.images.length > 0) {
-          setSelectedImage(data.images[0]);
+          setSelectedImage(data.images[0].url);
+        } else {
+          setSelectedImage(null);
         }
       } catch (error) {
         console.error(error);
@@ -97,11 +115,6 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     );
   }
 
-  const handleImageClick = (image: string) => {
-    // Set the clicked image as the selected main image
-    setSelectedImage(image);
-  };
-
   const getDeviceStatus = (status: string) => {
     switch (status) {
       case "Available":
@@ -117,14 +130,41 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     }
   };
 
+  const getDeviceStatusClassName = (status: string) => {
+    if (status === undefined) {
+      return "unknown";
+    } else {
+      return status.toLowerCase().replace(" ", "-");
+    }
+  };
+
   /** Undoes any changes made to the device */
   const discardChanges = () => {
-    setUpdatedDevice(device);
+    const prevDevice: Partial<Equipment> = JSON.parse(JSON.stringify(device));
+    if (prevDevice.images && prevDevice.images.length > 0) {
+      prevDevice.images = prevDevice.images.map((image) => ({
+        ...image,
+        delete: false,
+        new: false,
+      }));
+    }
+    setUpdatedDevice(prevDevice);
+    setImages(null);
+    const fileInput = document.getElementById("images") as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+    if (device.images && device.images.length > 0) {
+      setSelectedImage(device.images[0].url);
+    } else {
+      setSelectedImage(null);
+    }
   };
 
   /** Component for the update buttons */
-  const UpdateButtons = () => (
-    <div className="d-flex justify-content-between align-items-center mb-3">
+  const UpdateButtons = (className: string) => (
+    <div
+      className={`d-flex justify-content-between align-items-center${className}`}>
       <button
         className="btn btn-primary"
         disabled={areObjectsEqual(device, updatedDevice)}
@@ -141,23 +181,151 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   );
 
   /** Modal callback to update the device */
-  const updateDevice = async (device: Equipment) => {
-    // Decode the images URLs before sending the request as they are encoded in the BE
-    if (device.images) {
-      device.images = device.images.map((image) => decodeURIComponent(image));
-    }
-
+  const updateDevice = async (updatedDevice: Partial<Equipment>) => {
+    setLoading(true);
+    
     try {
+      // Images paths to be deleted
+      const imagesToDelete: Array<string> = [];
+      if (updatedDevice.images) {
+        for (const image of updatedDevice.images) {
+          if (image.delete) {
+            imagesToDelete.push(image.url);
+          }
+        }
+      }
+      if (imagesToDelete.length > 0) {
+        axios.delete(`${BE_URL}/images/delete`, {
+          data: {
+            imagePaths: imagesToDelete,
+          },
+        });
+      }
+
+      // Remove the image paths from the device objcect
+      const updatedDeviceNoImages = JSON.parse(JSON.stringify(updatedDevice));
+      if (updatedDeviceNoImages.images) {
+        updatedDeviceNoImages.images = (
+          updatedDeviceNoImages.images as any[]
+        ).filter((image) => !image.delete);
+      }
+
+      // Upload the new images
+      let newImages = updatedDevice.images?.filter((image) => image.new);
+      const formData = new FormData();
+      formData.append("manufacturer", updatedDevice.manufacturer ?? "");
+      formData.append("device", updatedDevice.name ?? "");
+      for (const element of images ?? []) {
+        formData.append("images", element);
+      }
+      if (newImages && newImages.length > 0) {
+        const newImagesRes = await axios.post(
+          `${BE_URL}/images/upload?imgType=device`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // Update `newImages` with the paths of the new images
+        newImages = newImages.map((image, index) => ({
+          ...image,
+          url: newImagesRes.data.imagePaths[index],
+        }));
+      }
+
+      // Remove the images whose `url` start with "blob:"
+      updatedDeviceNoImages.images = (
+        updatedDeviceNoImages.images as any[]
+      ).filter((image) => !image.url.startsWith("blob:"));
+
+      // Append the `newImages` to the `updatedDeviceNoImages`
+      if (newImages && newImages.length > 0) {
+        if (updatedDeviceNoImages.images) {
+          updatedDeviceNoImages.images = [
+            ...(updatedDeviceNoImages.images ?? []),
+            ...newImages,
+          ];
+        } else {
+          updatedDeviceNoImages.images = newImages;
+        }
+      }
+
       const response = await axios.put(
-        `${BE_URL}/device?id=${device._id}`,
-        device
+        `${BE_URL}/device?id=${updatedDevice._id}`,
+        updatedDeviceNoImages
       );
       const data = response.data;
       setShowModal(true);
 
+      // Record the update as a history entry
+      let historyChanges = "";
+
+      // Name change
+      console.log(device);
+      console.log(updatedDevice);
+      if (device.name !== updatedDevice.name) {
+        historyChanges += `Cambio de nombre de "${device.name}" a "${updatedDevice.name}"`;
+      }
+
+      // Quantity change
+      if (device.quantity !== updatedDevice.quantity) {
+        if (historyChanges !== "") {
+          historyChanges += ".<br>";
+        }
+        historyChanges += `Cambio de cantidad de "${device.quantity}" a "${updatedDevice.quantity}"`;
+      }
+
+      // State change
+      if (device.status !== updatedDevice.status) {
+        if (historyChanges !== "") {
+          historyChanges += ".<br>";
+        }
+        historyChanges += `Cambio de estado de "${device.status}" a "${updatedDevice.status}"`;
+      }
+
+      console.log("Change:", historyChanges);
+
+      // HTTP POST request to register the change
+      const historyChangeObj = {
+        equipmentId: device._id,
+        history: [
+          {
+            change: "updated",
+            description: historyChanges,
+            userId: localStorage.getItem("userId"),
+          },
+        ],
+      };
+      await axios.post(
+        `${BE_URL}/history`,
+        historyChangeObj
+      );
+
+      const newlyUpdatedDevice = await axios.get(
+        `${BE_URL}/device?id=${updatedDevice._id}`
+      );
+
       if (response.status === 200 && data.success) {
-        setDevice(data.device);
-        setUpdatedDevice(data.device);
+        if (updatedDevice.images) {
+          for (const image of updatedDevice.images) {
+            image.delete = false;
+            image.new = false;
+          }
+        }
+        setImages(null);
+        const fileInput = document.getElementById("images") as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = "";
+        }
+        if (data.device.images && data.device.images.length > 0) {
+          setSelectedImage(data.device.images[0].url);
+        } else {
+          setSelectedImage(null);
+        }
+        setDevice(newlyUpdatedDevice.data.device);
+        setUpdatedDevice(JSON.parse(JSON.stringify(data.device)));
         setModalTitle("Equipo Actualizado");
         setModalBody(
           <p className="fs-6">El equipo fue actualizado correctamente.</p>
@@ -174,7 +342,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       let msg = (
         <>
           <p className="fs-6">
-            Ha ocurrido un error al intentar agregar el equipo.
+            Ha ocurrido un error al intentar actualizar el equipo.
           </p>
           <p className="fs-6">Por favor, intente de nuevo más tarde.</p>
         </>
@@ -187,7 +355,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
           msg = (
             <>
               <p className="fs-6">
-                Un dispositivo con el nombre {device.name} ya existe.
+                Un dispositivo con el nombre {updatedDevice.name} ya existe.
               </p>
               <p className="fs-6">
                 Por favor, ingrese un nombre diferente para el dispositivo.
@@ -205,6 +373,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         setShowModal(false);
       });
     }
+
+    setLoading(false);
   };
 
   /** Handles updating the device */
@@ -221,6 +391,30 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     setModalCallback(() => () => updateDevice(updatedDevice));
   };
 
+  /**
+   * Adds the new images to the formData
+   * @param event Event that triggered the function
+   */
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const fileList = event.target.files;
+      setImages(fileList);
+
+      // Add the images to the updated device
+      const newImages = Array.from(fileList).map((file) => ({
+        url: URL.createObjectURL(file),
+        caption: "",
+        new: true,
+      }));
+      setUpdatedDevice({
+        ...updatedDevice,
+        images: [...(updatedDevice.images ?? []), ...newImages],
+      });
+
+      setSelectedImage(newImages[0].url);
+    }
+  };
+
   return !loading ? (
     <>
       <ModalForm
@@ -233,192 +427,451 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         primaryBtnClass={modalBtnClass}
       />
       <Loader loading={loading} />
-      <div className="equipment-detail mb-5">
-        {allowUpdate ? (
-          <>
-            <UpdateButtons />
-            <div className="d-flex justify-content-between align-items-center">
-              <input
-                className="form-control mb-5 device-title-input"
-                type="text"
-                value={updatedDevice.name}
-                onChange={(e) =>
-                  setUpdatedDevice({ ...updatedDevice, name: e.target.value })
-                }
-              />
-            </div>
-          </>
-        ) : (
-          <h1>{device.name}</h1>
-        )}
-        <EquipmentImgView
-          equipment={device}
-          selectedImage={selectedImage}
-          handleImageClick={handleImageClick}
-        />
-        {device.images && <hr className="divider" />}
-        <div className="equipment-details">
-          {!allowUpdate && userType !== "admin" && (
+      <div className="form-card card equipment-card">
+        <div className="equipment-detail mb-3">
+          {allowUpdate ? (
             <>
-              <h2>Agregar a la solicitud</h2>
-              <label htmlFor="equipmentAmount">Cantidad</label>
-              <div
-                className="form-group mb-5 d-flex justify-content-between w-100"
-                id="requestedEquipment">
-                <div className="col-6">
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="equipmentAmount"
-                    placeholder="Cantidad por solicitar"
-                    min="1"
-                    step="1"
-                    max={device.quantity}
-                    value={requestedDevice.quantity}
-                    onChange={(e) => {
-                      setRequestedDevice({
-                        ...requestedDevice,
-                        quantity: Math.min(
-                          parseInt(e.target.value),
-                          device.quantity
-                        ),
-                      });
-                    }}
-                  />
-                </div>
-                <div className="col-6">
-                  <button
-                    className="btn btn-primary"
-                    disabled={requestedDevice.quantity === 0}
-                    onClick={() => {
-                      const requestedDevices =
-                        sessionStorage.getItem("requestedDevices");
-                      const parsedRequestedDevices = requestedDevices
-                        ? JSON.parse(requestedDevices)
-                        : [];
-                      const requestedDeviceIndex =
-                        parsedRequestedDevices.findIndex(
-                          (device: Equipment) =>
-                            device._id === requestedDevice._id
-                        );
-                      if (requestedDeviceIndex !== -1) {
-                        parsedRequestedDevices[requestedDeviceIndex].quantity =
-                          requestedDevice.quantity;
-                      } else {
-                        parsedRequestedDevices.push(requestedDevice);
-                      }
-                      sessionStorage.setItem(
-                        "requestedDevices",
-                        JSON.stringify(parsedRequestedDevices)
-                      );
-
-                      setShowModal(true);
-                      setModalTitle("Equipo Agregado");
-                      setModalBody(
-                        <>
-                          <p className="fs-6">
-                            El equipo fue agregado correctamente a la solicitud.
-                          </p>
-                          <p className="fs-6">
-                            Cuando desee realizar su solicitud, diríjase al
-                            apartado de{" "}
-                            <Link to="/inquiries">solicitudes</Link>.
-                          </p>
-                        </>
-                      );
-                      setModalBtnText("Aceptar");
-                      setModalBtnClass("btn-success");
-                      setModalCallback(() => () => {
-                        setShowModal(false);
-                      });
-                    }}>
-                    Agregar a la solicitud
-                  </button>
-                </div>
+              {UpdateButtons(" mb-4")}
+              <div className="d-flex justify-content-between align-items-center">
+                <input
+                  className="form-control mb-5 device-title-input"
+                  type="text"
+                  value={updatedDevice.name}
+                  onChange={(e) =>
+                    setUpdatedDevice({ ...updatedDevice, name: e.target.value })
+                  }
+                />
               </div>
-              <hr className="divider" />
+            </>
+          ) : (
+            <h1>{device.name}</h1>
+          )}
+          <EquipmentImgView
+            equipment={updatedDevice}
+            updateEquipment={setUpdatedDevice}
+            selectedImage={selectedImage}
+            handleImageClick={(image) => setSelectedImage(image)}
+            showDeleteButton={allowUpdate}
+          />
+          {device.images && <hr className="divider" />}
+          {allowUpdate && (
+            <>
+              <label htmlFor="newEquipmentImages">Nuevas Imágenes</label>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control mb-5 img-file-uploader"
+                id="images"
+                multiple
+                placeholder="Seleccionar imágenes"
+                onChange={handleImageChange}
+              />
+              {images && images.length > 0 && (
+                <div className="row">
+                  {Array.from(images).map((image, index) => (
+                    <div className="col-3" key={index}>
+                      <div className="card">
+                        <img
+                          src={URL.createObjectURL(image)}
+                          className="card-img-top"
+                          alt="..."
+                        />
+                        <div className="card-body">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Título de la imagen"
+                            onChange={(e) => {
+                              const newImages = updatedDevice.images ?? [];
+                              newImages[
+                                index + (device.images ?? []).length
+                              ].caption = e.target.value;
+                              setUpdatedDevice({
+                                ...updatedDevice,
+                                images: newImages,
+                              });
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-danger mt-2"
+                            onClick={() => {
+                              const newImages = updatedDevice.images ?? [];
+                              newImages.splice(
+                                index + (device.images ?? []).length,
+                                1
+                              );
+                              setUpdatedDevice({
+                                ...updatedDevice,
+                                images: newImages,
+                              });
+
+                              const oldImages = Array.from(images);
+                              oldImages.splice(index, 1);
+                              const dataTransfer = new DataTransfer();
+                              for (const file of oldImages) {
+                                dataTransfer.items.add(file);
+                              }
+                              setImages(dataTransfer.files);
+
+                              const fileInput = document.getElementById(
+                                "images"
+                              ) as HTMLInputElement;
+                              if (fileInput) {
+                                if (oldImages.length === 0) {
+                                  fileInput.value = "";
+                                } else {
+                                  fileInput.files = dataTransfer.files;
+                                }
+                              }
+                            }}>
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <hr className="divider mt-3" />
             </>
           )}
-          <h2>Detalles del Equipo</h2>
-          {allowUpdate ? (
-            <div className="mb-5">
-              <label htmlFor="manufacturer">Fabricante</label>
-              <select
-                className="form-control mb-5"
-                value={updatedDevice.manufacturer}
-                onChange={(e) => {
-                  setUpdatedDevice({
-                    ...updatedDevice,
-                    manufacturer: e.target.value,
-                  });
-                }}>
-                {manufacturers.map((manufacturer) => (
-                  <option key={manufacturer._id} value={manufacturer.name}>
-                    {manufacturer.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <p>
-              <b>Fabricante:</b> {device.manufacturer}
-            </p>
-          )}
-          <EquipmentDocs equipment={device} />
-          <hr className="divider" />
-          <h2>Proyectos en los que se ha utilizado</h2>
-          {device.projects && device.projects.length > 0 ? (
-            <ul className="mb-4">
-              {device.projects.map((project) => (
-                <li key={project.name}>
-                  <Link to={`/projects${project.path}`}>{project.name}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No se ha utilizado en ningún proyecto</p>
-          )}
-          <hr className="divider" />
-          <h2>Información Adicional</h2>
-          {device.notes && (
-            <div className="notes">
-              <h3>Notas</h3>
-              <p className="equipment-notes">{device.notes}</p>
-            </div>
-          )}
-          <div className="status mb-5">
-            <h3>Estado</h3>
-            {allowUpdate ? (
-              <select
-                className="form-select"
-                id="deviceStatus"
-                value={updatedDevice.status}
-                onChange={(e) => {
-                  setUpdatedDevice({
-                    ...updatedDevice,
-                    status: e.target.value,
-                  });
-                }}>
-                <option value="Available">Disponible</option>
-                <option value="In Use">En uso</option>
-                <option value="In Maintenance">En mantenimiento</option>
-                <option value="Broken">Averiado</option>
-              </select>
-            ) : (
-              <p>{getDeviceStatus(device.status)}</p>
+          <div className="equipment-details">
+            {!allowUpdate && userType !== "admin" && (
+              <>
+                <h2>Agregar a la solicitud</h2>
+                <label htmlFor="equipmentAmount">Cantidad</label>
+                <div
+                  className="form-group mb-5 d-flex justify-content-between w-100"
+                  id="requestedEquipment">
+                  <div className="col-6">
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="equipmentAmount"
+                      placeholder="Cantidad por solicitar"
+                      min="1"
+                      step="1"
+                      max={device.quantity}
+                      value={requestedDevice.quantity}
+                      onChange={(e) => {
+                        setRequestedDevice({
+                          ...requestedDevice,
+                          quantity: Math.min(
+                            parseInt(e.target.value),
+                            device.quantity ?? 1
+                          ),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="col-6">
+                    <button
+                      className="btn btn-primary"
+                      disabled={requestedDevice.quantity === 0}
+                      onClick={() => {
+                        const requestedDevices =
+                          sessionStorage.getItem("requestedDevices");
+                        const parsedRequestedDevices = requestedDevices
+                          ? JSON.parse(requestedDevices)
+                          : [];
+                        const requestedDeviceIndex =
+                          parsedRequestedDevices.findIndex(
+                            (device: Equipment) =>
+                              device._id === requestedDevice._id
+                          );
+                        if (requestedDeviceIndex !== -1) {
+                          parsedRequestedDevices[
+                            requestedDeviceIndex
+                          ].quantity = requestedDevice.quantity;
+                        } else {
+                          parsedRequestedDevices.push(requestedDevice);
+                        }
+                        sessionStorage.setItem(
+                          "requestedDevices",
+                          JSON.stringify(parsedRequestedDevices)
+                        );
+
+                        setShowModal(true);
+                        setModalTitle("Equipo Agregado");
+                        setModalBody(
+                          <>
+                            <p className="fs-6">
+                              El equipo fue agregado correctamente a la
+                              solicitud.
+                            </p>
+                            <p className="fs-6">
+                              Cuando desee realizar su solicitud, diríjase al
+                              apartado de{" "}
+                              <Link to="/inquiries">solicitudes</Link>.
+                            </p>
+                          </>
+                        );
+                        setModalBtnText("Aceptar");
+                        setModalBtnClass("btn-success");
+                        setModalCallback(() => () => {
+                          setShowModal(false);
+                        });
+                      }}>
+                      Agregar a la solicitud
+                    </button>
+                  </div>
+                </div>
+                <hr className="divider" />
+              </>
             )}
-          </div>
-          <div className="last-checked mb-5">
-            <h3>Última Actualización</h3>
-            <p>{timestampToDate(device.updatedAt)}</p>
-          </div>
-          {device.configuration && (
-            <div className="configuration">
-              <h3>Configuration</h3>
-              <p className="equipment-notes">{device.configuration}</p>
+            {allowUpdate && (
+              <div className="mb-5">
+                <label htmlFor="equipmentQuantity">Cantidad</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="equipmentQuantity"
+                  placeholder="Cantidad"
+                  min="1"
+                  step="1"
+                  value={updatedDevice.quantity}
+                  onChange={(e) =>
+                    setUpdatedDevice({
+                      ...updatedDevice,
+                      quantity: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+            )}
+            <h2>Detalles del Equipo</h2>
+            {allowUpdate ? (
+              <div className="mb-5">
+                <label htmlFor="manufacturer">Fabricante</label>
+                <select
+                  className="form-control mb-5"
+                  value={updatedDevice.manufacturer}
+                  onChange={(e) => {
+                    setUpdatedDevice({
+                      ...updatedDevice,
+                      manufacturer: e.target.value,
+                    });
+                  }}>
+                  {manufacturers.map((manufacturer) => (
+                    <option key={manufacturer._id} value={manufacturer.name}>
+                      {manufacturer.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <p>
+                <b>Fabricante:</b> {device.manufacturer}
+              </p>
+            )}
+            {allowUpdate ? (
+              <div className="mb-5">
+                <label htmlFor="documentation">Documentación</label>
+                <table
+                  className="table table-bordered table-hover"
+                  id="documentation-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Enlace</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {updatedDevice.documentation &&
+                      updatedDevice.documentation.map((link, index) => (
+                        <tr key={index}>
+                          <td>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Nombre"
+                              value={link.name}
+                              onChange={(e) => {
+                                const newDocumentation =
+                                  updatedDevice.documentation ?? [];
+                                newDocumentation[index].name = e.target.value;
+                                setUpdatedDevice({
+                                  ...updatedDevice,
+                                  documentation: newDocumentation,
+                                });
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Enlace"
+                              value={link.url}
+                              onChange={(e) => {
+                                const newDocumentation =
+                                  updatedDevice.documentation ?? [];
+                                newDocumentation[index].url = e.target.value;
+                                setUpdatedDevice({
+                                  ...updatedDevice,
+                                  documentation: newDocumentation,
+                                });
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => {
+                                const newDocumentation =
+                                  updatedDevice.documentation
+                                    ? updatedDevice.documentation.filter(
+                                        (l) => l.name !== link.name
+                                      )
+                                    : [];
+                                setUpdatedDevice({
+                                  ...updatedDevice,
+                                  documentation: newDocumentation,
+                                });
+                              }}>
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    <tr>
+                      <td>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Nombre"
+                          value={currDocName}
+                          onChange={(e) => setCurrDocName(e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enlace"
+                          value={currDocLink}
+                          onChange={(e) => setCurrDocLink(e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-primary"
+                          disabled={currDocName === "" || currDocLink === ""}
+                          onClick={() => {
+                            const newDocumentation =
+                              updatedDevice.documentation ?? [];
+                            newDocumentation.push({
+                              name: currDocName,
+                              url: currDocLink,
+                            });
+                            setUpdatedDevice({
+                              ...updatedDevice,
+                              documentation: newDocumentation,
+                            });
+                            setCurrDocName("");
+                            setCurrDocLink("");
+                          }}>
+                          Agregar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) : device.documentation ? (
+              <>
+                <p>Enlaces de documentación: </p>
+                <ul className="mb-4">
+                  {device.documentation.map((link, index) => (
+                    <li key={index}>
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="mb-4">
+                No hay enlaces de documentación disponibles
+              </p>
+            )}
+            <hr className="divider" />
+            <h2>Proyectos en los que se ha utilizado</h2>
+            {device.projects && device.projects.length > 0 ? (
+              <ul className="mb-4">
+                {device.projects.map((project) => (
+                  <li key={project.name}>
+                    <Link to={`/projects${project.path}`}>{project.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mb-4">No se ha utilizado en ningún proyecto</p>
+            )}
+            <hr className="divider" />
+            <h2>Información Adicional</h2>
+            {device.notes && (
+              <div className="notes">
+                <h3>Notas</h3>
+                <p className="equipment-notes">{device.notes}</p>
+              </div>
+            )}
+            <div className="status mb-5">
+              <h3>Estado</h3>
+              {allowUpdate ? (
+                <select
+                  className="form-select"
+                  id="deviceStatus"
+                  value={updatedDevice.status}
+                  onChange={(e) => {
+                    setUpdatedDevice({
+                      ...updatedDevice,
+                      status: e.target.value,
+                    });
+                  }}>
+                  <option value="Available">Disponible</option>
+                  <option value="In Use">En uso</option>
+                  <option value="In Maintenance">En mantenimiento</option>
+                  <option value="Broken">Averiado</option>
+                </select>
+              ) : (
+                <div
+                  className={`equipment-status status-${getDeviceStatusClassName(
+                    device.status ?? ""
+                  )}`}>
+                  {getDeviceStatus(device.status ?? "")}
+                </div>
+              )}
             </div>
-          )}
-          {allowUpdate && <UpdateButtons />}
+            <div className="last-checked mb-5">
+              <h3>Última Actualización</h3>
+              <p>{timestampToDate(device.updatedAt ?? "")}</p>
+            </div>
+            <div className="last-checked">
+              <h3>Cambios históricos</h3>
+              {device.history && device.history.length > 0 ? (
+                <EquipmentHistoryTable
+                  historyItems={device.history}
+                  showUser={allowUpdate}
+                />
+              ) : (
+                <p className="mb-4">No hay cambios históricos</p>
+              )}
+            </div>
+            {device.configuration && (
+              <div className="configuration">
+                <h3>Configuration</h3>
+                <p className="equipment-notes">{device.configuration}</p>
+              </div>
+            )}
+            {allowUpdate && UpdateButtons(" mt-4")}
+          </div>
         </div>
       </div>
     </>

@@ -1,41 +1,43 @@
 import React from "react";
-import { Equipment } from "../EquipmentList/equipment";
+import "./ProjecttImgView.scss";
+import { Project } from "../ProjectsList/projects";
 
-import "./EquipmentImgView.scss";
-
-/** Interface for EquipmentImgView props */
-interface EquipmentImgViewProps {
-  /** Equipment object */
-  equipment: Partial<Equipment>;
-  /** Callback to update the equipment object */
-  updateEquipment: (equipment: Partial<Equipment>) => void;
+/** Interface for ProjectImgView props */
+interface ProjectImgViewProps {
+  /** Project object */
+  project: Partial<Project>;
+  /** Callback to update the projectt object */
+  updateProject: (project: Partial<Project>) => void;
   /** Currently selected image */
   selectedImage: string | null;
   /** Function to handle image click */
   handleImageClick: (image: string) => void;
+  /** HTML class name for the component */
+  className?: string;
   /** Whether to show the buttons to delete the image */
   showDeleteButton?: boolean;
 }
 
-const EquipmentImgView = ({
-  equipment,
-  updateEquipment,
+const ProjectImgView = ({
+  project,
+  updateProject,
   selectedImage,
   handleImageClick,
+  className,
   showDeleteButton,
-}: EquipmentImgViewProps) => {
+}: ProjectImgViewProps) => {
   return (
-    <div className="equipment-img-view">
+    <div className={`project-img-view${" " + className}`}>
       <div className={`img-container${selectedImage ? " has-image" : ""}`}>
-        <div className="equipment-img">
+        <div className="project-img">
           <div className="additional-images">
-            {equipment.images &&
-              equipment.images.length > 0 &&
-              equipment.images.map((image, index) => (
+            {project.images &&
+              project.images.length > 0 &&
+              project.images.map((image, index) => (
                 <img
                   key={index}
                   src={image.url}
-                  alt={equipment.name}
+                  alt={project.name}
                   className={`img-fluid additional-image${
                     selectedImage === image.url ? " selected" : ""
                   }${image.delete ? " delete" : ""}${image.new ? " new" : ""}`}
@@ -44,19 +46,19 @@ const EquipmentImgView = ({
               ))}
           </div>
         </div>
-        <div className="main-equipment-img">
+        <div className="main-project-img">
           {selectedImage ? (
             <div className="img-caption">
               <img
                 src={selectedImage}
-                alt={equipment.name}
+                alt={project.name}
                 className={`img-fluid main-image${
-                  equipment.images?.find((image) => image.url === selectedImage)
+                  project.images?.find((image) => image.url === selectedImage)
                     ?.delete
                     ? " delete"
                     : ""
                 }${
-                  equipment.images?.find((image) => image.url === selectedImage)
+                  project.images?.find((image) => image.url === selectedImage)
                     ?.new
                     ? " new"
                     : ""
@@ -65,9 +67,8 @@ const EquipmentImgView = ({
               <div className="caption my-3 text-center">
                 <p className="mb-0 d-block image-caption">
                   {
-                    equipment.images?.find(
-                      (image) => image.url === selectedImage
-                    )?.caption
+                    project.images?.find((image) => image.url === selectedImage)
+                      ?.caption
                   }
                 </p>
               </div>
@@ -80,7 +81,9 @@ const EquipmentImgView = ({
                 className="img-fluid main-image"
               />
               <div className="caption my-3 text-center">
-                <p className="mb-0 d-block">No hay imágenes para este equipo</p>
+                <p className="mb-0 d-block">
+                  No hay imágenes para este proyecto
+                </p>
               </div>
             </div>
           )}
@@ -92,17 +95,17 @@ const EquipmentImgView = ({
             <button
               className="btn btn-danger w-100"
               disabled={
-                equipment.images?.find((image) => image.url === selectedImage)
+                project.images?.find((image) => image.url === selectedImage)
                   ?.delete
               }
               onClick={() => {
-                const images = equipment.images?.map((image) => {
+                const images = project.images?.map((image) => {
                   if (image.url === selectedImage) {
                     image.delete = !image.delete;
                   }
                   return image;
                 });
-                updateEquipment({ ...equipment, images });
+                updateProject({ ...project, images });
               }}>
               Eliminar Imagen
             </button>
@@ -111,17 +114,17 @@ const EquipmentImgView = ({
             <button
               className="btn btn-secondary w-100"
               disabled={
-                !equipment.images?.find((image) => image.url === selectedImage)
+                !project.images?.find((image) => image.url === selectedImage)
                   ?.delete
               }
               onClick={() => {
-                const images = equipment.images?.map((image) => {
+                const images = project.images?.map((image) => {
                   if (image.url === selectedImage) {
                     image.delete = !image.delete;
                   }
                   return image;
                 });
-                updateEquipment({ ...equipment, images });
+                updateProject({ ...project, images });
               }}>
               Cancelar
             </button>
@@ -132,4 +135,4 @@ const EquipmentImgView = ({
   );
 };
 
-export default EquipmentImgView;
+export default ProjectImgView;

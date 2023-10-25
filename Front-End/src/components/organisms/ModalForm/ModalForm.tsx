@@ -7,7 +7,7 @@ interface ModalFormProps {
   handleClose: () => void;
   onAccept?: () => void;
   title?: string;
-  body: string | JSX.Element;
+  body: JSX.Element;
   buttonText?: string;
   primaryBtnText?: string;
   primaryBtnClass?: string;
@@ -63,7 +63,7 @@ const ModalForm = ({
             <div className="modal-content">
               <div className="modal-overlay" onClick={handleClose} />
               <div className="modal-header">
-                <h5 className="modal-title">{title || "Modal Form"}</h5>
+                <h5 className="modal-title">{title ?? "Modal Form"}</h5>
                 <button
                   type="button"
                   className="btn-close"

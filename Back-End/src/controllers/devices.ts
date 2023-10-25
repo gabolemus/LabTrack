@@ -3,6 +3,7 @@ import { BaseController } from "./BaseController";
 import Device from "../models/devices";
 import History from "../models/histories";
 import Projects from "../models/projects";
+import Users from "../models/users";
 import { IDevice } from "../types/device";
 import logger from "../utils/logger";
 import { HistoryEntry, IHistory } from "../types/history";
@@ -23,6 +24,16 @@ export class DevicesController extends BaseController<IDevice> {
   }
 
   /**
+   * Gets the name and email of the user who created the history item.
+   * @param userId The ID of the user
+   * @returns The name and email of the user
+   */
+  private async getUser(userId: string) {
+    const user = await Users.findById(userId);
+    return { name: user?.name, email: user?.email };
+  }
+
+  /**
    * Processes the history of a history item.
    * @param history The history of an equipment
    * @returns The processed history
@@ -31,16 +42,20 @@ export class DevicesController extends BaseController<IDevice> {
     const modifiedHistory = [];
 
     for (const entry of history) {
+      // Get the name and email of the user who created the history item
+      const { userId } = entry;
+      const user = await this.getUser(userId);
+      const entryData = this.extractHistoryFields(entry);
+      delete entryData.projectId;
+
       if (entry.projectId) {
         const project = await Projects.findById(entry.projectId);
 
         // If the project exists, add the "path" value to the history entry
         if (project) {
-          const entryData = this.extractHistoryFields(entry);
-          delete entryData.projectId;
-
           const entryCopy = {
             ...entryData,
+            user,
             project: {
               name: project.name,
               path: project.path,
@@ -53,7 +68,13 @@ export class DevicesController extends BaseController<IDevice> {
         }
       } else {
         // If the history entry doesn't have a "projectId" value, add it to the modified history array
-        modifiedHistory.push(entry);
+        const entryCopy = {
+          ...entryData,
+          user,
+          _id: (entry as any)._id,
+        };
+
+        modifiedHistory.push(entryCopy);
       }
     }
 
@@ -61,7 +82,7 @@ export class DevicesController extends BaseController<IDevice> {
   };
 
   private async getHistoryEntries(deviceId: string): Promise<Partial<HistoryEntry>[]> {
-    const historyEntries = await History.find({ equipmentId: deviceId }); // Replace 'equipmentId' with the actual field name
+    const historyEntries = await History.find({ equipmentId: deviceId });
 
     // Also, add the project fields for the history entries that contain them
     const processedHistoryEntries = await this.processHistoryWithProjectPath(
@@ -126,6 +147,62 @@ export class DevicesController extends BaseController<IDevice> {
 
       // res.status(200).json({ success: true, length: items.length, [`${this.modelName}s`]: items });
       res.status(200).json({ success: true, length: itemsWithHistory.length, [pluralModelName]: itemsWithHistory });
+    } catch (error) {
+      this.handleError(res, error);
+    }
+  };
+
+  public getFilteredItems = async (req: Request, res: Response): Promise<void> => {
+    try {
+      logger.info(`GET /${this.modelName}/filtered?name=${req.query.name}`);
+      const items = await Device.db.db
+        .collection("devices")
+        .aggregate([
+          {
+            $lookup: {
+              from: "manufacturers",
+              localField: "manufacturerID",
+              foreignField: "_id",
+              as: "manufacturer",
+            },
+          },
+          {
+            $unwind: "$manufacturer",
+          },
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              manufacturer: "$manufacturer.name",
+              tags: 1,
+              quantity: 1,
+              status: 1,
+              path: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              documentation: 1,
+              configuration: 1,
+              images: 1,
+            },
+          },
+        ])
+        .toArray();
+
+      // Filter the array to only return the devices that contain the specified name
+      const filteredItems = items.filter((item) => item.name.toLowerCase().includes((req.query.name as string).toLowerCase()));
+
+      // Iterate through the devices and retrieve the history entries for each one
+      const filteredItemsWithHistory = await Promise.all(
+        filteredItems.map(async (item) => {
+          const historyEntries = await this.getHistoryEntries(item._id.toString());
+          return {
+            ...item,
+            history: historyEntries,
+          };
+        }),
+      );
+
+      res.status(200).json({ success: true, length: filteredItemsWithHistory.length, [`${this.modelName}s`]: filteredItemsWithHistory });
     } catch (error) {
       this.handleError(res, error);
     }
@@ -329,31 +406,10 @@ export class DevicesController extends BaseController<IDevice> {
       // Make the name of the device in lowercase and changing whitespaces to hyphens its path
       req.body.path = "/" + req.body.name.toLowerCase().replace(/\s/g, "-");
 
-      // Encode the URLs for the images
-      if (req.body.images) {
-        req.body.images = req.body.images.map((image: string) => encodeURI(image));
-      }
-
       // Create the device
       const newDevice = new this.model(req.body);
       const savedDevice = await newDevice.save();
       res.status(201).json({ success: true, [`new${this.modelName}`]: savedDevice });
-    } catch (error) {
-      this.handleError(res, error);
-    }
-  };
-
-  public updateItem = async (req: Request, res: Response): Promise<void> => {
-    logger.info(`PUT fdfdsa /${this.modelName} ${JSON.stringify(req.body)}`);
-
-    try {
-      // Encode the URLs for the images
-      if (req.body.images) {
-        req.body.images = req.body.images.map((image: string) => encodeURI(image));
-      }
-
-      const updatedItem = await this.model.findByIdAndUpdate(req.query.id, req.body);
-      res.status(updatedItem ? 200 : 404).json({ success: true, [this.modelName]: updatedItem });
     } catch (error) {
       this.handleError(res, error);
     }

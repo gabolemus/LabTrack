@@ -27,7 +27,6 @@ const Information = () => {
     <MainPage>
       <h1>Instrucciones de uso</h1>
       <MarkdownRenderer />
-      {/* Separator */}
       <div className="my-5" />
     </MainPage>
   );

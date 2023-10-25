@@ -16,6 +16,33 @@ export type Project = {
   quantity: number;
 };
 
+/** Type that defines the images a device has */
+export type Image = {
+  caption: string;
+  url: string;
+  delete?: boolean;
+  new?: boolean;
+};
+
+/** Enum that represents the possible history changes of a lab device */
+export enum HistoryChange {
+  CREATED = "created",
+  UPDATED = "updated",
+  USED_IN_PROJECT = "used in project",
+}
+
+/** Type that defines the history of a device */
+export type HistoryEntry = {
+  _id: string,
+  change: HistoryChange,
+  timestamp: Date,
+  description: string,
+  user: {
+    name: string,
+    email: string,
+  },
+};
+
 /** Equipment type definition */
 export type Equipment = {
   _id: string;
@@ -26,9 +53,10 @@ export type Equipment = {
   path: string;
   projects: Project[];
   documentation?: DocumentationLink[];
-  images?: string[];
+  images?: Image[];
   notes?: string;
   configuration?: string;
+  history: HistoryEntry[];
   status: string;
   updatedAt: string;
 };
@@ -57,5 +85,20 @@ export const fetchEquipmentData = async (id: string): Promise<Equipment> => {
   } catch (error) {
     console.log(error);
     return {} as Equipment;
+  }
+};
+
+/** Gets the equipment filtered by the given name */
+export const getFilteredEquipment = async (
+  name: string,
+): Promise<Array<Equipment>> => {
+  try {
+    const response = await axios.get(
+      `${BE_URL}/devices/filtered?name=${name}`
+    );
+    return response.data.devices as Array<Equipment>;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
 };

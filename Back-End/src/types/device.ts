@@ -17,6 +17,12 @@ export interface IDocumentation {
   url: string;
 }
 
+/** Interface that represents an image with a caption */
+export interface IImage {
+  caption: string;
+  url: string;
+}
+
 /** Lab device interface */
 export interface IDevice extends Document {
   id: string;
@@ -31,5 +37,5 @@ export interface IDevice extends Document {
   documentation?: IDocumentation[];
   notes?: string;
   configuration?: string;
-  images?: string;
+  images?: IImage[];
 }
