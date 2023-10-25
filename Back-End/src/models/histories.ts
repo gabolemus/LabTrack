@@ -7,7 +7,12 @@ const historiesSchema: Schema = new Schema(
     equipmentId: {
       type: Schema.Types.ObjectId,
       ref: "Device",
-      required: true,
+      required: false,
+    },
+    projectID: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: false,
     },
     history: [
       {

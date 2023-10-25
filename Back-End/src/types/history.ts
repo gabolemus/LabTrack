@@ -21,6 +21,7 @@ export type HistoryEntry = {
 };
 
 export interface IHistory extends Document {
-  equipmentID: IDevice["_id"];
+  equipmentID?: IDevice["_id"];
+  projectID?: IProject["_id"];
   history: HistoryEntry[];
 }

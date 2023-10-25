@@ -91,7 +91,6 @@ export class HistoryItemsController extends BaseController<IHistory> {
           return { ...item, history: [{ ...item.history[0], user }] };
         }),
       );
-      logger.debug(itemsWithUser);
 
       res.status(200).json({ success: true, length: items.length, [pluralModelName]: itemsWithHistory });
       // res.status(200).json({ success: true, length: items.length, [pluralModelName]: itemsWithUser });
@@ -129,12 +128,17 @@ export class HistoryItemsController extends BaseController<IHistory> {
     try {
       logger.info(`POST /${this.modelName} ${JSON.stringify(req.body)}`);
 
-      const { equipmentId, history } = req.body;
+      const { equipmentId, projectID, history } = req.body;
       const [{ change, timestamp, description, userId, projectId }] = history as HistoryEntry[];
       const currentTimestamp = new Date();
 
       // Use the Histories model to check if a document with the same equipmentId value already exists
-      const existingHistory = await Histories.findOne({ equipmentId });
+      let existingHistory = await Histories.findOne({ equipmentId });
+
+      // If existingHistory is null, check if a document with the same projectID value exists
+      if (!existingHistory) {
+        existingHistory = await Histories.findOne({ projectID });
+      }
 
       if (existingHistory) {
         // If it does, add the new history entry to the history array
@@ -151,6 +155,7 @@ export class HistoryItemsController extends BaseController<IHistory> {
         // If it doesn't, create a new history item
         const newItem = await this.model.create({
           equipmentId,
+          projectID,
           history: [
             {
               change,
