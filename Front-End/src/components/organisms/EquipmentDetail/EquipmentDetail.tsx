@@ -46,8 +46,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   const [modalBtnClass, setModalBtnClass] = useState("");
 
   useEffect(() => {
-    // // Scroll to top
-    // window.scrollTo(0, 0);
+    // Scroll to top
+    window.scrollTo(0, 0);
 
     const user = localStorage.getItem("role");
     setUserType(user || "");
@@ -181,15 +181,15 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
   );
 
   /** Modal callback to update the device */
-  const updateDevice = async (device: Partial<Equipment>) => {
+  const updateDevice = async (updatedDevice: Partial<Equipment>) => {
     // TODO: update this to also change the images
     // TODO: add a new history entry when an update is done
 
     try {
       // Images paths to be deleted
       const imagesToDelete: Array<string> = [];
-      if (device.images) {
-        for (const image of device.images) {
+      if (updatedDevice.images) {
+        for (const image of updatedDevice.images) {
           if (image.delete) {
             imagesToDelete.push(image.url);
           }
@@ -204,7 +204,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       }
 
       // Remove the image paths from the device objcect
-      const updatedDeviceNoImages = JSON.parse(JSON.stringify(device));
+      const updatedDeviceNoImages = JSON.parse(JSON.stringify(updatedDevice));
       if (updatedDeviceNoImages.images) {
         updatedDeviceNoImages.images = (
           updatedDeviceNoImages.images as any[]
@@ -212,10 +212,10 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       }
 
       // Upload the new images
-      let newImages = device.images?.filter((image) => image.new);
+      let newImages = updatedDevice.images?.filter((image) => image.new);
       const formData = new FormData();
-      formData.append("manufacturer", device.manufacturer ?? "");
-      formData.append("device", device.name ?? "");
+      formData.append("manufacturer", updatedDevice.manufacturer ?? "");
+      formData.append("device", updatedDevice.name ?? "");
       for (const element of images ?? []) {
         formData.append("images", element);
       }
@@ -254,15 +254,63 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       }
 
       const response = await axios.put(
-        `${BE_URL}/device?id=${device._id}`,
+        `${BE_URL}/device?id=${updatedDevice._id}`,
         updatedDeviceNoImages
       );
       const data = response.data;
       setShowModal(true);
 
+      // Record the update as a history entry
+      let historyChanges = "";
+
+      // Name change
+      console.log(device);
+      console.log(updatedDevice);
+      if (device.name !== updatedDevice.name) {
+        historyChanges += `Cambio de nombre de "${device.name}" a "${updatedDevice.name}"`;
+      }
+
+      // Quantity change
+      if (device.quantity !== updatedDevice.quantity) {
+        if (historyChanges !== "") {
+          historyChanges += ".<br>";
+        }
+        historyChanges += `Cambio de cantidad de "${device.quantity}" a "${updatedDevice.quantity}"`;
+      }
+
+      // State change
+      if (device.status !== updatedDevice.status) {
+        if (historyChanges !== "") {
+          historyChanges += ".<br>";
+        }
+        historyChanges += `Cambio de estado de "${device.status}" a "${updatedDevice.status}"`;
+      }
+
+      console.log("Change:", historyChanges);
+
+      // HTTP POST request to register the change
+      const historyChangeObj = {
+        equipmentId: device._id,
+        history: [
+          {
+            change: "updated",
+            description: historyChanges,
+            userId: localStorage.getItem("userId"),
+          },
+        ],
+      };
+      await axios.post(
+        `${BE_URL}/history`,
+        historyChangeObj
+      );
+
+      const newlyUpdatedDevice = await axios.get(
+        `${BE_URL}/device?id=${updatedDevice._id}`
+      );
+
       if (response.status === 200 && data.success) {
-        if (device.images) {
-          for (const image of device.images) {
+        if (updatedDevice.images) {
+          for (const image of updatedDevice.images) {
             image.delete = false;
             image.new = false;
           }
@@ -277,7 +325,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         } else {
           setSelectedImage(null);
         }
-        setDevice(data.device);
+        setDevice(newlyUpdatedDevice.data.device);
         setUpdatedDevice(JSON.parse(JSON.stringify(data.device)));
         setModalTitle("Equipo Actualizado");
         setModalBody(
@@ -308,7 +356,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
           msg = (
             <>
               <p className="fs-6">
-                Un dispositivo con el nombre {device.name} ya existe.
+                Un dispositivo con el nombre {updatedDevice.name} ya existe.
               </p>
               <p className="fs-6">
                 Por favor, ingrese un nombre diferente para el dispositivo.
@@ -570,6 +618,26 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
                 </div>
                 <hr className="divider" />
               </>
+            )}
+            {allowUpdate && (
+              <div className="mb-5">
+                <label htmlFor="equipmentQuantity">Cantidad</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="equipmentQuantity"
+                  placeholder="Cantidad"
+                  min="1"
+                  step="1"
+                  value={updatedDevice.quantity}
+                  onChange={(e) =>
+                    setUpdatedDevice({
+                      ...updatedDevice,
+                      quantity: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
             )}
             <h2>Detalles del Equipo</h2>
             {allowUpdate ? (
