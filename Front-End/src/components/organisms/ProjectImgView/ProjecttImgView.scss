@@ -1,0 +1,65 @@
+@import "../../../sass/utilities/variables";
+
+$max-height: 30rem;
+
+.img-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  padding: 0 1rem;
+  margin: 0 auto;
+  margin-bottom: 2.5rem;
+  max-height: $max-height;
+}
+
+.project-img {
+  flex: 0 0 auto;
+  width: 10%;
+}
+
+.main-project-img {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 70%;
+  height: auto;
+  margin: 0 auto;
+  max-height: $max-height;
+}
+
+.selected {
+  border: 0.25rem solid $blue;
+}
+
+.additional-image:hover {
+  border: 0.25rem solid $gray;
+  cursor: pointer;
+}
+
+.main-image {
+  height: $max-height;
+  max-height: $max-height;
+  width: auto;
+  max-width: 100%;
+}
+
+.delete {
+  border: 0.25rem solid #ff6666;
+}
+
+.new {
+  border: 0.25rem solid #77dd77;
+}
+
+.image-caption {
+  height: 2.5rem;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 1.25rem;
+  text-align: center;
+}

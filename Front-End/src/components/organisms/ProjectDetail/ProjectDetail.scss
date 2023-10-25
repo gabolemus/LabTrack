@@ -37,3 +37,55 @@
     background-color: $green;
   }
 }
+
+#project-equipment-table {
+  th {
+    background-color: $gray;
+  }
+
+  // Intercalate row colors
+  td {
+    background-color: transparent;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: $lightGray;
+  }
+}
+
+.project-card {
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="date"],
+  textarea,
+  select {
+    background-color: #f1f1f1;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' fill='none' viewBox='0 0 8 8'%3E%3Cpath stroke='%23A9A9A9' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M1 2l3 3 3-3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  label {
+    margin-bottom: 0.25rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  textarea {
+    min-height: 5rem;
+    max-height: 10rem;
+  }
+}
+
+.project-title-input {
+  font-size: 2rem;
+}

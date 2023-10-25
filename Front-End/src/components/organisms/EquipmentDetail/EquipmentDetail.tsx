@@ -50,7 +50,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     window.scrollTo(0, 0);
 
     const user = localStorage.getItem("role");
-    setUserType(user || "");
+    setUserType(user ?? "");
     if (user === "superAdmin") {
       setAllowUpdate(true);
     }
@@ -182,9 +182,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
 
   /** Modal callback to update the device */
   const updateDevice = async (updatedDevice: Partial<Equipment>) => {
-    // TODO: update this to also change the images
-    // TODO: add a new history entry when an update is done
-
+    setLoading(true);
+    
     try {
       // Images paths to be deleted
       const imagesToDelete: Array<string> = [];
@@ -374,6 +373,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         setShowModal(false);
       });
     }
+
+    setLoading(false);
   };
 
   /** Handles updating the device */

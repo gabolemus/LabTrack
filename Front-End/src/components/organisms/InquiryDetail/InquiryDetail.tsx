@@ -161,11 +161,10 @@ const InquiryDetail = ({ id }: InquiryDetailProps) => {
             },
           ],
         };
-        const newProjectEntryHistory = await axios.post(
+        await axios.post(
           `${BE_URL}/history`,
           newProjectEntryObj
         );
-        console.log(newProjectEntryHistory);
 
         const newProjectEmail = {
           to: inquiry.projectRequester.email,
