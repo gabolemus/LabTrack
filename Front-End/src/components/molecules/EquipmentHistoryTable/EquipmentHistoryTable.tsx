@@ -1,0 +1,52 @@
+import React from "react";
+import { HistoryEntry } from "../../organisms/EquipmentList/equipment";
+import { timestampToShortDate } from "../../../utils/utils";
+import "./EquipmentHistoryTable.scss";
+
+/** Props for EquipmentHistoryTable component */
+export interface EquipmentHistoryTableProps {
+  /** History items of the equipment */
+  historyItems: HistoryEntry[];
+  /** Whether to show the user column or not */
+  showUser?: boolean;
+}
+
+const EquipmentHistoryTable = ({
+  historyItems,
+  showUser,
+}: EquipmentHistoryTableProps) => {
+  return (
+    <table className="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Descripción</th>
+          <th scope="col">Fecha</th>
+          {showUser && <th scope="col">Usuario</th>}
+          {showUser && <th scope="col">Correo</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {historyItems.map((historyItem, index) => (
+          <tr key={index}>
+            <td className="history-item-desc">{historyItem.description}</td>
+            <td className="history-item-timestamp">
+              {timestampToShortDate(historyItem.timestamp.toString())}
+            </td>
+            {showUser && (
+              <td className="history-item-username">{historyItem.user.name}</td>
+            )}
+            {showUser && (
+              <td className="history-item-useremail">
+                <a href={`mailto:${historyItem.user.email}`}>
+                  {historyItem.user.email}
+                </a>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default EquipmentHistoryTable;
