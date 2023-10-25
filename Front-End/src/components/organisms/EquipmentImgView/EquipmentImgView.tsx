@@ -45,7 +45,7 @@ const EquipmentImgView = ({
           </div>
         </div>
         <div className="main-equipment-img">
-          {selectedImage && (
+          {selectedImage ? (
             <div className="img-caption">
               <img
                 src={selectedImage}
@@ -55,16 +55,32 @@ const EquipmentImgView = ({
                     ?.delete
                     ? " delete"
                     : ""
+                }${
+                  equipment.images?.find((image) => image.url === selectedImage)
+                    ?.new
+                    ? " new"
+                    : ""
                 }`}
               />
               <div className="caption my-3 text-center">
-                <p>
+                <p className="mb-0 d-block image-caption">
                   {
                     equipment.images?.find(
                       (image) => image.url === selectedImage
                     )?.caption
                   }
                 </p>
+              </div>
+            </div>
+          ) : (
+            <div className="img-caption">
+              <img
+                src="https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg"
+                alt="No image"
+                className="img-fluid main-image"
+              />
+              <div className="caption my-3 text-center">
+                <p className="mb-0 d-block">No hay imágenes para este equipo</p>
               </div>
             </div>
           )}
@@ -81,16 +97,11 @@ const EquipmentImgView = ({
               }
               onClick={() => {
                 const images = equipment.images?.map((image) => {
-                  console.log(image.url);
-                  console.log(image.url === selectedImage);
                   if (image.url === selectedImage) {
                     image.delete = !image.delete;
                   }
                   return image;
                 });
-                console.log(selectedImage);
-                console.log(images);
-                console.log({ ...equipment, images });
                 updateEquipment({ ...equipment, images });
               }}>
               Eliminar Imagen
@@ -110,8 +121,6 @@ const EquipmentImgView = ({
                   }
                   return image;
                 });
-                console.log(images);
-                console.log({ ...equipment, images });
                 updateEquipment({ ...equipment, images });
               }}>
               Cancelar
