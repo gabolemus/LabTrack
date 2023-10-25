@@ -85,6 +85,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         // Select the first image as the initially selected image
         if (data.images && data.images.length > 0) {
           setSelectedImage(data.images[0].url);
+        } else {
+          setSelectedImage(null);
         }
       } catch (error) {
         console.error(error);
@@ -153,6 +155,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
     }
     if (device.images && device.images.length > 0) {
       setSelectedImage(device.images[0].url);
+    } else {
+      setSelectedImage(null);
     }
   };
 
@@ -177,15 +181,101 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
 
   /** Modal callback to update the device */
   const updateDevice = async (device: Partial<Equipment>) => {
+    // TODO: update this to also change the images
+    // TODO: add a new history entry when an update is done
+
     try {
+      // Images paths to be deleted
+      const imagesToDelete: Array<string> = [];
+      if (device.images) {
+        for (const image of device.images) {
+          if (image.delete) {
+            imagesToDelete.push(image.url);
+          }
+        }
+      }
+      if (imagesToDelete.length > 0) {
+        axios.delete(`${BE_URL}/images/delete`, {
+          data: {
+            imagePaths: imagesToDelete,
+          },
+        });
+      }
+
+      // Remove the image paths from the device objcect
+      const updatedDeviceNoImages = JSON.parse(JSON.stringify(device));
+      if (updatedDeviceNoImages.images) {
+        updatedDeviceNoImages.images = (
+          updatedDeviceNoImages.images as any[]
+        ).filter((image) => !image.delete);
+      }
+
+      // Upload the new images
+      let newImages = device.images?.filter((image) => image.new);
+      const formData = new FormData();
+      formData.append("manufacturer", device.manufacturer ?? "");
+      formData.append("device", device.name ?? "");
+      for (const element of images ?? []) {
+        formData.append("images", element);
+      }
+      if (newImages && newImages.length > 0) {
+        const newImagesRes = await axios.post(
+          `${BE_URL}/images/upload?imgType=device`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // Update `newImages` with the paths of the new images
+        newImages = newImages.map((image, index) => ({
+          ...image,
+          url: newImagesRes.data.imagePaths[index],
+        }));
+      }
+
+      // Remove the images whose `url` start with "blob:"
+      updatedDeviceNoImages.images = (
+        updatedDeviceNoImages.images as any[]
+      ).filter((image) => !image.url.startsWith("blob:"));
+
+      // Append the `newImages` to the `updatedDeviceNoImages`
+      if (newImages && newImages.length > 0) {
+        if (updatedDeviceNoImages.images) {
+          updatedDeviceNoImages.images = [
+            ...(updatedDeviceNoImages.images ?? []),
+            ...newImages,
+          ];
+        } else {
+          updatedDeviceNoImages.images = newImages;
+        }
+      }
+
       const response = await axios.put(
         `${BE_URL}/device?id=${device._id}`,
-        device
+        updatedDeviceNoImages
       );
       const data = response.data;
       setShowModal(true);
 
       if (response.status === 200 && data.success) {
+        if (device.images) {
+          for (const image of device.images) {
+            image.delete = false;
+            image.new = false;
+          }
+        }
+        setImages(null);
+        const fileInput = document.getElementById("images") as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = "";
+        }
+        if (data.device.images && data.device.images.length > 0) {
+          setSelectedImage(data.device.images[0].url);
+        } else {
+          setSelectedImage(null);
+        }
         setDevice(data.device);
         setUpdatedDevice(JSON.parse(JSON.stringify(data.device)));
         setModalTitle("Equipo Actualizado");
@@ -204,7 +294,7 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
       let msg = (
         <>
           <p className="fs-6">
-            Ha ocurrido un error al intentar agregar el equipo.
+            Ha ocurrido un error al intentar actualizar el equipo.
           </p>
           <p className="fs-6">Por favor, intente de nuevo más tarde.</p>
         </>
@@ -270,6 +360,8 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
         ...updatedDevice,
         images: [...(updatedDevice.images ?? []), ...newImages],
       });
+
+      setSelectedImage(newImages[0].url);
     }
   };
 
@@ -598,8 +690,6 @@ const EquipmentDetail = ({ id }: EquipmentDetailProps) => {
                           className="btn btn-primary"
                           disabled={currDocName === "" || currDocLink === ""}
                           onClick={() => {
-                            console.log(device.documentation);
-                            console.log(updatedDevice.documentation);
                             const newDocumentation =
                               updatedDevice.documentation ?? [];
                             newDocumentation.push({
